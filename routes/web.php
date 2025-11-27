@@ -22,8 +22,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ========================================================
     Route::prefix('instructor')->as('instructor.')->group(function () {
 
-                Route::apiResource('classes.subjects', App\Http\Controllers\Api\V1\Instructor\SubjectController::class);
-        Route::apiResource('subjects.assessments', App\Http\Controllers\Api\V1\Instructor\AssessmentController::class);
+        Route::apiResource('classes', App\Http\Controllers\Instructor\ClassroomController::class);
+        //         Route::apiResource('classes.subjects', App\Http\Controllers\Api\V1\Instructor\SubjectController::class);
+        // Route::apiResource('subjects.assessments', App\Http\Controllers\Api\V1\Instructor\AssessmentController::class);
 
         
     });

@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('quizzes', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->string('type'); // quiz, exam, etc.
+            $table->dateTime('start_time')->nullable();
+            $table->dateTime('end_time')->nullable();
+            $table->integer('duration')->nullable(); // minutes
+            $table->integer('max_attempts')->nullable(); // NULL = unlimited
+            $table->integer('created_by')->nullable();
+
             $table->timestamps();
         });
     }

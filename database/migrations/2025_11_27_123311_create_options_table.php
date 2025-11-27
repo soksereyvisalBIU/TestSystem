@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('options', function (Blueprint $table) {
             $table->id();
+            $table->integer('question_id')->nullable();
+            $table->text('option_text')->nullable();
+            $table->boolean('is_correct')->default(false);
+            $table->string('match_key')->nullable();
+            $table->tinyInteger('side')->nullable();
+
             $table->timestamps();
         });
     }
