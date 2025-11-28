@@ -1,0 +1,79 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class AnswerHistory extends Model
+{
+    protected $table = 'answer_histories';
+    protected $fillable = [
+        'attempt_id',
+        'question_id',
+        'answer_text',
+        'selected_option_id',
+        'file_path',
+        'code_submission',
+        'is_correct',
+        'points_awarded',
+        'changed_at',
+    ];
+
+    // ========== Relation ===========
+
+    public function question()
+    {
+        return $this->belongsTo(Question::class, 'question_id');
+    }
+
+    public function attempt()
+    {
+        return $this->belongsTo(Attempt::class, 'attempt_id');
+    }
+
+    public function selectedOption()
+    {
+        return $this->belongsTo(Option::class, 'selected_option_id');
+    }   
+
+    public function answer()
+    {
+        return $this->belongsTo(Answer::class, 'answer_id');
+    }
+
+    public function assessmentAttempt()
+    {
+        return $this->belongsTo(AssessmentAttempt::class, 'attempt_id');
+    }
+
+    public function assessmentQuestion()
+    {
+        return $this->belongsTo(Question::class, 'question_id');
+    }
+
+    public function assessment()
+    {
+        return $this->assessmentAttempt->assessment();
+    }
+
+    public function student()
+    {
+        return $this->assessmentAttempt->student();
+    }
+
+    public function answerFiles()
+    {
+        return $this->hasMany(AnswerFile::class, 'answer_id');
+    }
+
+    public function getAnswerFilesAttribute()
+    {
+        return $this->answerFiles()->get();
+    }
+
+    public function studentCourse()
+    {
+        return $this->belongsTo(StudentCourse::class, 'answer_id', 'id');
+    }
+    
+}

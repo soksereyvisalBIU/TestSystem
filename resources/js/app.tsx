@@ -41,10 +41,15 @@ createInertiaApp({
                         >
                             <AnimatePresence mode="wait">
                                 <motion.div
-                                    key={props.initialPage.component} // use component name as key
+                                    // key={props.initialPage.component} // use component name as key
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
+
+                                    // initial={{ opacity: 0 }}
+                                    // animate={{ opacity: 1 }}
+                                    // exit={{ opacity: 0 }}
+                                    transition={{ duration: 1 }}
                                 >
                                     <App {...props} />
                                 </motion.div>
@@ -62,7 +67,7 @@ createInertiaApp({
             </StrictMode>,
         );
     },
-    progress: { color: '#4B5563' , showSpinner: true },
+    progress: { color: '#4B5563', showSpinner: true },
 });
 
 initializeTheme();

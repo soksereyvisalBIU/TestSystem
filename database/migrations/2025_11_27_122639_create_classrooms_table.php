@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->integer('batch');
-            $table->integer('year');
-            $table->integer('semester');
-            $table->string('shift');
+            // $table->integer('batch');
+            // $table->integer('year');
+            // $table->integer('semester');
+            // $table->string('shift');
             $table->string('visibility')->default('public');
             $table->text('cover')->nullable();
             $table->integer('creator_id')->nullable();
