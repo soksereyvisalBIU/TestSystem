@@ -1,8 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Edit2Icon, Trash2Icon } from 'lucide-react';
-// import { renderAnswers } from '/function/RenderAnswer';
-// import { renderAnswers } from 'function/RenderAnswer';
 import { renderAnswers } from './function/renderAnswer';
 
 export default function QuestionCard({

@@ -1,4 +1,3 @@
-// import Modal from '@/components/Modal/Modal';
 import Modal from '@/components/instructor/modal/Modal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

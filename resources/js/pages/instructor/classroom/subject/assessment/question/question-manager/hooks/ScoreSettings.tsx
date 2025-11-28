@@ -30,34 +30,6 @@ export default function ScoreSettings({
     // =======================================================
     // 🔹 Step 1: Auto-distribute percentages equally (only once when loading)
     // =======================================================
-    // useEffect(() => {
-    //     if (
-    //         questionTypes.length > 0 &&
-    //         Object.keys(typePercentages).length === 0
-    //     ) {
-    //         console.log(questionTypes);
-    //         const equalShare = parseFloat(
-    //             (100 / questionTypes.length).toFixed(2),
-    //         );
-    //         const distributed = questionTypes.reduce(
-    //             (acc, type, i) => {
-    //                 // =======================================================
-    //                 // Last item adjusts to ensure total = 100%
-    //                 // =======================================================
-    //                 if (i === questionTypes.length - 1) {
-    //                     const remainder =
-    //                         100 - equalShare * (questionTypes.length - 1);
-    //                     acc[type] = parseFloat(remainder.toFixed(2));
-    //                 } else {
-    //                     acc[type] = equalShare;
-    //                 }
-    //                 return acc;
-    //             },
-    //             {} as Record<string, number>,
-    //         );
-    //         setTypePercentages(distributed);
-    //     }
-    // }, [questionTypes, typePercentages, setTypePercentages]);
     useEffect(() => {
         if (
             questionTypes.length > 0 &&
@@ -102,15 +74,6 @@ export default function ScoreSettings({
             <Card className="gap-4">
                 <CardHeader>
                     <CardTitle>Score Settings</CardTitle>
-                    {/* <CardDescription>Card Description</CardDescription>
-                    <CardAction className="flex items-center gap-2">
-                        <Label htmlFor="auto">Set</Label>
-                        <Switch
-                            id="auto"
-                            checked={autoPoints}
-                            onCheckedChange={setAutoPoints}
-                        />
-                    </CardAction> */}
                 </CardHeader>
                 <CardContent>
                     {/* Total Score Input */}
