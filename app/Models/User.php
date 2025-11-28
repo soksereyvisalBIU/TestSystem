@@ -59,6 +59,14 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
+    // ======== new relations ========
+    public function classes()
+    {
+        return $this->hasMany(Classroom::class, 'creator_id');
+    }
+    
+    
+
     // ========== Relation ===========
     public function joinedCourses()
     {
@@ -78,7 +86,7 @@ class User extends Authenticatable
     }
     public function courses()
     {
-        return $this->hasMany(Course::class, 'created_by');
+        return $this->hasMany(Course::class, 'creator_id');
     }
 
     public function assessments()

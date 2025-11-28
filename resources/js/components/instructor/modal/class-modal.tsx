@@ -9,21 +9,78 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { useState } from 'react';
+import { useForm } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
 import Modal from './Modal';
 
 interface ClassModalProps {
-    isOpen: any;
-    // setIsOpen: (v: boolean) => void;
-    setIsOpen: any;
+    isOpen: boolean;
+    setIsOpen: (v: boolean) => void;
+    mode: 'create' | 'edit';
+    classData: any;
 }
 
-export default function ClassModal({ isOpen, setIsOpen }: ClassModalProps) {
+export default function ClassModal({
+    isOpen,
+    setIsOpen,
+    mode,
+    classData,
+}: ClassModalProps) {
     const [preview, setPreview] = useState<string | null>(null);
+
+    const { data, setData, post, progress, errors, reset, put } = useForm({
+        name: '',
+        description: '',
+        campus: '',
+        major: '',
+        batch: '',
+        year: '',
+        semester: '',
+        shift: '',
+        cover: null as File | null,
+    });
+
+    /** Prefill form when editing */
+    useEffect(() => {
+        if (mode === 'edit' && classData) {
+            setData({
+                name: classData.name,
+                description: classData.description,
+                campus: classData.campus,
+                major: classData.major,
+                batch: classData.batch,
+                year: classData.year,
+                semester: classData.semester,
+                shift: classData.shift,
+                cover: null,
+            });
+            setPreview(classData.cover_url);
+        } else {
+            reset();
+            setPreview(null);
+        }
+    }, [mode, classData]);
+
+    const handleSubmit = (e: any) => {
+        e.preventDefault();
+
+        if (mode === 'create') {
+            post(route('instructor.classes.store'), {
+                onSuccess: () => setIsOpen(false),
+            });
+        } else {
+            put(route('instructor.classes.update', classData.id), {
+                onSuccess: () => setIsOpen(false),
+            });
+        }
+    };
 
     const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) setPreview(URL.createObjectURL(file));
+        if (file) {
+            setData('cover', file);
+            setPreview(URL.createObjectURL(file));
+        }
     };
 
     return (
@@ -31,67 +88,113 @@ export default function ClassModal({ isOpen, setIsOpen }: ClassModalProps) {
             size="lg"
             isOpen={isOpen}
             setIsOpen={setIsOpen}
-            title="Sample Class Form"
+            title={mode === 'create' ? 'Create Class' : 'Update Class'}
         >
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
                 {/* Name */}
                 <div>
                     <Label>Name</Label>
-                    <Input placeholder="Class name" />
+                    <Input
+                        value={data.name}
+                        onChange={(e) => setData('name', e.target.value)}
+                        placeholder="Class name"
+                    />
+                    {errors.name && (
+                        <p className="text-sm text-red-500">{errors.name}</p>
+                    )}
                 </div>
 
                 {/* Description */}
                 <div>
                     <Label>Description</Label>
-                    <Textarea placeholder="Short description" />
+                    <Textarea
+                        value={data.description}
+                        onChange={(e) => setData('description', e.target.value)}
+                        placeholder="Short description"
+                    />
+                    {errors.description && (
+                        <p className="text-sm text-red-500">
+                            {errors.description}
+                        </p>
+                    )}
                 </div>
 
-                {/* Batch */}
+                {/* Campus / Major / Batch */}
                 <div className="grid grid-cols-3 gap-4">
                     <div>
                         <Label>Campus</Label>
-                        <Select>
+                        <Select
+                            onValueChange={(v) => setData('campus', v)}
+                            defaultValue={data.campus}
+                        >
                             <SelectTrigger>
-                                <SelectValue placeholder="Select batch" />
+                                <SelectValue placeholder="Campus" />
                             </SelectTrigger>
                             <SelectContent>
-                                {[1 ,2 ].map((b) => (
-                                    <SelectItem key={b} value={String(b)}>
-                                        {b}
-                                    </SelectItem>
-                                ))}
+                                <SelectItem value="1">1</SelectItem>
+                                <SelectItem value="2">2</SelectItem>
                             </SelectContent>
                         </Select>
+                        {errors.campus && (
+                            <p className="text-sm text-red-500">
+                                {errors.campus}
+                            </p>
+                        )}
                     </div>
+
                     <div>
                         <Label>Major</Label>
-                        <Select>
+                        <Select
+                            onValueChange={(v) => setData('major', v)}
+                            defaultValue={data.major}
+                        >
                             <SelectTrigger>
-                                <SelectValue placeholder="Select batch" />
+                                <SelectValue placeholder="Major" />
                             </SelectTrigger>
                             <SelectContent>
-                                {["Software Engineering" , "Computer Networking" , "Multimedia Design"].map((b , i) => (
-                                    <SelectItem key={i} value={String(b)}>
-                                        {b}
+                                {[
+                                    'Software Engineering',
+                                    'Computer Networking',
+                                    'Multimedia Design',
+                                ].map((m) => (
+                                    <SelectItem key={m} value={m}>
+                                        {m}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
+                        {errors.major && (
+                            <p className="text-sm text-red-500">
+                                {errors.major}
+                            </p>
+                        )}
                     </div>
+
                     <div>
                         <Label>Batch</Label>
-                        <Select>
+                        <Select
+                            onValueChange={(v) => setData('batch', v)}
+                            defaultValue={data.batch}
+                        >
                             <SelectTrigger>
-                                <SelectValue placeholder="Select batch" />
+                                <SelectValue placeholder="Batch" />
                             </SelectTrigger>
                             <SelectContent>
-                                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((b) => (
-                                    <SelectItem key={b} value={String(b)}>
-                                        {b}
+                                {Array.from({ length: 10 }).map((_, i) => (
+                                    <SelectItem
+                                        key={i + 1}
+                                        value={String(i + 1)}
+                                    >
+                                        {i + 1}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
+                        {errors.batch && (
+                            <p className="text-sm text-red-500">
+                                {errors.batch}
+                            </p>
+                        )}
                     </div>
                 </div>
 
@@ -99,7 +202,10 @@ export default function ClassModal({ isOpen, setIsOpen }: ClassModalProps) {
                 <div className="grid grid-cols-3 gap-4">
                     <div>
                         <Label>Year</Label>
-                        <Select>
+                        <Select
+                            onValueChange={(v) => setData('year', v)}
+                            defaultValue={data.year}
+                        >
                             <SelectTrigger>
                                 <SelectValue placeholder="Year" />
                             </SelectTrigger>
@@ -111,11 +217,19 @@ export default function ClassModal({ isOpen, setIsOpen }: ClassModalProps) {
                                 ))}
                             </SelectContent>
                         </Select>
+                        {errors.year && (
+                            <p className="text-sm text-red-500">
+                                {errors.year}
+                            </p>
+                        )}
                     </div>
 
                     <div>
                         <Label>Semester</Label>
-                        <Select>
+                        <Select
+                            onValueChange={(v) => setData('semester', v)}
+                            defaultValue={data.semester}
+                        >
                             <SelectTrigger>
                                 <SelectValue placeholder="Semester" />
                             </SelectTrigger>
@@ -124,27 +238,38 @@ export default function ClassModal({ isOpen, setIsOpen }: ClassModalProps) {
                                 <SelectItem value="2">2</SelectItem>
                             </SelectContent>
                         </Select>
+                        {errors.semester && (
+                            <p className="text-sm text-red-500">
+                                {errors.semester}
+                            </p>
+                        )}
                     </div>
 
                     <div>
                         <Label>Shift</Label>
-                        <Select>
+                        <Select
+                            onValueChange={(v) => setData('shift', v)}
+                            defaultValue={data.shift}
+                        >
                             <SelectTrigger>
                                 <SelectValue placeholder="Shift" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="Morning">Morning</SelectItem>
-                                <SelectItem value="Afternoon">
-                                    Afternoon
-                                </SelectItem>
+                                <SelectItem value="Afternoon">Afternoon</SelectItem>
                                 <SelectItem value="Evening">Evening</SelectItem>
                                 <SelectItem value="Weekend">Weekend</SelectItem>
                             </SelectContent>
                         </Select>
+                        {errors.shift && (
+                            <p className="text-sm text-red-500">
+                                {errors.shift}
+                            </p>
+                        )}
                     </div>
                 </div>
 
-                {/* Cover Image */}
+                {/* Image */}
                 <div>
                     <Label>Class Cover</Label>
                     <Input
@@ -152,6 +277,10 @@ export default function ClassModal({ isOpen, setIsOpen }: ClassModalProps) {
                         accept="image/*"
                         onChange={handleImage}
                     />
+
+                    {errors.cover && (
+                        <p className="text-sm text-red-500">{errors.cover}</p>
+                    )}
 
                     {preview && (
                         <img
@@ -170,7 +299,9 @@ export default function ClassModal({ isOpen, setIsOpen }: ClassModalProps) {
                     >
                         Cancel
                     </Button>
-                    <Button type="submit">Submit</Button>
+                    <Button type="submit">
+                        {mode === 'create' ? 'Create' : 'Update'}
+                    </Button>
                 </div>
             </form>
         </Modal>

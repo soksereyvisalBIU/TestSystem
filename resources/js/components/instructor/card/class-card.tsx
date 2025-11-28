@@ -1,6 +1,5 @@
 import { Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import { Edit, Eye } from 'lucide-react';
 import { route } from 'ziggy-js';
 
 const imageURL = `/assets/img/class/39323.jpg`;
@@ -37,7 +36,8 @@ export default function ClassCard() {
                             Computer Science Class
                         </h3>
                         <p className="line-clamp-2 text-sm opacity-90">
-                            This is a sample static description for preview purposes.
+                            This is a sample static description for preview
+                            purposes.
                         </p>
                     </motion.div>
                 </div>
