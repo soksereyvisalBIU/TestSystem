@@ -19,4 +19,9 @@ class Classroom extends Model
         'cover',
         'creator_id',
     ];
+
+    public function subjects(){
+                return $this->hasMany(Subject::class, 'class_id');
+
+    }
 }
