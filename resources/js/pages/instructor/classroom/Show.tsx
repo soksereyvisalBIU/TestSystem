@@ -38,6 +38,20 @@ export default function SubjectShow({ classroom }: { classroom: any }) {
         },
     };
 
+    // Open "Create" modal
+    const openCreateModal = () => {
+        setModalMode('create');
+        setEditingSubject(null);
+        setIsModalOpen(true);
+    };
+
+    // Open "Edit" modal
+    const openEditModal = (subject) => {
+        setModalMode('edit');
+        setEditingSubject(subject);
+        setIsModalOpen(true);
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Class Details" />
@@ -100,7 +114,7 @@ export default function SubjectShow({ classroom }: { classroom: any }) {
                         initial="hidden"
                         animate="show"
                         className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
-                    >
+                     >
                         {subjects.length === 0 && (
                             <p className="col-span-full py-8 text-center text-muted-foreground">
                                 No subjects added yet.
