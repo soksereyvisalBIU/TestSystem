@@ -16,7 +16,8 @@ import {
     Trash,
     Users,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { route } from 'ziggy-js';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Class', href: '/' },
@@ -24,24 +25,59 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Assessments', href: '/assessments' },
 ];
 
-export default function AssessmentDetail() {
+export default function AssessmentDetail({ assessment , classId, subjectId }: { assessment: any }) {
+    
+    console.log('Assessment Data:', assessment);
+    // {
+    //     "id": 1,
+    //     "name": "C++ programming I",
+    //     "description": null,
+    //     "class_id": 1,
+    //     "visibility": "public",
+    //     "cover": "subjects/qYrvPjtHEcqeIGwQga3hYqXe5uEcmMjFAyG1AmMX.png",
+    //     "created_at": "2025-11-29T08:49:17.000000Z",
+    //     "updated_at": "2025-11-29T08:49:17.000000Z",
+    //     "assessments": [
+    //         {
+    //             "id": 4,
+    //             "title": "Id assumenda dolore",
+    //             "description": "Atque aliquam facili",
+    //             "type": "quiz",
+    //             "start_time": "2025-11-29 14:29:00",
+    //             "end_time": "2025-11-30 10:23:00",
+    //             "duration": null,
+    //             "max_attempts": 3,
+    //             "created_by": null,
+    //             "created_at": "2025-11-29T09:30:34.000000Z",
+    //             "updated_at": "2025-11-29T09:30:34.000000Z",
+    //             "questions_count": 0,
+    //             "pivot": {
+    //                 "subject_id": 1,
+    //                 "assessment_id": 4
+    //             }
+    //         }
+    //     ]
+    // }
+    
     const role = 'editor';
-    const id = 1;
+    const id = assessment.id;
+
     const [showQuestions, setShowQuestions] = useState(true);
     const [studentSearch, setStudentSearch] = useState('');
     const [studentFilter, setStudentFilter] = useState<
         'all' | 'draft' | 'submitted' | 'checked'
     >('all');
 
-    const assessment = {
-        title: 'Midterm Exam',
-        type: 'Exam',
-        start_time: '2025-01-06',
-        end_time: '2025-01-06',
-        total_questions: 20,
-        total_marks: 100,
-    };
+    // Compute total questions & marks from DB data
+    const totalQuestions = assessment.questions?.length ?? 0;
+    const totalMarks = useMemo(() => {
+        return assessment.questions?.reduce(
+            (sum: number, q: any) => sum + Number(q.point || 0),
+            0,
+        );
+    }, [assessment.questions]);
 
+    // Dummy student list (replace with DB students later)
     const students = [
         { name: 'Sok Dara', status: 'submitted', score: 80 },
         { name: 'Chan Lisa', status: 'checked', score: 92 },
@@ -49,46 +85,7 @@ export default function AssessmentDetail() {
         { name: 'Srey Neang', status: 'submitted', score: 78 },
     ];
 
-    const questions = [
-        {
-            id: 1,
-            question: 'Is the earth round?',
-            type: 'true_false',
-            marks: 2,
-            answer: true,
-        },
-        {
-            id: 2,
-            question: 'Select the prime numbers',
-            type: 'multiple_choice',
-            marks: 5,
-            options: [
-                { label: 'A', text: '2', correct: true },
-                { label: 'B', text: '4', correct: false },
-                { label: 'C', text: '5', correct: true },
-                { label: 'D', text: '6', correct: false },
-            ],
-        },
-        {
-            id: 3,
-            question: 'Match countries with capitals',
-            type: 'matching',
-            marks: 6,
-            pairs: [
-                { left: 'Cambodia', right: 'Phnom Penh' },
-                { left: 'France', right: 'Paris' },
-            ],
-        },
-        {
-            id: 4,
-            question: 'Explain Dijkstra Algorithm',
-            type: 'qa',
-            marks: 10,
-            answerText: 'Dijkstra’s algorithm finds the shortest path...',
-        },
-    ];
-
-    // Filter students
+    // Filter logic
     const filteredStudents = students.filter((s) => {
         const matchFilter =
             studentFilter === 'all' || s.status === studentFilter;
@@ -112,6 +109,10 @@ export default function AssessmentDetail() {
         },
     };
 
+    // Safe date format
+    const safeDate = (value: string | null) =>
+        value ? new Date(value).toLocaleString() : '-';
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Assessment: ${assessment.title}`} />
@@ -123,11 +124,12 @@ export default function AssessmentDetail() {
                     className="relative"
                 >
                     <Card className="overflow-hidden rounded-2xl shadow-lg">
-                        <CardHeader className="flex items-center justify-between">
+                        <CardHeader className="flex-row items-center justify-between">
                             <CardTitle className="flex items-center gap-2">
-                                <ClipboardList className="h-5 w-5" />{' '}
+                                <ClipboardList className="h-5 w-5" />
                                 {assessment.title}
                             </CardTitle>
+
                             {role === 'editor' && (
                                 <div className="flex gap-2">
                                     <Button variant="outline" size="sm">
@@ -139,6 +141,7 @@ export default function AssessmentDetail() {
                                 </div>
                             )}
                         </CardHeader>
+
                         <CardContent className="space-y-2 text-sm">
                             <p>
                                 <span className="font-semibold">Type:</span>{' '}
@@ -146,31 +149,29 @@ export default function AssessmentDetail() {
                             </p>
                             <p>
                                 <span className="font-semibold">Start:</span>{' '}
-                                {new Date(
-                                    assessment.start_time,
-                                ).toLocaleString()}
+                                {safeDate(assessment.start_time)}
                             </p>
                             <p>
                                 <span className="font-semibold">End:</span>{' '}
-                                {new Date(assessment.end_time).toLocaleString()}
+                                {safeDate(assessment.end_time)}
                             </p>
                             <p>
                                 <span className="font-semibold">
                                     Total Questions:
                                 </span>{' '}
-                                {assessment.total_questions}
+                                {totalQuestions}
                             </p>
                             <p>
                                 <span className="font-semibold">
                                     Total Marks:
                                 </span>{' '}
-                                {assessment.total_marks}
+                                {totalMarks}
                             </p>
                         </CardContent>
                     </Card>
                 </motion.div>
 
-                {/* Students & Chart */}
+                {/* Students & Questions */}
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                     <motion.div
                         variants={containerVariants}
@@ -181,10 +182,11 @@ export default function AssessmentDetail() {
                         {/* Students */}
                         <motion.div variants={cardVariants}>
                             <Card className="rounded-2xl">
-                                <CardHeader className="flex items-center justify-between">
+                                <CardHeader className="flex-row items-center justify-between">
                                     <CardTitle className="flex items-center gap-2">
                                         <Users className="h-5 w-5" /> Students
                                     </CardTitle>
+
                                     <Input
                                         placeholder="Search student..."
                                         value={studentSearch}
@@ -197,7 +199,9 @@ export default function AssessmentDetail() {
                                         }
                                     />
                                 </CardHeader>
+
                                 <CardContent className="space-y-2">
+                                    {/* Filters */}
                                     <div className="mb-2 flex gap-2">
                                         {[
                                             'all',
@@ -207,7 +211,11 @@ export default function AssessmentDetail() {
                                         ].map((f) => (
                                             <Badge
                                                 key={f}
-                                                className={`cursor-pointer ${studentFilter === f ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`}
+                                                className={`cursor-pointer ${
+                                                    studentFilter === f
+                                                        ? 'bg-blue-600 text-white'
+                                                        : 'bg-gray-200 text-gray-800'
+                                                }`}
                                                 onClick={() =>
                                                     setStudentFilter(f as any)
                                                 }
@@ -217,6 +225,8 @@ export default function AssessmentDetail() {
                                             </Badge>
                                         ))}
                                     </div>
+
+                                    {/* Student List */}
                                     {filteredStudents.length > 0 ? (
                                         filteredStudents.map((s, i) => (
                                             <div
@@ -256,108 +266,99 @@ export default function AssessmentDetail() {
                         </motion.div>
 
                         {/* Questions */}
-                        {/* Questions */}
                         <motion.div variants={cardVariants}>
                             <Card className="rounded-2xl">
-                                <CardHeader className="flex items-center justify-between">
+                                <CardHeader className="flex-row items-center justify-between">
                                     <CardTitle className="flex items-center gap-2">
                                         <ClipboardList className="h-5 w-5" />{' '}
                                         Questions
                                     </CardTitle>
-                                    <Button
+
+                                    {/* <Button
                                         size="sm"
                                         onClick={() =>
                                             setShowQuestions(!showQuestions)
                                         }
                                     >
                                         {showQuestions ? 'Hide' : 'Show'}
-                                    </Button>
+                                    </Button> */}
+
+                                    <Link
+                                        href={route(
+                                            'instructor.classes.subjects.assessments.questions.index' , [classId, subjectId, assessment.id]
+                                        )}
+                                    >
+                                        see more
+                                    </Link>
                                 </CardHeader>
+
                                 {showQuestions && (
                                     <CardContent className="space-y-3">
-                                        {questions.map((q) => (
+                                        {assessment.questions.map((q: any) => (
                                             <div
                                                 key={q.id}
                                                 className="flex flex-col rounded-xl border p-4 transition hover:bg-gray-50"
                                             >
-                                                {/* Question Header */}
                                                 <div className="mb-2 flex items-center justify-between">
                                                     <span className="font-semibold">
-                                                        {q.question}
+                                                        {q.question_text}
                                                     </span>
                                                     <Badge className="bg-gray-200 text-gray-800">
-                                                        {q.marks} Marks
+                                                        {q.point} pts
                                                     </Badge>
                                                 </div>
 
-                                                {/* Question Type */}
                                                 <Badge className="mb-2 bg-blue-600 text-white capitalize">
                                                     {q.type}
                                                 </Badge>
 
-                                                {/* Answers */}
+                                                {/* True/False */}
                                                 {q.type === 'true_false' && (
-                                                    <div className="ml-2 space-y-1">
-                                                        <p>
-                                                            <span className="font-semibold">
-                                                                Answer:
-                                                            </span>{' '}
-                                                            {q.answer
-                                                                ? 'True'
-                                                                : 'False'}
-                                                        </p>
-                                                    </div>
+                                                    <p>
+                                                        <span className="font-semibold">
+                                                            Answer:
+                                                        </span>{' '}
+                                                        {q.answer
+                                                            ? 'True'
+                                                            : 'False'}
+                                                    </p>
                                                 )}
 
-                                                {q.type ===
-                                                    'multiple_choice' && (
-                                                    <div className="ml-2 space-y-1">
-                                                        {q.options.map(
-                                                            (opt, i) => (
-                                                                <p
-                                                                    key={i}
-                                                                    className={
-                                                                        opt.correct
-                                                                            ? 'font-semibold text-green-600'
-                                                                            : ''
-                                                                    }
-                                                                >
-                                                                    {opt.label}.{' '}
-                                                                    {opt.text}
-                                                                </p>
-                                                            ),
-                                                        )}
-                                                    </div>
-                                                )}
+                                                {/* Multiple Choice */}
+                                                {q.type === 'multiple_choice' &&
+                                                    q.options &&
+                                                    q.options.map(
+                                                        (opt: any) => (
+                                                            <p
+                                                                key={opt.label}
+                                                                className={
+                                                                    opt.correct
+                                                                        ? 'font-semibold text-green-600'
+                                                                        : ''
+                                                                }
+                                                            >
+                                                                {opt.label}.{' '}
+                                                                {opt.text}
+                                                            </p>
+                                                        ),
+                                                    )}
 
-                                                {q.type === 'matching' && (
-                                                    <div className="ml-2 space-y-1">
-                                                        {q.pairs.map(
-                                                            (pair, i) => (
-                                                                <p key={i}>
-                                                                    <span className="font-semibold">
-                                                                        {
-                                                                            pair.left
-                                                                        }
-                                                                    </span>{' '}
-                                                                    →{' '}
-                                                                    {pair.right}
-                                                                </p>
-                                                            ),
-                                                        )}
-                                                    </div>
-                                                )}
-
-                                                {q.type === 'qa' && (
-                                                    <div className="ml-2 space-y-1">
-                                                        <p>
-                                                            <span className="font-semibold">
-                                                                Answer:
-                                                            </span>{' '}
-                                                            {q.answerText}
-                                                        </p>
-                                                    </div>
-                                                )}
+                                                {/* Matching */}
+                                                {q.type === 'matching' &&
+                                                    q.pairs &&
+                                                    q.pairs.map(
+                                                        (
+                                                            pair: any,
+                                                            i: number,
+                                                        ) => (
+                                                            <p key={i}>
+                                                                <span className="font-semibold">
+                                                                    {pair.left}
+                                                                </span>{' '}
+                                                                → {pair.right}
+                                                            </p>
+                                                        ),
+                                                    )}
                                             </div>
                                         ))}
                                     </CardContent>
@@ -377,7 +378,7 @@ export default function AssessmentDetail() {
                             <Card className="rounded-2xl">
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
-                                        <BarChart3 className="h-5 w-5" />{' '}
+                                        <BarChart3 className="h-5 w-5" />
                                         Performance Chart
                                     </CardTitle>
                                 </CardHeader>
@@ -393,7 +394,8 @@ export default function AssessmentDetail() {
                             <Card className="rounded-2xl">
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
-                                        <FileText className="h-5 w-5" /> Reports
+                                        <FileText className="h-5 w-5" />
+                                        Reports
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-2 text-sm">

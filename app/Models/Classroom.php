@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Classroom extends Model
 {
@@ -19,4 +20,8 @@ class Classroom extends Model
         'cover',
         'creator_id',
     ];
+
+    public function subjects(){
+        return $this->hasMany(Subject::class, 'class_id' , 'id');
+    }
 }

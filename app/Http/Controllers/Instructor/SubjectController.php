@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Instructor;
 
 use App\Http\Controllers\Controller;
+use App\Models\Classroom;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -11,9 +13,10 @@ class SubjectController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request,$subjectId)
     {
-        return Inertia::render('instructor/classroom/subject/Show');
+        $subject = Subject::with('assessments')->findOrFail($subjectId);
+        return Inertia::render('instructor/classroom/subject/Index' , compact('subject'));
     }
 
     /**
@@ -27,10 +30,42 @@ class SubjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, $classId)
     {
-        //
+        // Validate that classId exists in the database
+        $request->validate([
+            'name'        => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'visibility'  => 'required|in:public,private',
+            'cover'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        // Ensure the classId in the URL is valid
+        if (! Classroom::where('id', $classId)->exists()) {
+            abort(404, 'Classroom not found');
+        }
+
+        // Handle cover upload
+        $coverPath = null;
+        if ($request->hasFile('cover')) {
+            $coverPath = $request->file('cover')->store('subjects', 'public');
+        }
+
+        // Create subject
+        $subject = Subject::create([
+            'name'        => $request->name,
+            'description' => $request->description,
+            'visibility'  => $request->visibility,
+            'cover'       => $coverPath,
+            'class_id'    => $classId,
+        ]);
+
+        return redirect()
+            ->back()
+            ->with('success', 'Subject created successfully!');
     }
+
+
 
     /**
      * Display the specified resource.

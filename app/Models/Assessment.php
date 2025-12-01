@@ -38,6 +38,10 @@ class Assessment extends Model
     }
 
 
+    public function total_questions()
+    {
+        return $this->hasMany(Question::class, 'assessment_id')->count();
+    }
 
     public function questions()
     {

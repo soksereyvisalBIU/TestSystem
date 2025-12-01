@@ -1,8 +1,8 @@
-import QuestionsManager from './question-manager/QuestionManager';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
+import QuestionsManager from './question-manager/QuestionManager';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {

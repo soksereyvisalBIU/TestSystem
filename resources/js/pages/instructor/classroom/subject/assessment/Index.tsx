@@ -1,4 +1,4 @@
-// import { Badge, Button } from '@/components/ui/card';
+import AssessmentModal from '@/components/instructor/modal/assessment-modal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,48 +11,49 @@ import {
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import { Edit2Icon, GridIcon, ListIcon, PlusIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Class', href: '/' },
     { title: 'Subjects', href: '/subjects' },
     { title: 'Assessments', href: '/assessments' },
 ];
-    
-export default function AssessmentPage() {
+
+export default function AssessmentPage({ subject }: { subject: any }) {
     const role = 'editor'; // simulate role
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
-    const [statusFilter, setStatusFilter] = useState('all');
+    const [statusFilter, setStatusFilter] = useState<'all' | string>('all');
 
-    const assessments = [
-        {
-            id: 1,
-            title: 'Quiz 1',
-            status: 'active',
-            start_time: '2025-01-02',
-            end_time: '2025-01-03',
-            total_questions: 10,
-        },
-        {
-            id: 2,
-            title: 'Quiz 2',
-            status: 'upcoming',
-            start_time: '2025-01-04',
-            end_time: '2025-01-05',
-            total_questions: 15,
-        },
-        {
-            id: 3,
-            title: 'Midterm Exam',
-            status: 'closed',
-            start_time: '2025-01-06',
-            end_time: '2025-01-06',
-            total_questions: 20,
-        },
-    ];
+    const [openAssessmentModal, setOpenAssessmentModal] = useState(false);
+
+    const { flash } = usePage().props as {
+        flash?: { success?: string; error?: string };
+    };
+
+    const classId = subject.class_id;
+    const subjectId = subject.id;
+
+    console.log('Subject Data:', subject);
+
+    // Show flash messages
+    useEffect(() => {
+        if (flash?.success) toast.success(flash.success);
+        if (flash?.error) toast.error(flash.error);
+    }, [flash]);
+
+    // ---- REAL BACKEND DATA ----
+    const assessments = subject.assessments || [];
+
+    // If you want to compute statuses automatically, you can enhance here.
+    // For now we assume status is included or fallback to 'active'.
+    const filtered =
+        statusFilter === 'all'
+            ? assessments
+            : assessments.filter((a: any) => a.status === statusFilter);
 
     const statusColors: Record<string, string> = {
         active: 'bg-green-500',
@@ -60,14 +61,11 @@ export default function AssessmentPage() {
         closed: 'bg-red-500',
     };
 
-    const isLoading = false; // simulate loading
+    const isLoading = false;
 
-    const filtered = assessments.filter(
-        (a) => statusFilter === 'all' || a.status === statusFilter,
-    );
-
-    const onNew = () => alert('Open new assessment modal');
-    const onEdit = (assessment: any) => alert('Edit ' + assessment.title);
+    const onEdit = (a: any) => {
+        toast.info('Edit mode not implemented yet: ' + a.title);
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -78,56 +76,51 @@ export default function AssessmentPage() {
                     {/* Header */}
                     <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                         <h2 className="text-xl font-bold">Assessments</h2>
+
                         <div className="flex items-center gap-3">
+                            {/* Status Filter */}
                             <Select
                                 value={statusFilter}
-                                onValueChange={setStatusFilter}
+                                onValueChange={(v) => setStatusFilter(v)}
                             >
                                 <SelectTrigger className="w-[140px]">
                                     <SelectValue placeholder="Filter status" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="active">
-                                        Active
-                                    </SelectItem>
-                                    <SelectItem value="upcoming">
-                                        Upcoming
-                                    </SelectItem>
-                                    <SelectItem value="closed">
-                                        Closed
-                                    </SelectItem>
+                                    <SelectItem value="active">Active</SelectItem>
+                                    <SelectItem value="upcoming">Upcoming</SelectItem>
+                                    <SelectItem value="closed">Closed</SelectItem>
                                     <SelectItem value="all">All</SelectItem>
                                 </SelectContent>
                             </Select>
 
+                            {/* Switch View */}
                             <ToggleGroup
                                 type="single"
                                 value={viewMode}
                                 onValueChange={(v) => v && setViewMode(v)}
                             >
-                                <ToggleGroupItem
-                                    value="list"
-                                    aria-label="List view"
-                                >
+                                <ToggleGroupItem value="list" aria-label="List view">
                                     <ListIcon className="h-4 w-4" />
                                 </ToggleGroupItem>
-                                <ToggleGroupItem
-                                    value="grid"
-                                    aria-label="Grid view"
-                                >
+
+                                <ToggleGroupItem value="grid" aria-label="Grid view">
                                     <GridIcon className="h-4 w-4" />
                                 </ToggleGroupItem>
                             </ToggleGroup>
 
                             {role === 'editor' && (
-                                <Button onClick={onNew} className="gap-2">
+                                <Button
+                                    onClick={() => setOpenAssessmentModal(true)}
+                                    className="gap-2"
+                                >
                                     <PlusIcon className="h-4 w-4" /> New
                                 </Button>
                             )}
                         </div>
                     </div>
 
-                    {/* Loading state */}
+                    {/* Loading */}
                     {isLoading && (
                         <p className="py-6 text-center text-sm text-gray-500">
                             Loading assessments...
@@ -137,14 +130,11 @@ export default function AssessmentPage() {
                     {/* Content */}
                     {!isLoading && filtered.length > 0 ? (
                         <motion.div
-                            // Stagger container
                             initial="hidden"
                             animate="show"
                             variants={{
                                 hidden: {},
-                                show: {
-                                    transition: { staggerChildren: 0.1 },
-                                }, // stagger 0.1s between cards
+                                show: { transition: { staggerChildren: 0.1 } },
                             }}
                             className={
                                 viewMode === 'grid'
@@ -152,7 +142,7 @@ export default function AssessmentPage() {
                                     : 'space-y-3'
                             }
                         >
-                            {filtered.map((a) => (
+                            {filtered.map((a: any) => (
                                 <motion.div
                                     key={a.id}
                                     variants={{
@@ -160,10 +150,7 @@ export default function AssessmentPage() {
                                         show: {
                                             opacity: 1,
                                             y: 0,
-                                            transition: {
-                                                duration: 0.35,
-                                                // ease: 'easeOut',
-                                            },
+                                            transition: { duration: 0.35 },
                                         },
                                     }}
                                     className={`group relative block rounded-lg border p-4 transition hover:shadow-md ${
@@ -173,46 +160,50 @@ export default function AssessmentPage() {
                                     }`}
                                 >
                                     <Link
-                                        // href={route('instructor.classes.subjects.assessments.index' ,  a.id)}
-                                        className={
-                                            viewMode === 'list' ? 'flex-1' : ''
-                                        }
+                                        href={route(
+                                            'instructor.classes.subjects.assessments.show',
+                                            [classId, subjectId, a.id]
+                                        )}
+                                        className={viewMode === 'list' ? 'flex-1' : ''}
                                     >
                                         <div className="space-y-1">
-                                            <h3 className="text-base leading-tight font-semibold">
+                                            <h3 className="text-base font-semibold leading-tight">
                                                 {a.title}{' '}
-                                                <Badge
-                                                    className={`${statusColors[a.status]} text-white capitalize`}
-                                                >
-                                                    {a.status}
-                                                </Badge>
+                                                {a.status && (
+                                                    <Badge
+                                                        className={`text-white capitalize ${
+                                                            statusColors[a.status] ||
+                                                            'bg-gray-500'
+                                                        }`}
+                                                    >
+                                                        {a.status}
+                                                    </Badge>
+                                                )}
                                             </h3>
+
                                             <p className="text-xs text-gray-500">
                                                 {a.start_time
-                                                    ? new Date(
-                                                          a.start_time,
-                                                      ).toLocaleString()
+                                                    ? new Date(a.start_time).toLocaleString()
                                                     : ''}{' '}
                                                 –{' '}
                                                 {a.end_time
-                                                    ? new Date(
-                                                          a.end_time,
-                                                      ).toLocaleString()
+                                                    ? new Date(a.end_time).toLocaleString()
                                                     : ''}
                                             </p>
                                         </div>
+
                                         <span className="mt-1 text-xs text-gray-400">
-                                            {a.total_questions} Questions
+                                            {a.questions_count ?? 0} Questions
                                         </span>
                                     </Link>
 
                                     {role === 'editor' && (
                                         <Button
                                             type="button"
-                                            variant="outline"
                                             size="sm"
+                                            variant="outline"
                                             onClick={() => onEdit(a)}
-                                            className="absolute top-2 right-2 p-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                                            className="absolute right-2 top-2 p-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
                                         >
                                             <Edit2Icon className="h-4 w-4" />
                                         </Button>
@@ -229,6 +220,15 @@ export default function AssessmentPage() {
                     )}
                 </div>
             </div>
+
+            {/* Create Modal */}
+            <AssessmentModal
+                isOpen={openAssessmentModal}
+                setIsOpen={setOpenAssessmentModal}
+                classId={classId}
+                subjectId={subjectId}
+                mode="create"
+            />
         </AppLayout>
     );
 }

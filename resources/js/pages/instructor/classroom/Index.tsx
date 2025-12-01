@@ -52,11 +52,12 @@ export default function SubjectIndex({
 
                 {/* Class Cards */}
                 <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-                    {classrooms.map((item) => (
+                    
+                    {classrooms.map((classroom) => (
                         <ClassCard
-                            key={item.id}
-                            classroom={item}
-                            onEdit={() => openEdit(item)}
+                            key={classroom.id}
+                            classroom={classroom}
+                            onEdit={() => openEdit(classroom)}
                         />
                     ))}
                 </div>

@@ -1,35 +1,40 @@
-import { Card, CardContent } from '@/components/ui/card';
+import SubjectModal from '@/components/instructor/modal/subject-modal';
+import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { route } from 'ziggy-js';
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Class', href: '/' }];
 
-export default function SubjectShow() {
-    const subjects = [
-        { id: 1, title: 'Mathematics', img: '/assets/img/class/class.jpg' },
-        { id: 2, title: 'Physics', img: '/assets/img/class/class.jpg' },
-        { id: 3, title: 'Biology', img: '/assets/img/class/class.jpg' },
-        { id: 4, title: 'Computer Science', img: '/assets/img/class/class.jpg' },
-    ];
+export default function SubjectShow({ classroom }: { classroom: any }) {
+    const subjects = classroom?.subjects ?? [];
+    const [openSubjectModal, setOpenSubjectModal] = useState(false);
 
-    // Staggered animation for cards
+    const { flash } = usePage().props as {
+        flash?: { success?: string; error?: string };
+    };
+
+    useEffect(() => {
+        if (flash?.success) toast.success(flash.success);
+        if (flash?.error) toast.error(flash.error);
+    }, [flash]);
+
+    // --- Animation ---
     const containerVariants = {
         hidden: { opacity: 0 },
-        show: {
-            opacity: 1,
-            transition: { staggerChildren: 0.08 },
-        },
+        show: { opacity: 1, transition: { staggerChildren: 0.08 } },
     };
 
     const cardVariants = {
-        hidden: { opacity: 0, y: 20 },
+        hidden: { opacity: 0, y: 18 },
         show: {
             opacity: 1,
             y: 0,
-            transition: { duration: 0.35, ease: 'easeOut' },
+            transition: { duration: 0.32, ease: 'easeOut' },
         },
     };
 
@@ -38,45 +43,57 @@ export default function SubjectShow() {
             <Head title="Class Details" />
 
             <div className="flex flex-col gap-6 p-4">
-                {/* CLASS HEADER */}
+
+                {/* ---------------- CLASS HEADER ---------------- */}
                 <motion.div
-                    layoutId="class-card-1"
+                    layoutId={`class-card-${classroom.id}`}
                     className="relative overflow-hidden rounded-3xl shadow-xl"
                 >
                     <motion.div
-                        layoutId="class-bg-1"
+                        layoutId={`class-bg-${classroom.id}`}
                         className="h-64 w-full bg-cover bg-center"
                         style={{
-                            backgroundImage: `url('/assets/img/class/39323.jpg')`,
+                            backgroundImage: `url('${
+                                classroom.cover
+                                    ? '/storage/' + classroom.cover
+                                    : '/assets/img/class/default.jpg'
+                            }')`,
                         }}
                     />
 
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-950/90 to-transparent p-6 text-white">
-                        <motion.div layoutId="class-meta-1">
+                        <motion.div layoutId={`class-meta-${classroom.id}`}>
                             <h3 className="text-lg font-medium">
-                                Batch 10 – Morning Shift
+                                Batch {classroom.batch} –{' '}
+                                {classroom.shift === 1 ? 'Morning' : 'Evening'}
                             </h3>
-                            <h3 className="text-lg opacity-90">Year 2025</h3>
+                            <h3 className="text-lg opacity-90">
+                                Year {classroom.year}
+                            </h3>
                         </motion.div>
 
                         <motion.div
-                            layoutId="class-title-1"
+                            layoutId={`class-title-${classroom.id}`}
                             className="mt-3 max-w-lg"
                         >
                             <h1 className="text-4xl leading-tight font-bold">
-                                Computer Science Class
+                                {classroom.name}
                             </h1>
                             <p className="mt-2 text-sm opacity-80">
-                                This is a sample static description for preview
-                                purposes.
+                                {classroom.description}
                             </p>
                         </motion.div>
                     </div>
                 </motion.div>
 
-                {/* SUBJECT LIST */}
+                {/* ---------------- SUBJECT LIST ---------------- */}
                 <div>
-                    <h1 className="mb-4 text-xl font-semibold">Subjects</h1>
+                    <div className="flex items-center justify-between">
+                        <h1 className="mb-4 text-xl font-semibold">Subjects</h1>
+                        <Button onClick={() => setOpenSubjectModal(true)}>
+                            + Add Subject
+                        </Button>
+                    </div>
 
                     <motion.div
                         variants={containerVariants}
@@ -84,35 +101,47 @@ export default function SubjectShow() {
                         animate="show"
                         className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
                     >
-                        {subjects.map((subj) => (
-                            <motion.div key={subj.id} variants={cardVariants}>
-                                <Link
-                                    href={route(
-                                        'instructor.classes.subjects.index',
-                                        subj.id,
-                                    )}
-                                >
-                                    <motion.div
-                                        layoutId={`subject-card-${subj.id}`}
-                                        className="cursor-pointer overflow-hidden rounded-2xl bg-white shadow-md transition hover:shadow-xl"
-                                    >
-                                        {/* SUBJECT IMAGE */}
-                                        <motion.div
-                                            layoutId={`subject-bg-${subj.id}`}
-                                            className="h-40 bg-cover bg-center"
-                                            style={{
-                                                backgroundImage: `url('${subj.img}')`,
-                                            }}
-                                        />
+                        {subjects.length === 0 && (
+                            <p className="col-span-full py-8 text-center text-muted-foreground">
+                                No subjects added yet.
+                            </p>
+                        )}
 
-                                        {/* CARD CONTENT */}
-                                        <Card className="rounded-none border-t-0">
-                                            <CardContent className="p-4">
+                        {subjects.map((subj: any) => {
+                            const cover = subj.cover
+                                ? `/storage/${subj.cover}`
+                                : '/assets/img/fallback/subject.png';
+
+                            return (
+                                <motion.div key={subj.id} variants={cardVariants}>
+                                    <Link
+                                        href={route(
+                                            'instructor.classes.subjects.index',
+                                            [classroom.id, subj.id]
+                                        )}
+                                    >
+                                        <motion.div
+                                            layoutId={`subject-card-${subj.id}`}
+                                            className="cursor-pointer overflow-hidden rounded-2xl  shadow-md transition hover:shadow-xl"
+                                        >
+                                            {/* Subject Cover */}
+                                            <motion.div
+                                                layoutId={`subject-bg-${subj.id}`}
+                                                className="h-40 bg-cover bg-center"
+                                                style={{
+                                                    backgroundImage: `url('${cover}')`,
+                                                }}
+                                            />
+
+                                            {/* Subject Content */}
+                                            <div className="border-t px-4 py-3">
                                                 <motion.div
                                                     layoutId={`subject-meta-${subj.id}`}
                                                 >
                                                     <p className="text-sm text-muted-foreground">
-                                                        Semester 1 – 2025
+                                                        {subj.visibility === 'public'
+                                                            ? 'Public'
+                                                            : 'Private'}
                                                     </p>
                                                 </motion.div>
 
@@ -120,17 +149,25 @@ export default function SubjectShow() {
                                                     layoutId={`subject-title-${subj.id}`}
                                                     className="mt-1 text-lg font-semibold"
                                                 >
-                                                    {subj.title}
+                                                    {subj.name}
                                                 </motion.h3>
-                                            </CardContent>
-                                        </Card>
-                                    </motion.div>
-                                </Link>
-                            </motion.div>
-                        ))}
+                                            </div>
+                                        </motion.div>
+                                    </Link>
+                                </motion.div>
+                            );
+                        })}
                     </motion.div>
                 </div>
             </div>
+
+            {/* MODAL */}
+            <SubjectModal
+                isOpen={openSubjectModal}
+                setIsOpen={setOpenSubjectModal}
+                mode="create"
+                classId={classroom?.id}
+            />
         </AppLayout>
     );
 }

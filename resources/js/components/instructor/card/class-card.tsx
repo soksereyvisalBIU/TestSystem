@@ -4,8 +4,10 @@ import { route } from 'ziggy-js';
 
 const imageURL = `/assets/img/class/39323.jpg`;
 
-export default function ClassCard() {
+export default function ClassCard({ classroom }: { classroom: any }) {
     const id = 1; // Use real class id later
+
+    console.log('Classroom data:', classroom);  
 
     return (
         <Link href={route('instructor.classes.show', id)}>
@@ -26,18 +28,17 @@ export default function ClassCard() {
                 <div className="absolute inset-0 flex flex-col justify-between p-4 text-white">
                     <motion.div layoutId={`class-meta-${id}`}>
                         <h3 className="text-md font-semibold">
-                            Batch 10 – Morning Shift
+                            Batch {classroom?.batch} – {classroom?.shift} Shift
                         </h3>
-                        <h3 className="text-md font-semibold">Year 2025</h3>
+                        <h3 className="text-md font-semibold">Year {classroom?.year}</h3>
                     </motion.div>
 
                     <motion.div layoutId={`class-title-${id}`}>
                         <h3 className="text-lg font-semibold">
-                            Computer Science Class
+                            {classroom?.name}
                         </h3>
                         <p className="line-clamp-2 text-sm opacity-90">
-                            This is a sample static description for preview
-                            purposes.
+                            {classroom?.description}
                         </p>
                     </motion.div>
                 </div>

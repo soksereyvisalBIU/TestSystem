@@ -7,13 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Subject extends Model
 {
 
-    protected $table = 'subject';
+    protected $table = 'subjects';
 
     protected $fillable = [
         'name',
         'description',
         'class_id',
-        'visibility',
+        'visibility',   
         'cover',
     ];
 

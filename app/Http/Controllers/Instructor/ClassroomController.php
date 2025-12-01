@@ -79,7 +79,7 @@ class ClassroomController extends Controller
             'year'        => (int) $validated['year'],
             'semester'    => (int) $validated['semester'],
             'shift'       => $shiftValue,
-            'cover'       => $coverPath,
+            'cover'       => $coverPath,    
             'creator_id'  => auth()->id(),
         ]);
 
@@ -92,7 +92,9 @@ class ClassroomController extends Controller
      */
     public function show(string $id)
     {
-        return Inertia::render('instructor/classroom/Show');
+        // $classroom = Classroom::with('subjects')->findOrFail($id);
+        $classroom = Classroom::with('subjects')->findOrFail($id);
+        return Inertia::render('instructor/classroom/Show', compact('classroom'));
     }
 
     /**
