@@ -56,26 +56,20 @@ const mainNavItems: (NavItem & { subItems?: NavItem[]; section?: string })[] = [
             { title: 'Create Course', href: '' },
         ],
     },
-    // {
-    //     title: 'Student Course',
-    //     href: route('student.courses.index'),
-    //     icon: SquareLibrary,
-    //     section: 'Main',
-    //     subItems: [
-    //         { title: 'All Student Courses', href: route('student.courses.index') },
-    //         { title: 'Enrolled Students', href: route('student.courses.index') },
-    //     ],
-    // },
-    // {
-    //     title: 'Student Course',
-    //     href: route('student.courses.index'),
-    //     icon: SquareLibrary,
-    //     section: 'Test',
-    //     subItems: [
-    //         { title: 'All Student Courses', href: route('student.courses.index') },
-    //         { title: 'Enrolled Students', href: route('student.courses.index') },
-    //     ],
-    // },
+
+    {
+        title: 'Classrooms',
+        href: route('student.classes.index'),
+        icon: SquareLibrary,
+        section: 'Student',
+        subItems: [
+            { title: 'All Classrooms', href: route('student.classes.index') },
+            { title: 'Year 1', href: route('instructor.classes.index') },
+            { title: 'Year 2', href: route('instructor.classes.index') },
+            { title: 'Year 3', href: route('instructor.classes.index') },
+            { title: 'Year 4', href: route('instructor.classes.index') },
+        ],
+    },
 ];
 
 const footerNavItems: NavItem[] = [

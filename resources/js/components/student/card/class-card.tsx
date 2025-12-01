@@ -10,7 +10,7 @@ export default function ClassCard({ classroom }: { classroom: any }) {
     console.log('Classroom data:', classroom);  
 
     return (
-        <Link href={route('instructor.classes.show', id)}>
+        <Link href={route('student.classes.show', id)}>
             <motion.div
                 layoutId={`class-card-${id}`}
                 className="group relative h-56 w-full cursor-pointer overflow-hidden rounded-2xl shadow-lg"

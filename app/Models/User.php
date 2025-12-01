@@ -65,7 +65,20 @@ class User extends Authenticatable
         return $this->hasMany(Classroom::class, 'creator_id');
     }
     
-    
+    public function instructorClasses()
+    {
+        return $this->hasMany(Classroom::class, 'instructor_id');
+    }
+
+    public function studentClassrooms()
+    {
+        return $this->belongsToMany(
+            Classroom::class,
+            'student_classroom', // pivot table
+            'student_id',       // foreign key on pivot referring to users
+            'classroom_id'      // foreign key on pivot referring to classrooms
+        );
+    }
 
     // ========== Relation ===========
     public function joinedCourses()
