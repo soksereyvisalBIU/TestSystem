@@ -60,12 +60,12 @@ export default function MatchingQuestion({ question, answer = {}, onChange }) {
                 <h3 className="font-semibold">Options</h3>
 
                 <div className="flex flex-wrap gap-2">
-                    {shuffledRight.map((r) => {
+                    {shuffledRight.map((r,i) => {
                         const used = Object.values(answer).includes(r.text);
 
                         return (
                             <div
-                                key={r.id}
+                                key={i}
                                 draggable={!used}
                                 onDragStart={(e) =>
                                     e.dataTransfer.setData('rightText', r.text)
@@ -152,9 +152,9 @@ export default function MatchingQuestion({ question, answer = {}, onChange }) {
                                         </CommandEmpty>
 
                                         <CommandGroup>
-                                            {unusedRight.map((opt) => (
+                                            {unusedRight.map((opt, i) => (
                                                 <CommandItem
-                                                    key={opt.id}
+                                                    key={i}
                                                     value={opt.text}
                                                     onSelect={() => {
                                                         assign(l.id, opt.text);

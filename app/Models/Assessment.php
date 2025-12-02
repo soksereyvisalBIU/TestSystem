@@ -29,6 +29,13 @@ class Assessment extends Model
     // Assessment.php
     public function subjects()
     {
+
+        // return $this->belongsTo(
+        //     Subject::class,
+        //     'subject_assessment',     // pivot table
+        //     'assessment_id',          // FK on pivot
+        //     'subject_id'              // FK on pivot
+        // );
         return $this->belongsToMany(
             Subject::class,
             'subject_assessment',     // pivot table
@@ -36,6 +43,7 @@ class Assessment extends Model
             'subject_id'              // FK on pivot
         );
     }
+
 
 
     public function total_questions()

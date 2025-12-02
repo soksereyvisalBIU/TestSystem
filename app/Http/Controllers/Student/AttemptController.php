@@ -5,10 +5,14 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AssessmentResource;
 use App\Http\Resources\Student\QuestionResource;
+use App\Models\Answer;
 use App\Models\Assessment;
+use App\Models\AssessmentAttempt;
 use App\Models\Question;
+use App\Models\StudentAssessmentAttempt;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
 
 class AttemptController extends Controller
 {
@@ -16,7 +20,7 @@ class AttemptController extends Controller
     {
         // dd($request->all());
 
-        $assessment = Assessment::findOrFail($assessment_id);
+        $assessment = Assessment::with('subjects')->findOrFail($assessment_id);
 
         $questions = QuestionResource::collection(Question::with('options')->where('assessment_id', $assessment_id)->orderBy('order')->get());
 
@@ -56,5 +60,108 @@ class AttemptController extends Controller
         //     'course_id' => $course_id
 
         // ]);
+    }
+
+    public function store(Request $request, $class_id, $subject_id, $assessment_id)
+    {
+
+        // "answers" => array:6 [▼
+        //     1 => "adsf"
+        //     2 => "True"
+        //     3 => array:5 [▼
+        //       34 => "array"
+        //       35 => "variable"
+        //       36 => "c++"
+        //       37 => "pointer"
+        //       38 => "data"
+        //     ]
+        //     4 => array:2 [▼
+        //       "id" => 40
+        //       "text" => "hello"
+        //     ]
+        //     5 => "adsfadsf"
+        //     6 => "False"
+        //   ]
+        //   "user_id" => 4
+
+        // Optional validation
+        Log::info($request->all());
+
+        // dd($request->all());
+
+        // Load active attempt
+        // $assessmentAttempt = StudentAssessmentAttempt::findOrFail($request->attempt_id);
+        // // 'student_assesment_id',
+        // // 'status',
+        // // 'started_at',
+        // // 'completed_at',
+        // // 'sub_score',
+        // // Save attempt (in case you increment something later)
+        // $assessmentAttempt->save();
+
+        // // Mark submitted
+        // $assessmentAttempt->update([
+        //     'submitted_at' => now(),
+        //     'score'        => null,
+        //     'status'       => 'submitted',
+        // ]);
+
+        /*
+    |--------------------------------------------------------------------------
+    | SAVE ANSWERS
+    |--------------------------------------------------------------------------
+    */
+        foreach ($request->answers as $question_id => $answer) {
+
+            // ---------------------------------------------------------
+            // CASE A — MATCHING QUESTION ( [ left_id => right_id ] )
+            // ---------------------------------------------------------
+            if (is_array($answer) && array_is_list($answer) === false && !isset($answer['text'])) {
+                foreach ($answer as $leftId => $rightId) {
+                    Answer::create([
+                        'attempt_id'          => $assessmentAttempt->id,
+                        'question_id'         => $question_id,
+                        'option_id'  => $rightId,
+                        'matching_id'         => $leftId,
+                        'answer_text'         => null,
+                    ]);
+                }
+                continue;
+            }
+
+            // ---------------------------------------------------------
+            // CASE B — SHORT ANSWER ({id: x, text: "..."} )
+            // ---------------------------------------------------------
+            if (is_array($answer) && isset($answer['text'])) {
+                Answer::create([
+                    'attempt_id'          => $assessmentAttempt->id,
+                    'question_id'         => $question_id,
+                    'option_id'  => null,
+                    'answer_text'         => $answer['text'],
+                ]);
+                continue;
+            }
+
+            // ---------------------------------------------------------
+            // CASE C — TRUE/FALSE or MULTIPLE CHOICE
+            // ---------------------------------------------------------
+            Answer::create([
+                'attempt_id'          => $assessmentAttempt->id,
+                'question_id'         => $question_id,
+                'option_id'  => is_numeric($answer) ? $answer : null,
+                'answer_text'         => !is_numeric($answer) ? $answer : null,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Assessment submitted successfully.',
+            'attempt_id' => $assessmentAttempt->id,
+            'status' => 'submitted',
+            'submitted_at' => $assessmentAttempt->submitted_at,
+        ], 200);
+
+
+        // dd($request->all());
     }
 }

@@ -53,6 +53,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'classes/{class_id}/subject/{subject_id}/assessment/{assessment_id}/attempt',
             [App\Http\Controllers\Student\AttemptController::class, 'attempt']
         )->name('classes.subjects.assessments.attempt');
+        Route::post(
+            'classes/{class_id}/subject/{subject_id}/assessment/{assessment_id}/attempt/store',
+            [App\Http\Controllers\Student\AttemptController::class, 'store']
+        )->name('classes.subjects.assessments.attempt.store');
     });
 
 

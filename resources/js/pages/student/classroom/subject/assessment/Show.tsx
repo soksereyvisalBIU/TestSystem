@@ -194,9 +194,9 @@ export default function AssessmentDetail({ assessment , classId, subjectId }: { 
                                             setStudentSearch(e.target.value)
                                         }
                                         className="w-48"
-                                        leadingIcon={
-                                            <Search className="h-4 w-4" />
-                                        }
+                                        // leadingIcon={
+                                        //     <Search className="h-4 w-4" />
+                                        // }
                                     />
                                 </CardHeader>
 

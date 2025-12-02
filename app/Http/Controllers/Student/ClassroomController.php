@@ -15,7 +15,7 @@ class ClassroomController extends Controller
     public function index()
     {
         // $classrooms = auth()->user()->studentClassrooms()->with('instructor')->get();
-        $classrooms = Classroom::where('visibility', 'public')->paginate(1); // Placeholder for actual data retrieval
+        $classrooms = Classroom::where('visibility', 'public')->paginate(10); // Placeholder for actual data retrieval
         return Inertia::render('student/classroom/Index', compact('classrooms'));
     }
 
