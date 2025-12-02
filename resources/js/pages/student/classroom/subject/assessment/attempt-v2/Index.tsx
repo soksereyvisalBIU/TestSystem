@@ -11,18 +11,14 @@ import { useForm, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { route } from 'ziggy-js';
 
-interface AttemptProps {
-    assessment: any;
-    questions: any;
-}
+export default function AttemptAssessment({ assessment }: { assesment: any }) {
 
-export default function Attempt({
-    assessment,
-    questions,
-}: AttemptProps) {
+    console.log(assessment);
+    
+    
     const { props } = usePage();
-
-    // const questions = questions?.data ?? [];
+    const attempt = props?.attempt;
+    const questions = assessment?.questions ?? [];
 
     const [answers, setAnswers] = useState<Record<string, any>>({});
     const [openConfirm, setOpenConfirm] = useState(false);
@@ -35,7 +31,7 @@ export default function Attempt({
     const form = useForm({
         answers: {},
         attempt_id: props?.attempt?.id,
-        user_id: props?.auth?.user?.id
+        user_id: props?.auth?.user?.id,
     });
 
     const updateAnswer = (questionId: string, value: any) => {
@@ -43,13 +39,13 @@ export default function Attempt({
     };
 
     const doSubmit = () => {
-        form.setData("answers", answers);
+        form.setData('answers', answers);
 
         form.post(
             route('student.course.assessment.attempt.store', {
                 assessment_id: props?.assessment_id,
                 course_id: props?.course_id,
-            })
+            }),
         );
     };
 
@@ -66,21 +62,24 @@ export default function Attempt({
         doSubmit();
     };
 
-    // const assessment = attempt?.assessment;
+    // const assessment = assessment;
 
     return (
         <div className="mx-auto max-w-4xl space-y-2 px-4 py-10">
             <header className="space-y-2 text-center">
                 <h1 className="text-3xl font-semibold">{assessment.title}</h1>
-                <p className="text-muted-foreground">{assessment.description}</p>
+                <p className="text-muted-foreground">
+                    {assessment.description}
+                </p>
 
                 <p className="text-sm text-muted-foreground">
-                    Duration: {assessment.duration} mins • Max Attempts: {assessment.max_attempts}
+                    Duration: {assessment.duration} mins • Max Attempts:{' '}
+                    {assessment.max_attempts}
                 </p>
             </header>
 
             <div className="space-y-4">
-                {questions?.data?.map((q, index) => (
+                {questions.map((q, index) => (
                     <QuestionRenderer
                         key={q.id}
                         question={q}
@@ -92,7 +91,11 @@ export default function Attempt({
             </div>
 
             <div className="flex justify-end">
-                <Button onClick={() => setOpenConfirm(true)} size="lg" className="px-6">
+                <Button
+                    onClick={() => setOpenConfirm(true)}
+                    size="lg"
+                    className="px-6"
+                >
                     Submit Assessment
                 </Button>
             </div>
@@ -101,7 +104,11 @@ export default function Attempt({
             <Dialog open={openConfirm} onOpenChange={setOpenConfirm}>
                 <DialogContent className="max-w-lg">
                     <DialogHeader className="justify-center sm:text-center">
-                        <img className="mx-auto max-w-32 rounded-full p-2" src="/assets/img/assessment/submit.gif" alt="" />
+                        <img
+                            className="mx-auto max-w-32 rounded-full p-2"
+                            src="/assets/img/assessment/submit.gif"
+                            alt=""
+                        />
                         <DialogTitle>Confirm Submission</DialogTitle>
                         <p className="text-sm text-muted-foreground">
                             Review your answers before submitting.
@@ -109,7 +116,7 @@ export default function Attempt({
                     </DialogHeader>
 
                     <div className="max-h-64 overflow-y-auto rounded-md border bg-muted/30 p-3">
-                        {questions?.data?.map((q, index) => (
+                        {questions.map((q, index) => (
                             <div key={q.id} className="mb-4">
                                 <p className="text-xs font-medium opacity-75">
                                     {index + 1}. {q.question}
@@ -117,10 +124,16 @@ export default function Attempt({
                                 <p className="text-sm text-muted-foreground">
                                     {answers[q.id] ? (
                                         <pre className="mt-1 rounded bg-muted p-2 text-xs">
-                                            {JSON.stringify(answers[q.id], null, 2)}
+                                            {JSON.stringify(
+                                                answers[q.id],
+                                                null,
+                                                2,
+                                            )}
                                         </pre>
                                     ) : (
-                                        <span className="text-red-500">No answer</span>
+                                        <span className="text-red-500">
+                                            No answer
+                                        </span>
                                     )}
                                 </p>
                             </div>
@@ -128,7 +141,10 @@ export default function Attempt({
                     </div>
 
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setOpenConfirm(false)}>
+                        <Button
+                            variant="outline"
+                            onClick={() => setOpenConfirm(false)}
+                        >
                             Cancel
                         </Button>
                         <Button
@@ -144,14 +160,22 @@ export default function Attempt({
             </Dialog>
 
             {/* SECOND CONFIRM */}
-            <Dialog open={openSecondConfirm} onOpenChange={setOpenSecondConfirm}>
+            <Dialog
+                open={openSecondConfirm}
+                onOpenChange={setOpenSecondConfirm}
+            >
                 <DialogContent className="max-w-lg">
                     <DialogHeader className="justify-center sm:text-center">
-                        <img className="mx-auto max-w-32 rounded-full p-2" src="/assets/img/assessment/wanted.gif" alt="" />
+                        <img
+                            className="mx-auto max-w-32 rounded-full p-2"
+                            src="/assets/img/assessment/wanted.gif"
+                            alt=""
+                        />
                         <DialogTitle>Unanswered Questions Found</DialogTitle>
                         <p className="text-sm text-muted-foreground">
-                            Several questions have not been answered. Submitting now may affect your results.
-                            Are you absolutely sure you want to continue?
+                            Several questions have not been answered. Submitting
+                            now may affect your results. Are you absolutely sure
+                            you want to continue?
                         </p>
                     </DialogHeader>
 
@@ -161,13 +185,18 @@ export default function Attempt({
                                 <p className="text-xs font-medium opacity-75">
                                     {index + 1}. {q.question}
                                 </p>
-                                <p className="text-sm font-semibold text-red-500">⚠ No answer provided</p>
+                                <p className="text-sm font-semibold text-red-500">
+                                    ⚠ No answer provided
+                                </p>
                             </div>
                         ))}
                     </div>
 
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setOpenSecondConfirm(false)}>
+                        <Button
+                            variant="outline"
+                            onClick={() => setOpenSecondConfirm(false)}
+                        >
                             Go Back
                         </Button>
 

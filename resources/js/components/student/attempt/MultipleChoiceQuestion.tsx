@@ -1,7 +1,7 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export default function MultipleChoiceQuestion({ q, value, onChange }: any) {
+export default function MultipleChoiceQuestion({ q, value, onChange }: any) {    
     return (
         <div className="space-y-2">
             {q.options.map((opt: any) => (

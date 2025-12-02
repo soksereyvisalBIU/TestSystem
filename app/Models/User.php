@@ -80,6 +80,11 @@ class User extends Authenticatable
         );
     }
 
+    public function studentAssessment()
+    {
+        return $this->hasMany(StudentAssessment::class, 'user_id' , 'id');
+    }
+
     // ========== Relation ===========
     public function joinedCourses()
     {

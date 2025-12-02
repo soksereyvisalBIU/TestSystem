@@ -13,4 +13,16 @@ class StudentAssessment extends Model
         'score',
         'attempted',
     ];
+
+
+    // ============ Raletion ===================
+    public function assessment(){
+        return $this->belongsTo(Assessment::class, 'assessment_id' , 'id');
+    }
+
+    public function student() {
+        return $this->belongsTo(User::class, 'user_id' , 'id');
+    }
+
+    
 }

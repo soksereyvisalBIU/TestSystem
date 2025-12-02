@@ -12,30 +12,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function SubjectDetail({ subject }: { subject: any }) {
-    const id = 1; // subject ID (static for now)
+    const id = subject?.id; // subject ID (static for now)
 
     console.log(subject);
-    // {
-    //     "id": 1,
-    //     "name": "Officia ex sit volu",
-    //     "description": "Voluptatibus et dolo",
-    //     "class_id": 1,
-    //     "visibility": "private",
-    //     "cover": "subjects/YNznNkaWVOu4vzcu8RKaO4JZoXEvlSrQ1YLUfHJT.jpg",
-    //     "created_at": "2025-11-29T02:20:50.000000Z",
-    //     "updated_at": "2025-11-29T02:20:50.000000Z",
-    //     "assessments": []
-    // }
 
     const assessments = subject?.assessments || [];
-    
-    // const assessments = [
-    //     { id: 1, title: 'Quiz 1', due: '02/01/2025' },
-    //     { id: 2, title: 'Quiz 2', due: '04/01/2025' },
-    //     { id: 3, title: 'Midterm Exam', due: '06/01/2025' },
-    //     { id: 4, title: 'Project', due: '08/01/2025' },
-    //     { id: 5, title: 'Final Exam', due: '10/01/2025' },
-    // ];
 
     const students = ['Sok Dara', 'Chan Lisa', 'Kim Vuthy', 'Srey Neang'];
 
@@ -59,8 +40,11 @@ export default function SubjectDetail({ subject }: { subject: any }) {
                         layoutId={`subject-bg-${id}`}
                         className="h-56 w-full bg-cover bg-center"
                         style={{
-                            backgroundImage:
-                                "url({subject?.cover ? '/storage/' + subject.cover : '/assets/img/subject/default.jpg'})",
+                            backgroundImage: `url(${
+                                subject?.cover
+                                    ? '/storage/' + subject.cover
+                                    : '/assets/img/class/class.jpg'
+                            })`,
                         }}
                     />
 
@@ -183,7 +167,7 @@ export default function SubjectDetail({ subject }: { subject: any }) {
                     <Card className="rounded-2xl lg:col-span-2">
                         <CardHeader>
                             <CardTitle className="flex items-center justify-between gap-2">
-                                <div>
+                                <div className="flex items-center gap-2">
                                     <ClipboardList className="h-5 w-5" />{' '}
                                     Assessments
                                 </div>
@@ -191,7 +175,7 @@ export default function SubjectDetail({ subject }: { subject: any }) {
                                     <Link
                                         href={route(
                                             'instructor.classes.subjects.assessments.index',
-                                            [1, 1],
+                                            [subject?.class_id, id],
                                         )}
                                         className="rounded-full bg-blue-600 px-3 py-1 text-sm text-white transition hover:bg-blue-700"
                                     >

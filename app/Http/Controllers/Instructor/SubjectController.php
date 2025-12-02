@@ -13,10 +13,10 @@ class SubjectController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request,$subjectId)
+    public function index(Request $request, $subjectId)
     {
         $subject = Subject::with('assessments')->findOrFail($subjectId);
-        return Inertia::render('instructor/classroom/subject/Index' , compact('subject'));
+        return Inertia::render('instructor/classroom/subject/Index', compact('subject'));
     }
 
     /**
@@ -70,9 +70,14 @@ class SubjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, $classId , $subjectId)
     {
-        //
+
+        // dd('show subject', $subjectId);
+        
+        $subject = Subject::with('assessments')->findOrFail($subjectId);
+        // return Inertia::render('instructor/classroom/subject/Show', compact('subject'));
+        return Inertia::render('instructor/classroom/subject/Index', compact('subject'));
     }
 
     /**

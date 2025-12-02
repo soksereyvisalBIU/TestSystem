@@ -7,15 +7,32 @@ use App\Models\Assessment;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+use function Laravel\Prompts\confirm;
+
 class AssessmentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request , $id)
     {
-        //
+
     }
+
+    public function request(Request $request, $class_id, $subject_id, $assessment_id)
+    {
+        // TODO: validation, check eligibility, etc.
+        // Redirect back to index route with success message
+        return redirect()
+            // ->route('student.classes.subjects.assessments.index', [
+            ->route('student.classes.subjects.assessments.attempt', [
+                'class_id' => $class_id,
+                'subject_id' => $subject_id,
+                'assessment_id' => $assessment_id,
+            ])
+            ->with('success', 'Assessment attempt requested successfully!');
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -36,10 +53,10 @@ class AssessmentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($class_id, $subject_id, $id)
     {
         $assessment = Assessment::findOrFail($id);
-        return Inertia::render('student/classroom/subject/assessment/attempt/Confirm', compact('assessment'));
+        return Inertia::render('student/classroom/subject/assessment/attempt/Confirm', compact('assessment', 'class_id', 'subject_id'));
     }
 
     /**

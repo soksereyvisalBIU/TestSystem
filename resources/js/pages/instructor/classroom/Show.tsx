@@ -130,7 +130,7 @@ export default function SubjectShow({ classroom }: { classroom: any }) {
                                 <motion.div key={subj.id} variants={cardVariants}>
                                     <Link
                                         href={route(
-                                            'instructor.classes.subjects.index',
+                                            'instructor.classes.subjects.show',
                                             [classroom.id, subj.id]
                                         )}
                                     >

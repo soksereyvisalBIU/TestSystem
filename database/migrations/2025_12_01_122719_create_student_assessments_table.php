@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->integer('user_id');
             $table->integer('assessment_id');
+            $table->string('status')->nullable();
             $table->float('score')->default(0);
-            $table->integer('attempted')->default(0);
+            $table->integer('attempted_amount')->default(0);
             $table->timestamps();
         });
     }
