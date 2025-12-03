@@ -11,14 +11,25 @@ class QuestionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Inertia::render('instructor/classroom/subject/assessment/question/Index');
+        $class_id      = $request->route('class');
+        $subject_id    = $request->route('subject');
+        $assessment_id = $request->route('assessment');
+
+        // Debug if needed
+        // dd(compact('class', 'subject', 'assessment'));
+
+        return Inertia::render(
+            'instructor/classroom/subject/assessment/question/Index',
+            compact('class_id', 'subject_id', 'assessment_id')
+        );
     }
-    
+
+
     /**
      * Show the form for creating a new resource.
-    */
+     */
     public function create()
     {
         return Inertia::render('instructor/classroom/subject/assessment/question/Create');

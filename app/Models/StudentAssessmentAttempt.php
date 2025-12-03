@@ -48,4 +48,9 @@ class StudentAssessmentAttempt extends Model
             'user_id' // Local key on StudentAssessment table...
         );
     }
+
+    public function answers(){
+        return $this->hasMany(Answer::class, 'student_assessment_attempt_id' , 'id');
+    }
+    
 }

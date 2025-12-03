@@ -31,7 +31,7 @@ export default function QuestionManager({
         setAutoPoints,
         recalculatePoints,
         setQuestions, // make sure useQuestionManager exposes this
-    } = useQuestionManager(1);
+    } = useQuestionManager(assessmentId);
 
     if (isLoading) {
         return <p className="p-4 text-gray-500">Loading questions...</p>;

@@ -16,10 +16,16 @@ class Answer extends Model
         'code_submission',
         'is_correct',
         'points_awarded',
+        'student_assessment_attempt_id',
+        'option_id'
     ];
 
     // ========== Relation ===========
 
+    public function studentAssessmentAttempt(){
+        
+        return $this->belongsTo(StudentAssessmentAttempt::class, 'student_assessment_attempt_id');
+    }
     public function question()
     {
         return $this->belongsTo(Question::class, 'question_id');

@@ -136,4 +136,14 @@ class AssessmentController extends Controller
     {
         //
     }
+
+
+    public function review(Request $request)
+    {
+        $assessmentAttempt = StudentAssessmentAttempt::with(['assessment', 'answers.question.options', 'answers.option'])->where('student_id', Auth::id())->where('assessment_id', $request->assessment)->first();
+
+        return Inertia::render("student/classroom/subject/assessment/attempt/Review", [
+            'assessmentAttempt' => $assessmentAttempt,
+        ]);
+    }
 }

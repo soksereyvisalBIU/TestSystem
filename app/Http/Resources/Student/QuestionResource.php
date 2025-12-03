@@ -24,7 +24,8 @@ class QuestionResource extends JsonResource
             return [
 
                 'id' => (string) $this->id,
-                'assessment_id' => (string) $this->assessment_id,
+                'assessment' => $this->whenLoaded('assessment'),
+                // 'assessment_id' => (string) $this->assessment_id,
                 'question' => $this->question_text,
                 'type' => $this->type,
                 'point' => (float) $this->point,
@@ -45,7 +46,8 @@ class QuestionResource extends JsonResource
         return [
             // Standard Fields
             'id' => (string) $this->id,
-            'assessment_id' => (string) $this->assessment_id,
+            'assessment' => $this->whenLoaded('assessment'),
+            // 'assessment_id' => (string) $this->assessment_id,
             'question' => $this->question_text,
             'type' => $this->type,
             'point' => (float) $this->point,

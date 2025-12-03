@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('answers', function (Blueprint $table) {
             $table->id();
+            
+            $table->integer('student_assessment_attempt_id')->nullable();
             $table->integer('attempt_id')->nullable();
+
             $table->integer('question_id')->nullable();
             $table->integer('option_id')->nullable();
             $table->integer('selected_option_id')->nullable();

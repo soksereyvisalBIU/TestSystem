@@ -12,10 +12,19 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Assessment({
+    class_id,
+    subject_id,
     assessment_id,
 }: {
+    class_id: number;
+    subject_id: number;
     assessment_id: number;
 }) {
+
+    console.log(class_id)
+    console.log(subject_id)
+    console.log(assessment_id)
+    
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />

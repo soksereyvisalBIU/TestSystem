@@ -473,6 +473,81 @@ export default function Comfirm({
                                     </div>
                                 )}
                             </div>
+
+                            {/* BUTTON / STATUS MESSAGE */}
+                            <div className="mt-10">
+                                {canAttemptNow ? (
+                                    // Replaced Inertia Link with a styled button and simulated action
+
+                                    <TailwindButton
+                                        // onClick={handleStartAssessment}
+                                        className="w-full py-3 text-xl shadow-2xl hover:shadow-indigo-500/50"
+                                        variant="default"
+                                    >
+                                        <Link
+                                            href={route(
+                                                'student.classes.subjects.assessments.attempt.review',
+                                                {
+                                                    class_id: class_id,
+                                                    subject_id: subject_id,
+                                                    assessment_id:
+                                                        assessment.id,
+                                                    student_assessment_attempt_id: studentAssessmentAttempt.id
+                                                },
+                                            )}
+                                            // method="post"
+                                        >
+                                            Review Assessment
+                                        </Link>
+                                    </TailwindButton>
+                                ) : (
+                                    <div className="space-y-4 rounded-xl border-2 border-red-500 bg-red-50 p-5 text-sm shadow-inner dark:border-red-700 dark:bg-red-950">
+                                        <p className="text-lg font-extrabold text-red-700 dark:text-red-400">
+                                            Access Restricted
+                                        </p>
+
+                                        {isBeforeStart && start && (
+                                            <p>
+                                                This assessment is locked until
+                                                the start time of{' '}
+                                                <strong className="text-red-800 dark:text-red-300">
+                                                    {start.format(
+                                                        'MMM D, HH:mm',
+                                                    )}
+                                                </strong>
+                                                .
+                                            </p>
+                                        )}
+
+                                        {isAfterEnd && (
+                                            <p>
+                                                This assessment window has
+                                                officially closed. You can no
+                                                longer start the exam.
+                                            </p>
+                                        )}
+
+                                        {!hasRemainingAttempts &&
+                                            maxAttempts > 0 && (
+                                                <p>
+                                                    You have used all{' '}
+                                                    <strong className="text-red-800 dark:text-red-300">
+                                                        {maxAttempts}
+                                                    </strong>{' '}
+                                                    allowed attempts.
+                                                </p>
+                                            )}
+
+                                        {/* Replaced Button with TailwindButton */}
+                                        <TailwindButton
+                                            disabled
+                                            className="mt-3 bg-red-400/50 text-white/70 dark:bg-red-900/50"
+                                        >
+                                            Review Assessment
+                                        </TailwindButton>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -53,8 +53,8 @@ export const useCreateQuestion = (assessment_id: number) => {
                 `api/v1/assessments/${assessment_id}/questions`,
                 payload,
             );
-            console.log(data)
-            console.log(data.data)
+            console.log(data);
+            console.log(data.data);
             return data.data;
         },
         onSuccess: (newQuestion) => {
@@ -70,12 +70,11 @@ export const useCreateQuestion = (assessment_id: number) => {
                 const errors = error.response.data.errors;
                 const allMessages = Object.values(errors).flat().join('\n');
                 toast.error(allMessages);
-            }else if(error){
-              const errors = error.response.data;
+            } else if (error) {
+                const errors = error.response.data;
                 const allMessages = Object.values(errors).flat().join('\n');
                 toast.error(allMessages);
-            } 
-            else {
+            } else {
                 toast.error('Server error — try again later');
             }
         },
@@ -97,7 +96,10 @@ export const useUpdateQuestion = (assessment_id: number) => {
                 const results = await Promise.all(
                     questions.map(async (q) => {
                         if (!q?.id) {
-                            console.warn('⚠️ Missing question ID — skipping update:', q);
+                            console.warn(
+                                '⚠️ Missing question ID — skipping update:',
+                                q,
+                            );
                             throw new Error(`Invalid question: missing "id"`);
                         }
 
@@ -153,7 +155,6 @@ export const useUpdateQuestion = (assessment_id: number) => {
         },
     });
 };
-
 
 // =======================
 // Delete question

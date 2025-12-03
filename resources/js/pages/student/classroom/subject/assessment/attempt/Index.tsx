@@ -51,7 +51,7 @@ export default function Attempt({ assessment, questions, studentAssessment , stu
                 class_id: subject.class_id,
                 subject_id: subject.id,
                 assessment_id: assessment.id,
-                student_assessment_attempt_id: studentAssessmentAttempt.id,
+                student_assessment_attempt_id: student_assessment_attempt_id,
             }),
         );
     };

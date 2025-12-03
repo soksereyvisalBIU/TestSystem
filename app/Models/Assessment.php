@@ -44,7 +44,10 @@ class Assessment extends Model
         );
     }
 
-
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 
     public function total_questions()
     {
@@ -59,11 +62,6 @@ class Assessment extends Model
     public function attempts()
     {
         return $this->hasMany(AssessmentAttempt::class, 'assessment_id');
-    }
-
-    public function creator()
-    {
-        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function getCourseAttribute()
