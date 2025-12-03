@@ -9,8 +9,11 @@ use App\Models\Answer;
 use App\Models\Assessment;
 use App\Models\AssessmentAttempt;
 use App\Models\Question;
+use App\Models\StudentAssessment;
 use App\Models\StudentAssessmentAttempt;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
 
@@ -18,20 +21,25 @@ class AttemptController extends Controller
 {
     public function attempt(Request $request, $class_id, $subject_id, $assessment_id)
     {
+
         // dd($request->all());
 
-        $assessment = Assessment::with('subjects')->findOrFail($assessment_id);
+        $student_assessment_id = $request->input('student_assessment_id');
+        $student_assessment_attempt_id = $request->input('student_assessment_attempt_id');
 
-        $questions = QuestionResource::collection(Question::with('options')->where('assessment_id', $assessment_id)->orderBy('order')->get());
+        $assessment = Assessment::with('subjects')
+            ->findOrFail($assessment_id);
 
-
-        // $assessment = AssessmentResource::with('questions.options')->findOrFail
-
-        // dd($assessment);
+        $questions = QuestionResource::collection(
+            Question::with('options')
+                ->where('assessment_id', $assessment_id)
+                ->orderBy('order')
+                ->get()
+        );
 
         return Inertia::render(
             'student/classroom/subject/assessment/attempt/Index',
-            compact('assessment', 'questions')
+            compact('assessment', 'questions' , 'student_assessment_attempt_id')
         );
 
 
@@ -65,6 +73,18 @@ class AttemptController extends Controller
     public function store(Request $request, $class_id, $subject_id, $assessment_id)
     {
 
+        dd($request->all());
+
+        $studentAssessment = StudentAssessment::firstOrCreate(
+            [
+                'user_id'       => Auth::user()->id,
+                'assessment_id' => $assessment_id
+            ]
+        );
+
+
+
+
         // "answers" => array:6 [▼
         //     1 => "adsf"
         //     2 => "True"
@@ -84,10 +104,10 @@ class AttemptController extends Controller
         //   ]
         //   "user_id" => 4
 
-        // Optional validation
-        Log::info($request->all());
+        // // Optional validation
+        // Log::info($request->all());
 
-        // dd($request->all());
+        dd($request->all());
 
         // Load active attempt
         // $assessmentAttempt = StudentAssessmentAttempt::findOrFail($request->attempt_id);

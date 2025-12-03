@@ -15,9 +15,14 @@ class StudentAssessmentAttempt extends Model
         'sub_score',
     ];
 
+    protected $casts = [
+        'started_at' => 'datetime',
+    ];
+
+
     public function studentAssessment()
     {
-        return $this->belongsTo(StudentAssessment::class, 'student_assesment_id' , 'id');   
+        return $this->belongsTo(StudentAssessment::class, 'student_assesment_id', 'id');
     }
 
     public function assessment()
@@ -43,5 +48,4 @@ class StudentAssessmentAttempt extends Model
             'user_id' // Local key on StudentAssessment table...
         );
     }
-    
 }

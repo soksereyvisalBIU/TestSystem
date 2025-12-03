@@ -11,7 +11,7 @@ class StudentAssessment extends Model
         'user_id',
         'assessment_id',
         'score',
-        'attempted',
+        'attempted_amount',
     ];
 
 
@@ -24,5 +24,5 @@ class StudentAssessment extends Model
         return $this->belongsTo(User::class, 'user_id' , 'id');
     }
 
-    
+
 }
