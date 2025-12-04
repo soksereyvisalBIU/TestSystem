@@ -52,6 +52,22 @@ class User extends Authenticatable
         ];
     }
 
+    // ==== relation ====
+
+    public function studentAssessmentAttempt()
+    {
+        return $this->belongsToMany(
+            StudentAssessment::class,
+            'student_assessment_attempts',
+            'assessment_id', // pivot FK to assessment
+            'user_id'        // pivot FK to user
+        )
+            ->withPivot(['status', 'started_at' , 'completed_at' ])
+            ->withTimestamps();
+    }
+
+    // ==================
+
 
 
     public function isAdmin(): bool
@@ -64,7 +80,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Classroom::class, 'creator_id');
     }
-    
+
     public function instructorClasses()
     {
         return $this->hasMany(Classroom::class, 'instructor_id');
@@ -82,7 +98,7 @@ class User extends Authenticatable
 
     public function studentAssessment()
     {
-        return $this->hasMany(StudentAssessment::class, 'user_id' , 'id');
+        return $this->hasMany(StudentAssessment::class, 'user_id', 'id');
     }
 
     // ========== Relation ===========
@@ -97,7 +113,7 @@ class User extends Authenticatable
         // ->withPivot(['enrolled_at'])
         //  ->withTimestamps();
     }
-    
+
     public function StudentCourse()
     {
         return $this->hasMany(StudentCourse::class, 'student_id');
@@ -150,13 +166,11 @@ class User extends Authenticatable
     public function studentCourseInCourse($courseId)
     {
         return $this->hasOne(StudentCourse::class, 'student_id')
-                    ->where('course_id', $courseId);
+            ->where('course_id', $courseId);
     }
 
     public function getStudentCourseInCourseAttribute()
     {
         return $this->studentCourseInCourse()->first();
     }
-
-
 }

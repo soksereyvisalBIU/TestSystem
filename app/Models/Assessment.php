@@ -59,6 +59,31 @@ class Assessment extends Model
         return $this->hasMany(Question::class, 'assessment_id');
     }
 
+    public function students()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'student_assessments',
+            'assessment_id', // pivot FK to assessment
+            'user_id'        // pivot FK to user
+        )
+            ->withPivot(['score', 'attempted_amount'])
+            ->withTimestamps();
+    }
+    public function student($studentId)
+    {
+        return $this->belongsToMany(
+            User::class,
+            'student_assessments',
+            'assessment_id',
+            'user_id'
+        )
+            ->where('users.id', $studentId)
+            ->withPivot(['score', 'attempted_amount'])
+            ->withTimestamps();
+    }
+
+
     public function attempts()
     {
         return $this->hasMany(AssessmentAttempt::class, 'assessment_id');

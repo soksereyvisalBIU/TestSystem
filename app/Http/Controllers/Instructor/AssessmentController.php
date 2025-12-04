@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Instructor;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Instructor\AssessmentResource;
 use App\Models\Assessment;
 use App\Models\Subject;
 use Illuminate\Http\Request;
@@ -47,6 +48,7 @@ class AssessmentController extends Controller
             'max_attempts' => 'nullable|integer|min:1',
             'start_time' => 'nullable|date',
             'deadline' => 'nullable|date|after_or_equal:start_time',
+            'duration' => 'required'
         ]);
 
         // Find the subject
@@ -57,6 +59,7 @@ class AssessmentController extends Controller
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
             'type' => $validated['type'],
+            'duration' => $validated['duration'],
             'max_attempts' => $validated['max_attempts'] ?? null,
             'start_time' => $validated['start_time'] ?? null,
             'end_time' => $validated['deadline'] ?? null,
@@ -73,8 +76,13 @@ class AssessmentController extends Controller
      */
     public function show($classId, $subjectId, $assessment_id)
     {
-        $assessment = Assessment::with('questions')->findOrFail($assessment_id);
-        return Inertia::render('instructor/classroom/subject/assessment/Show', compact('assessment' , 'classId', 'subjectId'));
+        // $assessment = Assessment::with('questions')->findOrFail($assessment_id);
+
+        $assessment = (new AssessmentResource(
+            Assessment::with('questions', 'students')->findOrFail($assessment_id)
+        ))->resolve();
+
+        return Inertia::render('instructor/classroom/subject/assessment/Show', compact('assessment', 'classId', 'subjectId'));
     }
 
     /**

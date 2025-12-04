@@ -188,7 +188,7 @@ export default function SubjectDetail({ subject }: { subject: any }) {
                             {assessments.map((a) => (
                                 <div
                                     key={a.id}
-                                    className="flex justify-between rounded-xl border p-4 transition hover:bg-gray-50"
+                                    className="flex justify-between rounded-xl border p-4 transition "
                                 >
                                     <div>
                                         <h3 className="font-semibold">
@@ -199,7 +199,14 @@ export default function SubjectDetail({ subject }: { subject: any }) {
                                         </p>
                                     </div>
                                     <Link
-                                        href="#"
+                                        href={route(
+                                            'instructor.classes.subjects.assessments.show',
+                                            [
+                                                subject?.class_id,
+                                                subject?.id,
+                                                a.id,
+                                            ],
+                                        )}
                                         className="text-blue-600 hover:underline"
                                     >
                                         View
@@ -220,11 +227,15 @@ export default function SubjectDetail({ subject }: { subject: any }) {
                             {students.map((s, i) => (
                                 <div
                                     key={i}
-                                    className="flex items-center justify-between rounded-xl border p-3 transition hover:bg-gray-50"
+                                    className="flex items-center justify-between rounded-xl border p-3 transition "
                                 >
                                     <span>{s}</span>
                                     <Link
-                                        href="#"
+                                        // href={route('instructor.classes.subjects.assessments.students' , {
+                                        //     class: subject?.class_id,
+                                        //     subject: subject.id,
+                                        //     student: s?.id 
+                                        // })}
                                         className="text-blue-600 hover:underline"
                                     >
                                         View
@@ -248,7 +259,7 @@ export default function SubjectDetail({ subject }: { subject: any }) {
                             {reports.map((r, i) => (
                                 <div
                                     key={i}
-                                    className="flex items-center justify-between rounded-xl border p-4 transition hover:bg-gray-50"
+                                    className="flex items-center justify-between rounded-xl border p-4 transition "
                                 >
                                     <span>{r}</span>
                                     <Link

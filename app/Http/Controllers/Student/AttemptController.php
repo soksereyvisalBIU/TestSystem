@@ -43,34 +43,42 @@ class AttemptController extends Controller
 
     public function store(Request $request, $class_id, $subject_id, $assessment_id)
     {
-        Log::info($request->all());
-        Log::info($request->student_assessment_attempt_id);
-
+        // ---------------------------------------------------
         // Load active attempt
+        // ---------------------------------------------------
         $assessmentAttempt = StudentAssessmentAttempt::findOrFail(
             $request->student_assessment_attempt_id
         );
 
+        // Prevent resubmitting already submitted attempts
+        if ($assessmentAttempt->status === 'submitted') {
+            return back()->with('error', 'This attempt has already been submitted.');
+        }
+
+        // ---------------------------------------------------
         // Mark as submitted
+        // ---------------------------------------------------
         $assessmentAttempt->update([
             'submitted_at' => now(),
             'status'       => 'submitted',
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Save Answers
-        |--------------------------------------------------------------------------
-        */
+        // ---------------------------------------------------
+        // Increment attempt count (FIXED syntax)
+        // ---------------------------------------------------
+        $assessmentAttempt->studentAssessment->increment('attempted_amount');
 
+        // ---------------------------------------------------
+        // Save Answers
+        // ---------------------------------------------------
         foreach ($request->answers as $questionId => $answer) {
 
             /*
-            |-------------------------------
-            | A. MATCHING QUESTION
-            | Structure: [ optionId => answerText ]
-            |-------------------------------
-            */
+        |--------------------------------------------------------------------------
+        | A. MATCHING QUESTION
+        | Structure: [ optionId => answerText ]
+        |--------------------------------------------------------------------------
+        */
             if (is_array($answer) && !array_is_list($answer) && !isset($answer['text'])) {
 
                 foreach ($answer as $optionId => $text) {
@@ -86,11 +94,11 @@ class AttemptController extends Controller
             }
 
             /*
-            |-------------------------------
-            | B. SHORT ANSWER
-            | Structure: { text: "..." }
-            |-------------------------------
-            */
+        |--------------------------------------------------------------------------
+        | B. SHORT ANSWER
+        | Structure: { text: "..." }
+        |--------------------------------------------------------------------------
+        */
             if (is_array($answer) && isset($answer['text'])) {
 
                 Answer::create([
@@ -104,12 +112,12 @@ class AttemptController extends Controller
             }
 
             /*
-            |-------------------------------
-            | C. TRUE/FALSE or MULTIPLE CHOICE
-            | Numeric → option_id
-            | String  → answer_text
-            |-------------------------------
-            */
+        |--------------------------------------------------------------------------
+        | C. TRUE/FALSE or MULTIPLE CHOICE
+        | Numeric → option_id
+        | String  → answer_text
+        |--------------------------------------------------------------------------
+        */
             Answer::create([
                 'student_assessment_attempt_id' => $assessmentAttempt->id,
                 'question_id'                   => $questionId,
@@ -117,19 +125,34 @@ class AttemptController extends Controller
                 'answer_text'                   => is_numeric($answer) ? null : $answer,
             ]);
         }
+
+        // ---------------------------------------------------
+        // Redirect after storing attempt
+        // ---------------------------------------------------
+
+        // show($class_id, $subject_id, $id)
+
+        return redirect()
+            ->route('student.classes.subjects.assessments.show', [
+                'class' => $class_id,
+                'subject' => $subject_id,
+                'assessment' => $assessment_id,
+            ])
+            ->with('success', 'Assessment submitted successfully!');
     }
 
-    public function review(Request $request){
 
-        $assessmentAttempt = StudentAssessmentAttempt::with('studentAssessment' , 'assessment.questions' , 'answers')->where('id', $request->student_assessment_attempt_id)->first();
+    public function review(Request $request)
+    {
+
+        // $assessmentAttempt = StudentAssessmentAttempt::with('studentAssessment' , 'assessment.questions' , 'answers')->where('id', $request->student_assessment_attempt_id)->first();
 
         // $assessmentAttemptResource = new \App\Http\Resources\Student\AssessmentResource(Assessment::with('questions' , 'answer')->findOrFail($request->student_assessment_attempt_id));
 
-        $assessmentAttemptResource = new StudentAssessmentAttemptResource(StudentAssessmentAttempt::with('studentAssessment' , 'assessment.questions' , 'answers')->findOrFail($request->student_assessment_attempt_id));
-
-        // dd($assessmentAttemptResource);
+        $assessmentAttemptResource = new StudentAssessmentAttemptResource(StudentAssessmentAttempt::with('studentAssessment', 'assessment.questions', 'answers')->findOrFail($request->student_assessment_attempt_id));
 
         // return response()->json($assessmentAttemptResource); 
-        return Inertia::render('student/classroom/subject/assessment/attempt/Review' , compact('assessmentAttempt' , 'assessmentAttemptResource'));
+        // return Inertia::render('student/classroom/subject/assessment/attempt/Review' , compact('assessmentAttempt' , 'assessmentAttemptResource'));
+        return Inertia::render('student/classroom/subject/assessment/attempt/Review', compact('assessmentAttemptResource'));
     }
 }

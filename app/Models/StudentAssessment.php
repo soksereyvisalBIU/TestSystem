@@ -16,13 +16,18 @@ class StudentAssessment extends Model
 
 
     // ============ Raletion ===================
-    public function assessment(){
-        return $this->belongsTo(Assessment::class, 'assessment_id' , 'id');
+    public function assessment()
+    {
+        return $this->belongsTo(Assessment::class, 'assessment_id', 'id');
     }
 
-    public function student() {
-        return $this->belongsTo(User::class, 'user_id' , 'id');
+    public function student()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-
+    public function attempts()
+    {
+        return $this->hasMany(StudentAssessmentAttempt::class, 'student_assesment_id', 'id');
+    }
 }

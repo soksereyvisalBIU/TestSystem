@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 // External modules that are assumed to be available or in the global scope
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
+import { Button } from '@headlessui/react';
 import { Head, Link } from '@inertiajs/react';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
@@ -53,13 +54,13 @@ const TailwindButton = ({
     }
 
     return (
-        <button
+        <Button
             className={`${baseStyle} ${variantStyle} ${disabled ? disabledStyle : ''} ${className}`}
             disabled={disabled}
             {...props}
         >
             {children}
-        </button>
+        </Button>
     );
 };
 
@@ -403,29 +404,30 @@ export default function Comfirm({
                             <div className="mt-10">
                                 {canAttemptNow ? (
                                     // Replaced Inertia Link with a styled button and simulated action
-
-                                    <TailwindButton
-                                        // onClick={handleStartAssessment}
-                                        className="w-full py-3 text-xl shadow-2xl hover:shadow-indigo-500/50"
-                                        variant="default"
+                                    <Link
+                                    className='w-full py-3 text-xl shadow-2xl hover:shadow-indigo-500/50 bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500/50'
+                                        href={route(
+                                            'student.classes.subjects.assessments.request',
+                                            {
+                                                class_id: class_id,
+                                                subject_id: subject_id,
+                                                assessment_id: assessment.id,
+                                                student_assessment_attempt_id:
+                                                    studentAssessmentAttempt.id,
+                                            },
+                                        )}
+                                        method="post"
                                     >
-                                        <Link
-                                            href={route(
-                                                'student.classes.subjects.assessments.request',
-                                                {
-                                                    class_id: class_id,
-                                                    subject_id: subject_id,
-                                                    assessment_id:
-                                                        assessment.id,
-                                                    student_assessment_attempt_id: studentAssessmentAttempt.id
-                                                },
-                                            )}
-                                            method="post"
-                                        >
-                                            Start Assessment Now
-                                        </Link>
-                                    </TailwindButton>
+                                        Start Assessment Now
+                                    </Link>
                                 ) : (
+                                    // <TailwindButton
+                                    //     // onClick={handleStartAssessment}
+                                    //     className="w-full py-3 text-xl shadow-2xl hover:shadow-indigo-500/50"
+                                    //     variant="default"
+                                    // >
+
+                                    // </TailwindButton>
                                     <div className="space-y-4 rounded-xl border-2 border-red-500 bg-red-50 p-5 text-sm shadow-inner dark:border-red-700 dark:bg-red-950">
                                         <p className="text-lg font-extrabold text-red-700 dark:text-red-400">
                                             Access Restricted
@@ -479,28 +481,30 @@ export default function Comfirm({
                                 {canAttemptNow ? (
                                     // Replaced Inertia Link with a styled button and simulated action
 
-                                    <TailwindButton
-                                        // onClick={handleStartAssessment}
+                                    <Link
                                         className="w-full py-3 text-xl shadow-2xl hover:shadow-indigo-500/50"
-                                        variant="default"
+                                        href={route(
+                                            'student.classes.subjects.assessments.attempt.review',
+                                            {
+                                                class_id: class_id,
+                                                subject_id: subject_id,
+                                                assessment_id: assessment.id,
+                                                student_assessment_attempt_id:
+                                                    studentAssessmentAttempt.id,
+                                            },
+                                        )}
+                                        // method="post"
                                     >
-                                        <Link
-                                            href={route(
-                                                'student.classes.subjects.assessments.attempt.review',
-                                                {
-                                                    class_id: class_id,
-                                                    subject_id: subject_id,
-                                                    assessment_id:
-                                                        assessment.id,
-                                                    student_assessment_attempt_id: studentAssessmentAttempt.id
-                                                },
-                                            )}
-                                            // method="post"
-                                        >
-                                            Review Assessment
-                                        </Link>
-                                    </TailwindButton>
+                                        Review Assessment
+                                    </Link>
                                 ) : (
+                                    // <TailwindButton
+                                    //     // onClick={handleStartAssessment}
+                                    //     className="w-full py-3 text-xl shadow-2xl hover:shadow-indigo-500/50"
+                                    //     variant="default"
+                                    // >
+
+                                    // </TailwindButton>
                                     <div className="space-y-4 rounded-xl border-2 border-red-500 bg-red-50 p-5 text-sm shadow-inner dark:border-red-700 dark:bg-red-950">
                                         <p className="text-lg font-extrabold text-red-700 dark:text-red-400">
                                             Access Restricted

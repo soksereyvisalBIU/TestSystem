@@ -10,140 +10,135 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
-use function Laravel\Prompts\confirm;
-
 class AssessmentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request, $id) {}
+    public function index(Request $request, $id)
+    {
+        //
+    }
 
+    /**
+     * Request to attempt an assessment.
+     */
     public function request(Request $request, $class_id, $subject_id, $assessment_id)
     {
         // TODO: validation, check eligibility, etc.
-        // Redirect back to index route with success message
-
 
         // ---------------------------------------------------
-        //   Create or increment student assessment attempt
+        // Create or get StudentAssessment record
         // ---------------------------------------------------
-        $studentAssessment = StudentAssessment::firstOrCreate(
-            [
-                'user_id'       => Auth::user()->id,
-                'assessment_id' => $assessment_id
-            ]
-        );
-
-        $studentAssessmentAttempt = StudentAssessmentAttempt::firstOrCreate([
-            'student_assesment_id' => $studentAssessment->id,
-            'status' => "draft",
-            'started_at' => now(),
-            // 'completed_at',
-            // 'sub_score',
+        $studentAssessment = StudentAssessment::firstOrCreate([
+            'user_id'       => Auth::id(),
+            'assessment_id' => $assessment_id,
         ]);
 
-        // dd($studentAssessmentAttempt);
+        // ---------------------------------------------------
+        // Fetch latest attempt
+        // ---------------------------------------------------
+        $latestAttempt = StudentAssessmentAttempt::where(
+            'student_assesment_id',
+            $studentAssessment->id
+        )
+            ->latest()
+            ->first();
 
-        return redirect()
-            // ->route('student.classes.subjects.assessments.index', [
-            ->route('student.classes.subjects.assessments.attempt', [
-                'class_id' => $class_id,
-                'subject_id' => $subject_id,
-                'assessment_id' => $assessment_id,
+        // ---------------------------------------------------
+        // Create new attempt if none exist OR last was submitted
+        // ---------------------------------------------------
+        if (!$latestAttempt || $latestAttempt->status === 'submitted') {
+            $studentAssessmentAttempt = StudentAssessmentAttempt::create([
                 'student_assesment_id' => $studentAssessment->id,
-                'student_assessment_attempt_id' => $studentAssessmentAttempt->id
+                'status'               => 'draft',
+                'started_at'           => now(),
+            ]);
+        } else {
+            // Reuse attempt: reset to draft and ensure started_at exists
+            $latestAttempt->update([
+                'status'     => 'draft',
+                'started_at' => $latestAttempt->started_at ?? now(),
+            ]);
+
+            $studentAssessmentAttempt = $latestAttempt;
+        }
+
+        // ---------------------------------------------------
+        // Redirect to attempt page
+        // ---------------------------------------------------
+        return redirect()
+            ->route('student.classes.subjects.assessments.attempt', [
+                'class_id'                      => $class_id,
+                'subject_id'                    => $subject_id,
+                'assessment_id'                 => $assessment_id,
+                'student_assesment_id'          => $studentAssessment->id,
+                'student_assessment_attempt_id' => $studentAssessmentAttempt->id,
             ])
             ->with('success', 'Assessment attempt requested successfully!');
     }
 
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
+     * Show a single assessment.
      */
     public function show($class_id, $subject_id, $id)
     {
         $assessment = Assessment::findOrFail($id);
 
-        // Find or create student assessment
+        // Create or get StudentAssessment
         $studentAssessment = StudentAssessment::firstOrCreate([
-            'user_id' => Auth::id(),
+            'user_id'       => Auth::id(),
             'assessment_id' => $id,
         ]);
 
-        // ------------------------------
-        // Check last attempt (1 minute rule)
-        // ------------------------------
-        $lastAttempt = StudentAssessmentAttempt::where('student_assesment_id', $studentAssessment->id)
+        // Get or create latest attempt
+        $studentAssessmentAttempt = StudentAssessmentAttempt::where(
+            'student_assesment_id',
+            $studentAssessment->id
+        )
             ->latest()
             ->first();
 
-        if ($lastAttempt && $lastAttempt->started_at->gt(now()->subMinute())) {
-            // Reuse last attempt
-            $studentAssessmentAttempt = $lastAttempt;
-        } else {
-            // Create new attempt
-            $studentAssessmentAttempt = StudentAssessmentAttempt::create([
+        if (!$studentAssessmentAttempt) {
+            $studentAssessmentAttempt = StudentAssessmentAttempt::firstOrCreate([
                 'student_assesment_id' => $studentAssessment->id,
-                'status' => 'pending',
-                'started_at' => now(),
             ]);
         }
 
-        return Inertia::render(
-            'student/classroom/subject/assessment/attempt/Confirm',
-            compact('assessment', 'class_id', 'subject_id', 'studentAssessment', 'studentAssessmentAttempt')
-        );
+        return Inertia::render('student/classroom/subject/assessment/attempt/Confirm', [
+            'assessment'              => $assessment,
+            'class_id'                => $class_id,
+            'subject_id'              => $subject_id,
+            'studentAssessment'       => $studentAssessment,
+            'studentAssessmentAttempt' => $studentAssessmentAttempt,
+        ]);
     }
 
+    public function create() {}
+    public function store(Request $request) {}
+    public function edit(string $id) {}
+    public function update(Request $request, string $id) {}
+    public function destroy(string $id) {}
 
     /**
-     * Show the form for editing the specified resource.
+     * Review completed assessment.
      */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-
-
     public function review(Request $request)
     {
-        $assessmentAttempt = StudentAssessmentAttempt::with(['assessment', 'answers.question.options', 'answers.option'])->where('student_id', Auth::id())->where('assessment_id', $request->assessment)->first();
+        $assessmentAttempt = StudentAssessmentAttempt::with([
+            'assessment',
+            'answers.question.options',
+            'answers.option',
+        ])
+            ->where('student_id', Auth::id())
+            ->where('assessment_id', $request->assessment)
+            ->first();
 
-        return Inertia::render("student/classroom/subject/assessment/attempt/Review", [
-            'assessmentAttempt' => $assessmentAttempt,
-        ]);
+        return Inertia::render(
+            "student/classroom/subject/assessment/attempt/Review",
+            ['assessmentAttempt' => $assessmentAttempt]
+        );
     }
 }

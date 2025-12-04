@@ -27,6 +27,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('classes.subject', App\Http\Controllers\Instructor\SubjectController::class)->names('classes.subjects');
         Route::resource('classes.subject.assessment', App\Http\Controllers\Instructor\AssessmentController::class)->names('classes.subjects.assessments');
         Route::resource('classes.subject.assessment.question', App\Http\Controllers\Instructor\QuestionController::class)->names('classes.subjects.assessments.questions');
+        Route::resource('classes.subject.assessment.student', App\Http\Controllers\Instructor\StudentController::class)->names('classes.subjects.assessments.students');
+
+        Route::get(
+            'classes/{class}/subject/{subject}/assessment/{assessment}/student/{student}/check',
+            [App\Http\Controllers\Instructor\StudentController::class, 'check']
+        )->name('classes.subjects.assessments.students.check');
     });
 
 
@@ -50,6 +56,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             [App\Http\Controllers\Student\AssessmentController::class, 'request']
         )->name('classes.subjects.assessments.request');
         Route::get(
+            'classes/{class_id}/subject/{subject_id}/assessment/{assessment_id}/review',
+            [App\Http\Controllers\Student\AttemptController::class, 'review']
+        )->name('classes.subjects.assessments.attempt.review');
+        Route::get(
             'classes/{class_id}/subject/{subject_id}/assessment/{assessment_id}/attempt',
             [App\Http\Controllers\Student\AttemptController::class, 'attempt']
         )->name('classes.subjects.assessments.attempt');
@@ -57,10 +67,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'classes/{class_id}/subject/{subject_id}/assessment/{assessment_id}/attempt/store',
             [App\Http\Controllers\Student\AttemptController::class, 'store']
         )->name('classes.subjects.assessments.attempt.store');
-        Route::get(
-            'classes/{class_id}/subject/{subject_id}/assessment/{assessment_id}/attempt/review',
-            [App\Http\Controllers\Student\AttemptController::class, 'review']
-        )->name('classes.subjects.assessments.attempt.review');
     });
 
 

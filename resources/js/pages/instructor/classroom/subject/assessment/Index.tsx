@@ -16,6 +16,7 @@ import { motion } from 'framer-motion';
 import { Edit2Icon, GridIcon, ListIcon, PlusIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { route } from 'ziggy-js';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Class', href: '/' },

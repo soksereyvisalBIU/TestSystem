@@ -177,7 +177,7 @@ export default function SubjectDetail() {
                                     <Link
                                         href={route(
                                             'instructor.classes.subjects.assessments.index',
-                                            [1, 1],
+                                            [subject?.class_id, subject?.id, id],
                                         )}
                                         className="rounded-full bg-blue-600 px-3 py-1 text-sm text-white transition hover:bg-blue-700"
                                     >
