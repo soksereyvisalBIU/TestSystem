@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
-// External modules that are assumed to be available or in the global scope
+// External modules
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Button } from '@headlessui/react';
@@ -18,114 +18,112 @@ dayjs.extend(timezone);
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
 
-// Since we cannot use external components like AppLayout, Head, Link, or custom Button,
-// we will replace them with functional equivalents (divs, standard buttons, etc.)
+// --- MOCK COMPONENTS (If AppLayout/Button are not actually available in your env) ---
+// If you have these components in your project, remove these mocks.
 
-// Mock components to replace unresolvable imports like AppLayout and Button
-const SimpleLayout = ({ children, title }) => (
-    <div className="p-4 text-gray-900 sm:p-8">
-        {/* <header className="mb-6">
-            <h1 className="text-2xl font-bold">{title}</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-                Dashboard / Assessment View
-            </p>
-        </header> */}
-        <main className="h-full">{children}</main>
+const SimpleLayout = ({ children, title }: { children: React.ReactNode; title: string }) => (
+    <div className="min-h-screen bg-gray-100 p-4 text-gray-900 sm:p-8 dark:bg-gray-900">
+        <main className="mx-auto max-w-7xl">{children}</main>
     </div>
 );
 
-// Styled Button replacement using standard HTML button and Tailwind classes
 const TailwindButton = ({
     children,
     disabled,
-    className,
+    className = '',
     variant = 'default',
     ...props
-}) => {
+}: any) => {
     const baseStyle =
-        'px-6 py-2 rounded-lg font-semibold transition-all duration-200 focus:outline-none focus:ring-4 w-full';
+        'px-6 py-2 rounded-lg font-semibold transition-all duration-200 focus:outline-none focus:ring-4 w-full flex items-center justify-center';
     const disabledStyle = 'opacity-50 cursor-not-allowed';
-
-    let variantStyle =
-        'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500/50';
+    
+    let variantStyle = 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500/50';
     if (variant === 'default') {
-        variantStyle =
-            'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500/50';
+        variantStyle = 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500/50';
     }
 
     return (
-        <Button
+        <button
             className={`${baseStyle} ${variantStyle} ${disabled ? disabledStyle : ''} ${className}`}
             disabled={disabled}
             {...props}
         >
             {children}
-        </Button>
+        </button>
     );
 };
+// ----------------------------------------------------------------------------------
 
 type DashboardProps = {
-    assessment: any;
+    assessment: {
+        id: number;
+        title: string;
+        description: string | null;
+        type: string;
+        start_time: string;
+        end_time: string;
+        duration: number;
+        max_attempts: number;
+        instructions?: string;
+        [key: string]: any;
+    };
     class_id: number;
     subject_id: number;
-    studentAssessment: any;
-    studentAssessmentAttempt: any;
+    studentAssessment: {
+        id: number;
+        attempted_amount: number;
+        score: number;
+        [key: string]: any;
+    } | null;
+    studentAssessmentAttempt: {
+        id: number;
+        status: string | null; // e.g., 'in_progress', 'completed'
+        [key: string]: any;
+    } | null;
 };
 
-// Removed the unresolvable 'route' and 'BreadcrumbItem' dependencies
-
-export default function Comfirm({
+export default function Confirm({
     assessment,
     class_id,
     subject_id,
     studentAssessment,
     studentAssessmentAttempt,
 }: DashboardProps) {
-    // ===================================
-    // ALL HOOKS DEFINED AT THE TOP LEVEL
-    // This ensures consistent hook order on every render.
-    // ===================================
+    
+    // 1. Server Time Synchronization
     const [serverNow, setServerNow] = useState<dayjs.Dayjs | null>(null);
 
-    // 1. Fetch server time on mount
     useEffect(() => {
-        // Mock fetch, as the actual API endpoint is unavailable in this environment
-        // In a real environment, this would ensure time synchronization.
-        const mockFetchServerTime = () => {
+        // Simulating fetching server time. In production, replace with actual API call.
+        const fetchServerTime = () => {
             return new Promise<{ now: string }>((resolve) => {
-                // Simulate a small network delay and provide the current client time as "server" time
                 setTimeout(() => {
                     resolve({ now: dayjs.utc().toISOString() });
                 }, 100);
             });
         };
 
-        mockFetchServerTime()
+        fetchServerTime()
             .then((data) => {
-                // Initialize server time, setting the time zone for display/comparison
                 setServerNow(dayjs.utc(data.now).tz('Asia/Phnom_Penh'));
             })
             .catch((error) => {
                 console.error('Error fetching server time:', error);
-                // Fallback to client time
                 setServerNow(dayjs().tz('Asia/Phnom_Penh'));
             });
     }, []);
 
-    // 2. Countdown tick - Increment server time state every second
+    // 2. Countdown Ticker
     useEffect(() => {
         if (!serverNow) return;
-
         const timer = setInterval(() => {
-            // Safely update state, ensuring we use the previous state value
             setServerNow((prev) => (prev ? prev.add(1, 'second') : prev));
         }, 1000);
-
         return () => clearInterval(timer);
     }, [serverNow]);
 
-    // 3. Time Logic (useMemo to prevent unnecessary recalculations)
-    // Now defined before conditional returns to maintain hook order.
+    // 3. Time & Status Logic
     const {
         start,
         end,
@@ -135,7 +133,6 @@ export default function Comfirm({
         isAfterEnd,
         countdown,
     } = useMemo(() => {
-        // Defensive check: If assessment or server time is not available yet, return safe defaults
         if (!assessment || !serverNow) {
             return {
                 start: null,
@@ -156,16 +153,12 @@ export default function Comfirm({
         const isBeforeStart = now.isBefore(start);
         const isAfterEnd = now.isAfter(end);
 
-        // Countdown Helper
         const getCountdown = (target: dayjs.Dayjs) => {
             const diff = target.diff(now);
-
             if (diff <= 0) return null;
-
             const timeDuration = dayjs.duration(diff);
-
             return {
-                days: timeDuration.days(),
+                days: Math.floor(timeDuration.asDays()),
                 hours: timeDuration.hours(),
                 minutes: timeDuration.minutes(),
                 seconds: timeDuration.seconds(),
@@ -178,58 +171,39 @@ export default function Comfirm({
               ? getCountdown(end)
               : null;
 
-        return {
-            start,
-            end,
-            now,
-            isWithinTime,
-            isBeforeStart,
-            isAfterEnd,
-            countdown,
-        };
-    }, [assessment, serverNow]); // Depend on the whole assessment object and serverNow
+        return { start, end, now, isWithinTime, isBeforeStart, isAfterEnd, countdown };
+    }, [assessment, serverNow]);
 
-    // ===================================
-    // CONDITIONAL RETURNS
-    // ===================================
-
-    // Replaced AppLayout with SimpleLayout
-    if (!assessment) {
-        return (
-            <SimpleLayout title="Assessment">
-                <div className="flex h-full flex-1 items-center justify-center">
-                    <p className="text-center font-medium text-red-600">
-                        Assessment not found.
-                    </p>
-                </div>
-            </SimpleLayout>
-        );
-    }
-
-    // Render nothing until server time is initialized
+    // 4. Early Returns
+    if (!assessment) return <div>Assessment not found</div>;
+    
     if (!serverNow) {
         return (
-            <SimpleLayout title="Assessment">
-                <div className="flex h-full flex-1 items-center justify-center">
-                    <div className="animate-pulse text-xl">
-                        Loading assessment clock...
-                    </div>
+            <SimpleLayout title="Loading...">
+                 <div className="flex h-[50vh] flex-1 items-center justify-center">
+                    <div className="animate-pulse text-xl text-gray-500">Syncing server time...</div>
                 </div>
             </SimpleLayout>
         );
     }
 
-    // =======================
-    // Attempts Logic
-    // =======================
-    const attempts = studentAssessment?.attempted_amount ?? 0;
+    // 5. Attempt Calculation
+    const attemptsUsed = studentAssessment?.attempted_amount ?? 0;
     const maxAttempts = assessment.max_attempts ?? 0;
-    const hasRemainingAttempts = maxAttempts === 0 || attempts < maxAttempts;
-    const canAttemptNow = isWithinTime && hasRemainingAttempts;
+    const hasRemainingAttempts = maxAttempts === 0 || attemptsUsed < maxAttempts;
+    
+    // Check if there is an active attempt we should resume
+    const isResuming = studentAssessmentAttempt && studentAssessmentAttempt.status !== 'completed';
+    
+    // Can we start/continue?
+    // We can start if we are within time AND (we have attempts left OR we are resuming an unfinished one)
+    const canAttemptNow = isWithinTime && (hasRemainingAttempts || isResuming);
 
-    // =======================
+    // Can we review?
+    // We can review if user has taken it at least once.
+    const canReview = attemptsUsed > 0 && studentAssessmentAttempt?.id;
+
     // Type Mapping
-    // =======================
     const typeMap: Record<string, string> = {
         quiz: 'Quiz',
         exam: 'Exam',
@@ -237,318 +211,146 @@ export default function Comfirm({
         midterm: 'Midterm',
         final: 'Final',
     };
-
     const assessmentType = typeMap[assessment.type] || 'Assessment';
 
-    // Simulate navigation/link action
-    const handleStartAssessment = () => {
-        console.log(
-            `Intending to navigate/POST to start assessment ID: ${assessment.id} for Class ID: ${class_id}, Subject ID: ${subject_id}`,
-        );
-        // IMPORTANT: Replaced alert() with console.log as alerts are forbidden
-        // Since we cannot use custom modals, we'll log the intended action.
-        console.log('Action: The assessment would now be initiated.');
-    };
-
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Class', href: '/' },
-        { title: 'Subjects', href: '/subjects' },
-        { title: 'Assessments', href: '/assessments' },
+        { title: 'Class', href: '#' },
+        { title: 'Subjects', href: '#' },
+        { title: 'Assessments', href: '#' },
     ];
 
-    // Replaced AppLayout with SimpleLayout
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Subject Detail" />
+            <Head title={assessment.title} />
 
-            <SimpleLayout title={assessment.title || 'Assessment'}>
-                {/* Removed <Head title={...} /> as it relies on Inertia/React components */}
-
-                <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl">
-                    <div className="relative flex flex-1 items-center justify-center rounded-xl border border-gray-300 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800">
-                        <div className="w-full max-w-xl p-8 text-center">
-                            <h1 className="mb-2 text-4xl font-extrabold text-gray-900 dark:text-white">
+            <SimpleLayout title={assessment.title}>
+                <div className="flex flex-col items-center justify-center py-6">
+                    <div className="relative flex w-full max-w-2xl flex-col rounded-xl border border-gray-300 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800">
+                        
+                        {/* HEADER */}
+                        <div className="p-8 text-center">
+                            <h1 className="mb-2 text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
                                 {assessment.title}
                             </h1>
-                            <p className="mb-6 text-lg text-gray-500 dark:text-gray-400">
-                                {assessment.description}
+                            <p className="text-lg text-gray-500 dark:text-gray-400">
+                                {assessment.description || 'No description provided.'}
                             </p>
 
-                            {/* COUNTDOWN DISPLAY ===================== */}
-                            {/* We use start/end from useMemo which handles null checks defensively */}
+                            {/* COUNTDOWN */}
                             {countdown && start && end && (
-                                <div
-                                    className={`mt-4 rounded-xl border-2 p-4 shadow-inner ${isBeforeStart ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-green-500 bg-green-50 dark:bg-green-900/20'} transition-all duration-300`}
-                                >
-                                    <p
-                                        className={`text-lg font-semibold ${isBeforeStart ? 'text-blue-700 dark:text-blue-300' : 'text-green-700 dark:text-green-300'}`}
-                                    >
-                                        {isBeforeStart
-                                            ? 'Assessment Starts In:'
-                                            : 'Assessment Ends In:'}
+                                <div className={`mt-6 rounded-xl border-2 p-4 shadow-inner transition-colors duration-300 ${
+                                    isBeforeStart 
+                                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
+                                        : 'border-green-500 bg-green-50 dark:bg-green-900/20'
+                                }`}>
+                                    <p className={`text-sm font-bold uppercase tracking-wider ${
+                                        isBeforeStart ? 'text-blue-700 dark:text-blue-300' : 'text-green-700 dark:text-green-300'
+                                    }`}>
+                                        {isBeforeStart ? 'Assessment Starts In' : 'Time Remaining'}
                                     </p>
-                                    <div className="tabular-lining mt-2 font-mono text-5xl font-extrabold text-gray-800 dark:text-gray-100">
-                                        <span className="mx-1">
-                                            {countdown.days}
-                                            <span className="ml-1 text-xl font-medium">
-                                                d
-                                            </span>
-                                        </span>
-                                        <span className="mx-1">:</span>
-                                        <span className="mx-1">
-                                            {countdown.hours
-                                                .toString()
-                                                .padStart(2, '0')}
-                                            <span className="ml-1 text-xl font-medium">
-                                                h
-                                            </span>
-                                        </span>
-                                        <span className="mx-1">:</span>
-                                        <span className="mx-1">
-                                            {countdown.minutes
-                                                .toString()
-                                                .padStart(2, '0')}
-                                            <span className="ml-1 text-xl font-medium">
-                                                m
-                                            </span>
-                                        </span>
-                                        <span className="mx-1">:</span>
-                                        <span className="mx-1">
-                                            {countdown.seconds
-                                                .toString()
-                                                .padStart(2, '0')}
-                                            <span className="ml-1 text-xl font-medium">
-                                                s
-                                            </span>
-                                        </span>
+                                    <div className="mt-2 flex justify-center space-x-2 font-mono text-4xl font-extrabold text-gray-800 dark:text-gray-100 sm:text-5xl">
+                                        {['days', 'hours', 'minutes', 'seconds'].map((unit, idx) => {
+                                            const val = countdown[unit as keyof typeof countdown];
+                                            if (unit === 'days' && val === 0) return null;
+                                            return (
+                                                <div key={unit} className="flex items-baseline">
+                                                    <span>{String(val).padStart(2, '0')}</span>
+                                                    <span className="ml-1 text-sm font-medium text-gray-500">{unit.charAt(0)}</span>
+                                                    {idx < 3 && (unit !== 'days' || val > 0) && <span className="mx-1 opacity-50">:</span>}
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             )}
 
-                            {/* ===================== */}
-                            {/* Meta Info */}
-                            {/* ===================== */}
-                            <div className="mt-8 space-y-3 rounded-xl border border-gray-200 bg-gray-50 p-5 text-base text-gray-700 dark:border-gray-700 dark:bg-gray-700/50 dark:text-gray-300">
-                                {/* Type */}
-                                <div className="flex items-center justify-between">
-                                    <span className="font-bold text-gray-900 dark:text-white">
-                                        Assessment Type:
-                                    </span>
-                                    <span className="text-indigo-600 dark:text-indigo-400">
-                                        {assessmentType}
-                                    </span>
-                                </div>
-
-                                {/* Time Window */}
-                                {start && end && (
-                                    <div className="flex items-center justify-between border-t border-gray-200 pt-3 dark:border-gray-600">
-                                        <span className="font-bold text-gray-900 dark:text-white">
-                                            Time Window (ICT):
-                                        </span>
-                                        <span className="text-right">
-                                            {start.format('MMM D, YYYY HH:mm')}
-                                            <span className="mx-1">→</span>
-                                            {end.format('MMM D, YYYY HH:mm')}
+                            {/* DETAILS TABLE */}
+                            <div className="mt-8 overflow-hidden rounded-xl border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-700/30">
+                                <div className="grid divide-y divide-gray-200 dark:divide-gray-600">
+                                    <div className="flex justify-between p-4">
+                                        <span className="font-semibold text-gray-700 dark:text-gray-300">Type</span>
+                                        <span className="font-bold text-indigo-600 dark:text-indigo-400">{assessmentType}</span>
+                                    </div>
+                                    {start && end && (
+                                        <div className="flex justify-between p-4">
+                                            <span className="font-semibold text-gray-700 dark:text-gray-300">Window</span>
+                                            <div className="text-right text-sm">
+                                                <div className="text-gray-900 dark:text-white">{start.format('MMM D, HH:mm')}</div>
+                                                <div className="text-gray-500">to</div>
+                                                <div className="text-gray-900 dark:text-white">{end.format('MMM D, HH:mm')}</div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div className="flex justify-between p-4">
+                                        <span className="font-semibold text-gray-700 dark:text-gray-300">Duration</span>
+                                        <span className="text-gray-900 dark:text-white">{assessment.duration ? `${assessment.duration} mins` : 'No Limit'}</span>
+                                    </div>
+                                    <div className="flex justify-between p-4">
+                                        <span className="font-semibold text-gray-700 dark:text-gray-300">Attempts</span>
+                                        <span className={`${!hasRemainingAttempts ? 'text-red-600' : 'text-gray-900'} font-medium dark:text-white`}>
+                                            {attemptsUsed} / {maxAttempts === 0 ? '∞' : maxAttempts}
                                         </span>
                                     </div>
-                                )}
-
-                                {/* Current Status */}
-                                {isWithinTime && end && now && (
-                                    <div className="flex items-center justify-between border-t border-gray-200 pt-3 dark:border-gray-600">
-                                        <span className="font-bold text-gray-900 dark:text-white">
-                                            Current Status:
-                                        </span>
-                                        <span className="font-extrabold text-green-600 dark:text-green-400">
-                                            ACTIVE (Ends {end.from(now)})
-                                        </span>
-                                    </div>
-                                )}
-
-                                {/* Duration */}
-                                <div className="flex items-center justify-between border-t border-gray-200 pt-3 dark:border-gray-600">
-                                    <span className="font-bold text-gray-900 dark:text-white">
-                                        Allowed Duration:
-                                    </span>
-                                    <span>
-                                        {assessment.duration ?? 'N/A'} minutes
-                                    </span>
-                                </div>
-
-                                {/* Attempts */}
-                                <div className="flex items-center justify-between border-t border-gray-200 pt-3 dark:border-gray-600">
-                                    <span className="font-bold text-gray-900 dark:text-white">
-                                        Attempts Used:
-                                    </span>
-                                    <span>
-                                        {maxAttempts === 0
-                                            ? `${attempts} / Unlimited`
-                                            : `${attempts} / ${maxAttempts}`}
-                                    </span>
                                 </div>
                             </div>
 
                             {/* INSTRUCTIONS */}
                             {assessment.instructions && (
-                                <div className="mt-6 rounded-xl border-2 border-yellow-500 bg-yellow-50 p-4 text-left shadow-lg dark:bg-yellow-950">
-                                    <p className="mb-2 text-lg font-extrabold text-yellow-800 dark:text-yellow-300">
-                                        Important Instructions:
-                                    </p>
-                                    <div className="text-sm whitespace-pre-line text-gray-700 dark:text-gray-200">
-                                        {assessment.instructions}
-                                    </div>
+                                <div className="mt-6 rounded-lg border-l-4 border-yellow-400 bg-yellow-50 p-4 text-left dark:bg-yellow-900/20">
+                                    <h3 className="text-sm font-bold text-yellow-800 dark:text-yellow-200">Instructions</h3>
+                                    <p className="mt-1 whitespace-pre-line text-sm text-yellow-700 dark:text-yellow-300">{assessment.instructions}</p>
                                 </div>
                             )}
 
-                            {/* BUTTON / STATUS MESSAGE */}
-                            <div className="mt-10">
+                            {/* ACTION BUTTONS AREA */}
+                            <div className="mt-8 flex flex-col gap-4">
                                 {canAttemptNow ? (
-                                    // Replaced Inertia Link with a styled button and simulated action
                                     <Link
-                                    className='w-full py-3 text-xl shadow-2xl hover:shadow-indigo-500/50 bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500/50'
-                                        href={route(
-                                            'student.classes.subjects.assessments.request',
-                                            {
-                                                class_id: class_id,
-                                                subject_id: subject_id,
-                                                assessment_id: assessment.id,
-                                                student_assessment_attempt_id:
-                                                    studentAssessmentAttempt.id,
-                                            },
-                                        )}
+                                        href={route('student.classes.subjects.assessments.request', {
+                                            class_id,
+                                            subject_id,
+                                            assessment_id: assessment.id,
+                                            // Pass the ID if resuming, otherwise it might be null or handled by backend
+                                            student_assessment_attempt_id: studentAssessmentAttempt?.id ?? null,
+                                        })}
                                         method="post"
+                                        as="button"
+                                        className="w-full transform rounded-lg bg-indigo-600 py-4 text-xl font-bold text-white shadow-lg transition-all duration-200 hover:-translate-y-1 hover:bg-indigo-700 hover:shadow-indigo-500/30 focus:ring-4 focus:ring-indigo-500/50"
                                     >
-                                        Start Assessment Now
+                                        {isResuming ? 'Resume Assessment' : 'Start Assessment Now'}
                                     </Link>
                                 ) : (
-                                    // <TailwindButton
-                                    //     // onClick={handleStartAssessment}
-                                    //     className="w-full py-3 text-xl shadow-2xl hover:shadow-indigo-500/50"
-                                    //     variant="default"
-                                    // >
-
-                                    // </TailwindButton>
-                                    <div className="space-y-4 rounded-xl border-2 border-red-500 bg-red-50 p-5 text-sm shadow-inner dark:border-red-700 dark:bg-red-950">
-                                        <p className="text-lg font-extrabold text-red-700 dark:text-red-400">
-                                            Access Restricted
+                                    /* RESTRICTED MESSAGE */
+                                    <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-center dark:border-red-900 dark:bg-red-900/20">
+                                        <h3 className="text-lg font-bold text-red-600 dark:text-red-400">Access Restricted</h3>
+                                        <p className="mt-1 text-sm text-red-500">
+                                            {isBeforeStart 
+                                                ? `Assessment is locked until ${start?.format('MMM D, HH:mm')}`
+                                                : isAfterEnd 
+                                                    ? "This assessment has closed."
+                                                    : !hasRemainingAttempts 
+                                                        ? "You have used all allowed attempts." 
+                                                        : "Assessment unavailable."}
                                         </p>
-
-                                        {isBeforeStart && start && (
-                                            <p>
-                                                This assessment is locked until
-                                                the start time of{' '}
-                                                <strong className="text-red-800 dark:text-red-300">
-                                                    {start.format(
-                                                        'MMM D, HH:mm',
-                                                    )}
-                                                </strong>
-                                                .
-                                            </p>
-                                        )}
-
-                                        {isAfterEnd && (
-                                            <p>
-                                                This assessment window has
-                                                officially closed. You can no
-                                                longer start the exam.
-                                            </p>
-                                        )}
-
-                                        {!hasRemainingAttempts &&
-                                            maxAttempts > 0 && (
-                                                <p>
-                                                    You have used all{' '}
-                                                    <strong className="text-red-800 dark:text-red-300">
-                                                        {maxAttempts}
-                                                    </strong>{' '}
-                                                    allowed attempts.
-                                                </p>
-                                            )}
-
-                                        {/* Replaced Button with TailwindButton */}
-                                        <TailwindButton
-                                            disabled
-                                            className="mt-3 bg-red-400/50 text-white/70 dark:bg-red-900/50"
-                                        >
-                                            Start Assessment (Unavailable)
-                                        </TailwindButton>
                                     </div>
                                 )}
-                            </div>
 
-                            {/* BUTTON / STATUS MESSAGE */}
-                            <div className="mt-10">
-                                {canAttemptNow ? (
-                                    // Replaced Inertia Link with a styled button and simulated action
-
-                                    <Link
-                                        className="w-full py-3 text-xl shadow-2xl hover:shadow-indigo-500/50"
-                                        href={route(
-                                            'student.classes.subjects.assessments.attempt.review',
-                                            {
-                                                class_id: class_id,
-                                                subject_id: subject_id,
+                                {/* REVIEW BUTTON (Secondary Action) */}
+                                {/* Only show review if we can't start, or if we want to allow review anytime history exists */}
+                                {canReview && (
+                                    <div className="mt-2">
+                                        <Link
+                                            href={route('student.classes.subjects.assessments.attempt.review', {
+                                                class_id,
+                                                subject_id,
                                                 assessment_id: assessment.id,
-                                                student_assessment_attempt_id:
-                                                    studentAssessmentAttempt.id,
-                                            },
-                                        )}
-                                        // method="post"
-                                    >
-                                        Review Assessment
-                                    </Link>
-                                ) : (
-                                    // <TailwindButton
-                                    //     // onClick={handleStartAssessment}
-                                    //     className="w-full py-3 text-xl shadow-2xl hover:shadow-indigo-500/50"
-                                    //     variant="default"
-                                    // >
-
-                                    // </TailwindButton>
-                                    <div className="space-y-4 rounded-xl border-2 border-red-500 bg-red-50 p-5 text-sm shadow-inner dark:border-red-700 dark:bg-red-950">
-                                        <p className="text-lg font-extrabold text-red-700 dark:text-red-400">
-                                            Access Restricted
-                                        </p>
-
-                                        {isBeforeStart && start && (
-                                            <p>
-                                                This assessment is locked until
-                                                the start time of{' '}
-                                                <strong className="text-red-800 dark:text-red-300">
-                                                    {start.format(
-                                                        'MMM D, HH:mm',
-                                                    )}
-                                                </strong>
-                                                .
-                                            </p>
-                                        )}
-
-                                        {isAfterEnd && (
-                                            <p>
-                                                This assessment window has
-                                                officially closed. You can no
-                                                longer start the exam.
-                                            </p>
-                                        )}
-
-                                        {!hasRemainingAttempts &&
-                                            maxAttempts > 0 && (
-                                                <p>
-                                                    You have used all{' '}
-                                                    <strong className="text-red-800 dark:text-red-300">
-                                                        {maxAttempts}
-                                                    </strong>{' '}
-                                                    allowed attempts.
-                                                </p>
-                                            )}
-
-                                        {/* Replaced Button with TailwindButton */}
-                                        <TailwindButton
-                                            disabled
-                                            className="mt-3 bg-red-400/50 text-white/70 dark:bg-red-900/50"
+                                                // Default to the last attempt ID or handle specifically
+                                                student_assessment_attempt_id: studentAssessmentAttempt?.id
+                                            })}
+                                            className="inline-flex w-full items-center justify-center rounded-lg border-2 border-gray-200 bg-white px-6 py-3 font-semibold text-gray-700 transition-colors hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
                                         >
-                                            Review Assessment
-                                        </TailwindButton>
+                                            Review Past Attempts
+                                        </Link>
                                     </div>
                                 )}
                             </div>

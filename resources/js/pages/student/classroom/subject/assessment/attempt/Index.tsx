@@ -24,6 +24,8 @@ interface AttemptProps {
 export default function Attempt({ assessment, questions, studentAssessment , student_assessment_attempt_id }: AttemptProps) {
     const { props } = usePage();
     const subject = assessment.subjects[0];
+
+
     console.log(student_assessment_attempt_id)
 
     const [answers, setAnswers] = useState<Record<string, any>>({});

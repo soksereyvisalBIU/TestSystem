@@ -9,7 +9,10 @@ use App\Models\StudentAssessment;
 use App\Models\StudentAssessmentAttempt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+
+use function Illuminate\Log\log;
 
 class StudentController extends Controller
 {
@@ -34,8 +37,115 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'student_assessment_attempt_id' => 'required|integer'
+        ]);
+
+        Log::info($request->all());
+
+        $total_score = 0;
+
+        // Always load the attempt
+        $studentAssessmentAttempt = StudentAssessmentAttempt::findOrFail(
+            $validated['student_assessment_attempt_id']
+        );
+
+        if ($request->answers) {
+
+            // Load related answers
+            $answers = $studentAssessmentAttempt->answers;
+            Log::info($answers);
+
+            foreach ($request->answers as $answer) {
+
+                // Find the specific student's answer record
+                $answerModel = $answers->firstWhere('question_id', $answer['question_id']);
+
+                if ($answerModel) {
+                    // Update points_earned
+                    $answerModel->update([
+                        'points_earned' => $answer['score']
+                    ]);
+
+                    // Add to total score
+                    $total_score += $answer['score'];
+                }
+            }
+        }
+
+        // Update attempt
+        $studentAssessmentAttempt->update([
+            'status' => "scored",
+            'sub_score' => $total_score
+        ]);
+
+        // Update parent assessment
+        $studentAssessmentAttempt->studentAssessment()->update([
+            'status' => 'scored',
+            'score' => $total_score
+        ]);
+
+        Log::info("Total Score: " . $total_score);
+
+        return redirect()->back()->with('success', 'Assessment scored successfully.'); 
     }
+
+
+    // public function store(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'scores' => 'required|array',
+    //         'scores.*' => 'nullable|numeric',
+    //     ]);
+
+    //     $attempt_id = $request->attempt_id;
+    //     $scores = $request->scores;
+
+    //     $total_scores = 0;
+
+    //     foreach ($validated['scores'] as $answerId => $points) {
+    //         AssessmentAnswer::where('id', $answerId)
+    //             ->update(['points_earned' => $points]);
+    //         $total_scores += $points;
+    //     }
+
+    //     $assessmentAttempt = AssessmentAttempt::with(['assessment', 'answers.question', 'answers.option'])->findOrFail($attempt_id);
+
+
+    //     // dd($assessmentAttempt);
+    //     // $assessmentAttempt = AssessmentAttempt::with(['assessment', 'answers.question', 'answers.option'])->first();
+
+    //     // Update the score in the database
+    //     $assessmentAttempt->update(['score' => $total_scores]);
+
+    //     // Reload the model to get the latest data
+    //     $assessmentAttempt->refresh();
+
+    //     // Try broadcasting score update
+    //     try {
+    //         broadcast(new ScoreUpdated($assessmentAttempt))->toOthers();
+    //     } catch (\Exception $e) {
+    //         Log::error("Broadcast ScoreUpdated failed: " . $e->getMessage());
+    //     }
+
+    //     // Try broadcasting course update
+    //     // try {
+    //     //     $course = $assessmentAttempt->assessment->course;
+    //     //     broadcast(new CourseUpdated($course, "Your course has updates!"))->toOthers();
+    //     // } catch (\Exception $e) {
+    //     //     Log::error("Broadcast CourseUpdated failed: " . $e->getMessage());
+    //     // }
+
+    //     // $course = $assessmentAttempt->assessment->course;
+    //     try {
+    //         Notification::send($assessmentAttempt->student, new SystemNotification("Your score has been updated to {$assessmentAttempt->score} on {$assessmentAttempt->assessment->title} assessment"));
+    //     } catch (\Exception $e) {
+    //         Log::error("" . $e->getMessage());
+    //     }
+
+    //     return redirect()->back()->with('success', 'Scores updated');
+    // }
+
 
     /**
      * Display the specified resource.

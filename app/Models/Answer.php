@@ -15,7 +15,7 @@ class Answer extends Model
         'file_path',
         'code_submission',
         'is_correct',
-        'points_awarded',
+        'points_earned',
         'student_assessment_attempt_id',
         'option_id'
     ];
