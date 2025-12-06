@@ -291,7 +291,8 @@ export default function AssessmentDetail({
                             <CardHeader>
                                 <div className="flex items-center justify-between">
                                     <CardTitle>Assessment Content</CardTitle>
-                                    <Button variant="outline" size="sm">Preview Assessment</Button>
+                                    <Link  href={route('instructor.classes.subjects.assessments.questions.index', {class: classId, subject: subjectId, assessment: assessment.id })} className=''>Question</Link>
+
                                 </div>
                                 <CardDescription>
                                     There are {totalQuestions} questions in this assessment.

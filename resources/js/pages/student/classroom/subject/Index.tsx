@@ -1,663 +1,336 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
+    CardDescription,
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import { Progress } from '@/components/ui/progress';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import {
     BarChart3,
-    ClipboardList,
-    Users,
-    FileBarChart,
-    GridIcon,
-    ListIcon,
+    BookOpen,
     Calendar,
-    FlaskConical,
-    CreditCard,
-    Building2,
+    ChevronRight,
     Clock,
-    User,
-    Pencil,
-    PlusCircle,
-    Eye,
+    Download,
+    FileText,
+    GraduationCap,
+    MoreVertical,
+    Plus,
+    Users,
 } from 'lucide-react';
-import StudentPerformanceChart from '@/components/instructor/chart/StudentPerformanceChart';
-import { Badge } from '@/components/ui/badge';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { useState } from 'react';
 import { route } from 'ziggy-js';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils'; // Assuming you have a utility for merging Tailwind classes
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Class', href: '/' },
     { title: 'Subjects', href: '/subjects' },
 ];
 
-// Helper components for the enhanced UI
-
-// A Stat component for the Quick Stats card
-const StatCard = ({ title, value, icon: Icon }: any) => (
-    <div className="flex items-center justify-between rounded-xl border p-4 shadow-sm">
-        <div className="flex flex-col">
-            <span className="text-2xl font-bold text-primary">{value}</span>
-            <span className="text-sm text-muted-foreground">{title}</span>
-        </div>
-        <Icon className="h-8 w-8 text-muted-foreground opacity-50" />
-    </div>
-);
-
-// A helper for status dots/borders
-const StatusDot = ({ status }: { status: string }) => {
-    const colorClass: Record<string, string> = {
-        upcoming: 'bg-blue-500',
-        ongoing: 'bg-green-500',
-        closed: 'bg-red-500',
-        unknown: 'bg-gray-500',
-    };
-    return (
-        <span
-            className={cn(
-                'absolute -left-1.5 h-3 w-3 rounded-full',
-                colorClass[status]
-            )}
-        />
-    );
-};
-
 export default function SubjectDetail({ subject }: { subject: any }) {
     const id = subject?.id;
+    const assessments = subject?.assessments || [];
 
-    const [statusFilter, setStatusFilter] = useState<'all' | string>('all');
-    const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
-
-    // MOCK DATA (kept the same)
-    const assessments = subject?.assessments || [
-        {
-            id: 1,
-            title: 'Midterm Exam',
-            description: 'Covers Chapters 1-5.',
-            type: 'Exam',
-            start_time: '2025-12-01T08:00:00Z',
-            end_time: '2025-12-01T10:00:00Z',
-        },
-        {
-            id: 2,
-            title: 'Quiz 3 - Functions',
-            description: 'Focus on advanced function concepts.',
-            type: 'Quiz',
-            start_time: '2025-12-07T14:00:00Z', // Upcoming
-            end_time: '2025-12-07T15:00:00Z',
-        },
-        {
-            id: 3,
-            title: 'Project Proposal',
-            description: 'Initial project idea submission.',
-            type: 'Project',
-            start_time: '2025-12-05T09:00:00Z', // Ongoing (Mock)
-            end_time: '2025-12-10T17:00:00Z',
-        },
+    const students = [
+        { name: 'Sok Dara', id: 1, avatar: 'SD', progress: 92 },
+        { name: 'Chan Lisa', id: 2, avatar: 'CL', progress: 88 },
+        { name: 'Kim Vuthy', id: 3, avatar: 'KV', progress: 74 },
+        { name: 'Srey Neang', id: 4, avatar: 'SN', progress: 95 },
     ];
-    const students = ['Sok Dara', 'Chan Lisa', 'Kim Vuthy', 'Srey Neang'];
-    const TestData = [
-        { name: 'Sok Dara', score: 85, status: 'Good' },
-        { name: 'Chan Lisa', score: 92, status: 'Excellent' },
-        { name: 'Kim Vuthy', score: 76, status: 'Fair' },
-    ];
-    const reports = [
-        { title: 'Overall Performance Report', icon: BarChart3 },
-        { title: 'Student Attendance Report', icon: Calendar },
-        { title: 'Performance by Topic', icon: FlaskConical },
-    ];
-
-    const getAssessmentStatus = (start: string | null, end: string | null) => {
-        const now = new Date();
-        const startTime = start ? new Date(start) : null;
-        const endTime = end ? new Date(end) : null;
-
-        if (startTime && now < startTime) return 'upcoming';
-        if (startTime && endTime && now >= startTime && now <= endTime)
-            return 'ongoing';
-        if (endTime && now > endTime) return 'closed';
-
-        return 'unknown';
-    };
-
-    const getTimeLabel = (start: string, end: string) => {
-        const now = new Date().getTime();
-        const s = new Date(start).getTime();
-        const e = new Date(end).getTime();
-
-        if (now > e) {
-            const diff = now - e;
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            return `Closed ${days === 0 ? 'today' : `${days} day(s) ago`}`;
-        }
-
-        if (now >= s && now <= e) {
-            const diff = e - now;
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-
-            if (days > 0) return `Ends in ${days} day(s)`;
-            return `Ends in ${hours} hour(s)`;
-        }
-
-        const diff = s - now;
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-
-        if (days > 0) return `Starts in ${days} day(s)`;
-        return `Starts in ${hours} hour(s)`;
-    };
-
-    const statusColors: Record<string, string> = {
-        upcoming: 'bg-blue-500 hover:bg-blue-600 border-blue-200',
-        ongoing: 'bg-green-500 hover:bg-green-600 border-green-200',
-        closed: 'bg-red-500 hover:bg-red-600 border-red-200',
-        unknown: 'bg-gray-500 hover:bg-gray-600 border-gray-200',
-    };
-
-    const filteredAssessments = assessments.filter((a) => {
-        const status = getAssessmentStatus(a.start_time, a.end_time);
-        if (statusFilter === 'all') return true;
-        // The original code was filtering by a.status, which isn't computed in the object,
-        // so we use the computed status here. Assuming 'active' means 'ongoing'.
-        if (statusFilter === 'active') return status === 'ongoing';
-        return status === statusFilter;
-    });
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Subject Detail" />
+            <Head title={`${subject?.name || 'Subject'} - Detail`} />
 
-            <div className="flex flex-col gap-6 p-4">
-                {/* HEADER — MORPH ANIMATION */}
+            <div className="min-h-screen space-y-6 bg-slate-50/50 p-4 pb-20 md:p-8">
+                {/* HERO SECTION */}
                 <motion.div
                     layoutId={`subject-card-${id}`}
-                    className="relative overflow-hidden rounded-3xl shadow-xl"
+                    className="group relative overflow-hidden rounded-[2rem] bg-white shadow-xl shadow-slate-200/50 ring-1 ring-slate-900/5"
                 >
-                    <motion.div
-                        layoutId={`subject-bg-${id}`}
-                        className="h-64 w-full bg-cover bg-center"
-                        style={{
-                            backgroundImage: `url(${
-                                subject?.cover
-                                    ? '/storage/' + subject.cover
-                                    : '/assets/img/class/class.jpg'
-                            })`,
-                        }}
-                    />
-
-                    {/* Enhanced Gradient for better text readability */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-8 text-white">
-                        <motion.div layoutId={`subject-meta-${id}`}>
-                            <h3 className="text-lg opacity-90">
-                                {subject?.year} — Semester {subject?.semester}
-                            </h3>
-                        </motion.div>
-
+                    {/* Background Image with Overlay */}
+                    <div className="absolute inset-0 z-0">
                         <motion.div
-                            layoutId={`subject-title-${id}`}
-                            className="mt-4 max-w-2xl"
-                        >
-                            <h1 className="text-5xl font-extrabold tracking-tight">
-                                {subject?.name}
-                            </h1>
-                            <p className="mt-3 max-w-md text-base opacity-80">
-                                {subject?.description}
-                            </p>
-                        </motion.div>
+                            layoutId={`subject-bg-${id}`}
+                            className="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                            style={{
+                                backgroundImage: `url(${
+                                    subject?.cover
+                                        ? '/storage/' + subject.cover
+                                        : 'https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=2070&auto=format&fit=crop' // Better fallback image
+                                })`,
+                            }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
+                    </div>
 
-                        {/* Primary Action Button */}
-                        <div className="absolute bottom-8 right-8">
-                            <Button className="bg-white text-black hover:bg-gray-200 flex items-center gap-2 rounded-full px-6 py-3 shadow-lg">
-                                <PlusCircle className="h-5 w-5" />
-                                New Assessment
-                            </Button>
+                    {/* Content */}
+                    <div className="relative z-10 flex flex-col justify-end p-6 md:p-10 md:pt-32">
+                        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                            <div className="space-y-2">
+                                <motion.div layoutId={`subject-meta-${id}`} className="flex items-center gap-2 text-blue-200">
+                                    <Badge variant="secondary" className="bg-blue-500/20 text-blue-100 hover:bg-blue-500/30">
+                                        {subject?.year || '2025'}
+                                    </Badge>
+                                    <span>•</span>
+                                    <span className="font-medium tracking-wide">Semester {subject?.semester || '1'}</span>
+                                </motion.div>
+
+                                <motion.div layoutId={`subject-title-${id}`}>
+                                    <h1 className="text-3xl font-bold text-white md:text-5xl lg:tracking-tight">
+                                        {subject?.name || 'Advanced Mathematics'}
+                                    </h1>
+                                    <p className="mt-2 max-w-2xl text-lg text-slate-300">
+                                        {subject?.description || 'Deep dive into calculus, algebra, and statistical models for engineering.'}
+                                    </p>
+                                </motion.div>
+                            </div>
+
+                            <div className="flex gap-3">
+                                {/* <Button size="lg" className="rounded-xl bg-white text-slate-900 hover:bg-slate-100 shadow-lg">
+                                    <Plus className="mr-2 h-4 w-4" /> New Assessment
+                                </Button> */}
+                                <Button size="lg" variant="outline" className="rounded-xl border-white/20 bg-white/10 text-white backdrop-blur-md hover:bg-white/20 hover:text-white">
+                                    <FileText className="mr-2 h-4 w-4" /> Reports
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </motion.div>
 
-                {/* INFO + STATS + ACTIONS (Redesigned) */}
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                    {/* Subject Info Card with Icons */}
-                    <Card className="rounded-2xl">
-                        <CardHeader>
-                            <CardTitle className="text-xl">
-                                Subject Info
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3 text-sm">
-                            <div className="flex items-center gap-3">
-                                <User className="h-4 w-4 text-primary" />
-                                <p>
-                                    <span className="font-semibold">
-                                        Instructor:
-                                    </span>{' '}
-                                    Dr. Sok Visal
-                                </p>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <CreditCard className="h-4 w-4 text-primary" />
-                                <p>
-                                    <span className="font-semibold">
-                                        Credits:
-                                    </span>{' '}
-                                    3
-                                </p>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <Clock className="h-4 w-4 text-primary" />
-                                <p>
-                                    <span className="font-semibold">
-                                        Schedule:
-                                    </span>{' '}
-                                    Mon & Wed — 8:00 AM
-                                </p>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <Building2 className="h-4 w-4 text-primary" />
-                                <p>
-                                    <span className="font-semibold">
-                                        Classroom:
-                                    </span>{' '}
-                                    B102
-                                </p>
-                            </div>
-                        </CardContent>
-                    </Card>
+                {/* MAIN CONTENT GRID */}
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+                    
+                    {/* LEFT COLUMN (Main Content) - Spans 8 cols */}
+                    <div className="lg:col-span-8">
+                        <Tabs defaultValue="assessments" className="w-full space-y-6">
+                            <TabsList className="h-auto w-full justify-start gap-2 rounded-none border-b bg-transparent p-0 pb-1">
+                                <TabTrigger value="assessments">Assessments</TabTrigger>
+                                <TabTrigger value="overview">Overview</TabTrigger>
+                                <TabTrigger value="students">Students</TabTrigger>
+                                <TabTrigger value="resources">Resources</TabTrigger>
+                            </TabsList>
 
-                    {/* Quick Stats (Redesigned with StatCard helper) */}
-                    <Card className="rounded-2xl md:col-span-1">
-                        <CardHeader>
-                            <CardTitle className="text-xl">
-                                Quick Stats
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="grid grid-cols-2 gap-4">
-                            <StatCard
-                                title="Students"
-                                value={students.length}
-                                icon={Users}
-                            />
-                            <StatCard
-                                title="Assessments"
-                                value={assessments.length}
-                                icon={ClipboardList}
-                            />
-                            <div className="col-span-2">
-                                <StatCard
-                                    title="Avg. Score"
-                                    value="83%"
-                                    icon={BarChart3}
-                                />
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Actions Card (Redesigned with explicit buttons) */}
-                    <Card className="rounded-2xl md:col-span-1">
-                        <CardHeader>
-                            <CardTitle className="text-xl">
-                                Action Center
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            <Link
-                                href={route(
-                                    'instructor.classes.subjects.assessments.create',
-                                    [subject.class_id, subject.id]
-                                )}
-                            >
-                                <Button className="w-full flex justify-start items-center gap-3 bg-blue-600 hover:bg-blue-700">
-                                    <Pencil className="h-5 w-5" />
-                                    Create New Assessment
-                                </Button>
-                            </Link>
-
-                            <Link
-                                // href={route('instructor.students.index', [
-                                //     subject.class_id,
-                                // ])}
-                            >
-                                <Button
-                                    variant="outline"
-                                    className="w-full flex justify-start items-center gap-3"
-                                >
-                                    <Users className="h-5 w-5" />
-                                    Manage Students
-                                </Button>
-                            </Link>
-
-                            <Link href="#">
-                                <Button
-                                    variant="outline"
-                                    className="w-full flex justify-start items-center gap-3"
-                                >
-                                    <FileBarChart className="h-5 w-5" />
-                                    Generate Report
-                                </Button>
-                            </Link>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* MAIN CONTENT */}
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                    {/* ASSESSMENTS */}
-                    <Card className="rounded-2xl lg:col-span-2">
-                        <CardHeader>
-                            <CardTitle className="flex items-center justify-between gap-2 text-xl">
-                                <div className="flex items-center gap-2">
-                                    <ClipboardList className="h-5 w-5 text-primary" />
-                                    Assessments
+                            {/* OVERVIEW TAB */}
+                            <TabsContent value="overview" className="space-y-6 pt-4">
+                                {/* Stats Row */}
+                                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                                    <StatCard icon={Users} label="Students" value={students.length} color="text-blue-600" bg="bg-blue-50" />
+                                    <StatCard icon={BookOpen} label="Assessments" value={assessments.length} color="text-purple-600" bg="bg-purple-50" />
+                                    <StatCard icon={Clock} label="Hours" value="48" color="text-amber-600" bg="bg-amber-50" />
+                                    <StatCard icon={BarChart3} label="Avg Score" value="83%" color="text-emerald-600" bg="bg-emerald-50" />
                                 </div>
 
-                                <div className="flex items-center gap-3">
-                                    {/* Filter */}
-                                    <Select
-                                        value={statusFilter}
-                                        onValueChange={(v) =>
-                                            setStatusFilter(v)
-                                        }
-                                    >
-                                        <SelectTrigger className="w-[140px] rounded-lg">
-                                            <SelectValue placeholder="Filter status" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="all">
-                                                All
-                                            </SelectItem>
-                                            <SelectItem value="ongoing">
-                                                Ongoing (Active)
-                                            </SelectItem>
-                                            <SelectItem value="upcoming">
-                                                Upcoming
-                                            </SelectItem>
-                                            <SelectItem value="closed">
-                                                Closed
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-
-                                    {/* List / Grid Toggle */}
-                                    <ToggleGroup
-                                        type="single"
-                                        value={viewMode}
-                                        onValueChange={(v) =>
-                                            v && setViewMode(v as 'list' | 'grid')
-                                        }
-                                        className="rounded-lg border"
-                                    >
-                                        <ToggleGroupItem
-                                            value="list"
-                                            aria-label="Toggle list view"
-                                        >
-                                            <ListIcon className="h-4 w-4" />
-                                        </ToggleGroupItem>
-                                        <ToggleGroupItem
-                                            value="grid"
-                                            aria-label="Toggle grid view"
-                                        >
-                                            <GridIcon className="h-4 w-4" />
-                                        </ToggleGroupItem>
-                                    </ToggleGroup>
-                                </div>
-                            </CardTitle>
-                        </CardHeader>
-
-                        <CardContent className="space-y-4">
-                            {/* ASSESSMENT LIST / GRID */}
-                            {filteredAssessments.length === 0 ? (
-                                <div className="flex h-40 flex-col items-center justify-center space-y-2 rounded-xl border border-dashed text-muted-foreground">
-                                    <ClipboardList className="h-8 w-8 opacity-50" />
-                                    <p>
-                                        No{' '}
-                                        {statusFilter !== 'all' &&
-                                            `'${statusFilter}'`}{' '}
-                                        assessments found.
-                                    </p>
-                                </div>
-                            ) : viewMode === 'list' ? (
-                                // --- LIST VIEW ---
-                                <div className="space-y-3">
-                                    {filteredAssessments.map((a: any) => {
-                                        const status = getAssessmentStatus(
-                                            a.start_time,
-                                            a.end_time
-                                        );
-                                        return (
-                                            <div
-                                                key={a.id}
-                                                className="relative flex items-center justify-between rounded-xl border p-4 pl-8 transition hover:bg-gray-50"
-                                            >
-                                                <StatusDot status={status} />
-                                                <div>
-                                                    <h3 className="font-semibold">
-                                                        {a.title}{' '}
-                                                        <Badge
-                                                            className={cn(
-                                                                'ml-2 min-w-16 justify-center',
-                                                                statusColors[
-                                                                    status
-                                                                ]
-                                                            )}
-                                                        >
-                                                            {status}
-                                                        </Badge>
-                                                    </h3>
-
-                                                    <p className="mt-1 text-xs text-muted-foreground">
-                                                        {getTimeLabel(
-                                                            a.start_time,
-                                                            a.end_time
-                                                        )}
-                                                    </p>
-                                                </div>
-
-                                                <Link
-                                                    href={route(
-                                                        'student.classes.subjects.assessments.show',
-                                                        [
-                                                            subject.class_id,
-                                                            subject.id,
-                                                            a.id,
-                                                        ]
-                                                    )}
-                                                    className="text-blue-600 hover:underline"
-                                                >
-                                                    <Button variant="ghost" size="sm" className='flex items-center gap-1'>
-                                                        <Eye className='h-4 w-4'/> View
-                                                    </Button>
-                                                </Link>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            ) : (
-                                // --- GRID VIEW (Enhanced) ---
-                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                    {filteredAssessments.map((a: any) => {
-                                        const status = getAssessmentStatus(
-                                            a.start_time,
-                                            a.end_time
-                                        );
-                                        return (
-                                            <Link
-                                                key={a.id}
-                                                className={cn(
-                                                    'relative flex flex-col justify-between rounded-2xl border-l-4 border p-4 transition hover:shadow-lg hover:border-l-primary/70 h-full',
-                                                    status === 'ongoing' &&
-                                                        'border-l-green-500/70',
-                                                    status === 'upcoming' &&
-                                                        'border-l-blue-500/70',
-                                                    status === 'closed' &&
-                                                        'border-l-red-500/70'
-                                                )}
-                                                href={route(
-                                                    'student.classes.subjects.assessments.show',
-                                                    [
-                                                        subject.class_id,
-                                                        subject.id,
-                                                        a.id,
-                                                    ]
-                                                )}
-                                            >
-                                                <h3 className="text-lg font-semibold mb-1">
-                                                    {a.title}
-                                                </h3>
-
-                                                <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
-                                                    {a.description}
-                                                </p>
-
-                                                <div className="mt-3 flex items-end justify-between border-t pt-2 text-xs text-muted-foreground">
-                                                    <div className="space-y-1">
-                                                        <p>
-                                                            Type:{' '}
-                                                            <span className="font-medium text-foreground">
-                                                                {a.type?.toUpperCase()}
-                                                            </span>
-                                                        </p>
-                                                        <p>
-                                                            <Clock className='h-3 w-3 inline-block mr-1'/>
-                                                            {getTimeLabel(
-                                                                a.start_time,
-                                                                a.end_time
-                                                            )}
-                                                        </p>
+                                {/* Chart Section */}
+                                <Card className="overflow-hidden rounded-2xl border-none shadow-sm">
+                                    <CardHeader className="bg-white pb-2">
+                                        <CardTitle className="text-lg">Class Performance</CardTitle>
+                                        <CardDescription>Average scores over the last semester</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="bg-white pt-4">
+                                        <div className="flex h-64 w-full items-end justify-between gap-2 rounded-xl bg-slate-50 p-6">
+                                            {/* Mock Chart Bars */}
+                                            {[40, 65, 55, 80, 72, 90, 83].map((h, i) => (
+                                                <div key={i} className="group relative w-full">
+                                                    <div 
+                                                        className="mx-auto w-full max-w-[40px] rounded-t-lg bg-blue-500 opacity-80 transition-all duration-500 hover:opacity-100 group-hover:bg-blue-600"
+                                                        style={{ height: `${h}%` }}
+                                                    />
+                                                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100">
+                                                        <span className="text-xs font-bold text-slate-700">{h}%</span>
                                                     </div>
-                                                    <Badge
-                                                        className={
-                                                            statusColors[status]
-                                                        }
-                                                    >
-                                                        {status}
-                                                    </Badge>
                                                 </div>
-                                            </Link>
-                                        );
-                                    })}
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
+                                            ))}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
 
-                    {/* STUDENTS */}
-                    <Card className="rounded-2xl lg:col-span-1">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-xl">
-                                <Users className="h-5 w-5 text-primary" />{' '}
-                                Student Roster
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3 max-h-96 overflow-y-auto pr-2">
-                            {students.map((s, i) => (
-                                <div
-                                    key={i}
-                                    className="flex items-center justify-between rounded-xl border p-3 transition hover:bg-gray-50"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <Avatar className="h-8 w-8">
-                                            <AvatarFallback className='bg-blue-100 text-blue-600 font-semibold text-sm'>
-                                                {s.split(' ')[0][0]}
-                                                {s.split(' ')[1][0]}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <span className="font-medium">{s}</span>
-                                    </div>
-                                    <Link
-                                        href="#"
-                                        className="text-blue-600 hover:underline"
-                                    >
-                                        <Button variant="link" size="sm">
-                                            View Profile
-                                        </Button>
-                                    </Link>
-                                </div>
-                            ))}
-                        </CardContent>
-                    </Card>
-                </div>
+                            {/* ASSESSMENTS TAB */}
+                            <TabsContent value="assessments" className="pt-2">
+                                <Card className="border-none shadow-sm">
+                                    <CardHeader className="flex flex-row items-center justify-between">
+                                        <div>
+                                            <CardTitle>Assessments</CardTitle>
+                                            <CardDescription>Manage quizzes, exams, and assignments.</CardDescription>
+                                        </div>
+                                        {/* <Button size="sm">Create New</Button> */}
+                                    </CardHeader>
+                                    <CardContent className="grid gap-4">
+                                        {assessments.map((assessment) => (
+                                            <div
+                                                key={assessment.id}
+                                                className="group flex items-center justify-between rounded-xl border border-slate-100 bg-white p-4 transition-all hover:border-blue-100 hover:shadow-md"
+                                            >
+                                                <div className="flex items-start gap-4">
+                                                    <div className={`mt-1 flex h-10 w-10 items-center justify-center rounded-lg ${assessment.type === 'Exam' ? 'bg-red-100 text-red-600' : 'bg-indigo-100 text-indigo-600'}`}>
+                                                        <FileText className="h-5 w-5" />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="font-semibold text-slate-900">{assessment.title}</h4>
+                                                        <div className="flex items-center gap-3 text-sm text-slate-500">
+                                                            <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {assessment.due}</span>
+                                                            <Separator orientation="vertical" className="h-3" />
+                                                            <Badge variant={assessment.status === 'completed' ? 'default' : 'outline'} className="h-5 px-1.5 text-[10px] uppercase">
+                                                                {assessment.status}
+                                                            </Badge>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-4">
+                                                    <div className="text-right">
+                                                        <p className="text-xs font-medium text-slate-500">Avg. Score</p>
+                                                        <p className="font-bold text-slate-900">{assessment.score ? assessment.score + '%' : '-'}</p>
+                                                    </div>
+                                                    <Button variant="ghost" size="icon" asChild>
+                                                        <Link href={route('student.classes.subjects.assessments.show', [subject?.class_id, id, assessment.id])}>
+                                                            <ChevronRight className="h-5 w-5 text-slate-400" />
+                                                        </Link>
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
 
-                {/* REPORTS + CHART */}
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                    {/* REPORTS */}
-                    <Card className="rounded-2xl">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-xl">
-                                <FileBarChart className="h-5 w-5 text-primary" />{' '}
-                                Generate Reports
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            {reports.map((r, i) => (
-                                <div
-                                    key={i}
-                                    className="flex items-center justify-between rounded-xl border p-4 transition hover:bg-gray-50"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <r.icon className="h-5 w-5 text-muted-foreground" />
-                                        <span className="font-medium">
-                                            {r.title}
-                                        </span>
-                                    </div>
-                                    <Link href="#">
-                                        <Button
-                                            variant="secondary"
-                                            size="sm"
-                                            className="flex items-center gap-2"
-                                        >
-                                            <Eye className="h-4 w-4" /> View
-                                        </Button>
-                                    </Link>
-                                </div>
-                            ))}
-                        </CardContent>
-                    </Card>
+                            {/* STUDENTS TAB */}
+                            <TabsContent value="students" className="pt-2">
+                                <Card className="border-none shadow-sm">
+                                    <CardHeader className="flex flex-row items-center justify-between">
+                                        <div>
+                                            <CardTitle>Enrolled Students</CardTitle>
+                                            <CardDescription>{students.length} students currently active.</CardDescription>
+                                        </div>
+                                        <Button variant="outline" size="sm">Add Student</Button>
+                                    </CardHeader>
+                                    <CardContent className="grid gap-4">
+                                        {students.map((student) => (
+                                            <div key={student.id} className="flex items-center justify-between rounded-xl p-2 transition hover:bg-slate-50">
+                                                <div className="flex items-center gap-4">
+                                                    <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
+                                                        <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${student.name}`} />
+                                                        <AvatarFallback>{student.avatar}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div>
+                                                        <p className="font-medium text-slate-900">{student.name}</p>
+                                                        <p className="text-xs text-slate-500">ID: 2024-{student.id}00</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-6">
+                                                    <div className="hidden w-32 flex-col items-end gap-1 sm:flex">
+                                                        <span className="text-xs font-medium text-slate-500">Progress</span>
+                                                        <Progress value={student.progress} className="h-2 w-full" />
+                                                    </div>
+                                                    <Button variant="ghost" size="icon">
+                                                        <MoreVertical className="h-4 w-4 text-slate-400" />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
+                        </Tabs>
+                    </div>
 
-                    {/* CHART PLACEHOLDER */}
-                    <Card className="rounded-2xl">
-                        <CardHeader className='pb-3'>
-                            <CardTitle className="flex items-center justify-between gap-2 text-xl">
-                                <div className="flex items-center gap-2">
-                                    <BarChart3 className="h-5 w-5 text-primary" />{' '}
-                                    Performance Chart
+                    {/* RIGHT COLUMN (Sidebar Info) - Spans 4 cols */}
+                    <div className="space-y-6 lg:col-span-4">
+                        
+                        {/* Instructor Card */}
+                        <Card className="rounded-2xl border-none shadow-sm">
+                            <CardHeader>
+                                <CardTitle className="text-base">Instructor</CardTitle>
+                            </CardHeader>
+                            <CardContent className="flex items-center gap-4">
+                                <Avatar className="h-12 w-12 rounded-xl">
+                                    <AvatarImage src="https://github.com/shadcn.png" />
+                                    <AvatarFallback>SV</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <p className="font-semibold text-slate-900">Dr. Sok Visal</p>
+                                    <p className="text-sm text-slate-500">PhD in Mathematics</p>
                                 </div>
-                                <Select defaultValue="overall">
-                                    <SelectTrigger className="w-[120px] rounded-lg text-sm h-9">
-                                        <SelectValue placeholder="Filter" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="overall">Overall</SelectItem>
-                                        <SelectItem value="last_month">Last 30 Days</SelectItem>
-                                        <SelectItem value="midterm">Midterm</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className='pt-0'>
-                            <StudentPerformanceChart data={TestData} />
-                            <p className='text-xs text-center text-muted-foreground mt-4'>
-                                Average scores across recent assessments.
-                            </p>
-                        </CardContent>
-                    </Card>
+                            </CardContent>
+                        </Card>
+
+                        {/* Details Card */}
+                        <Card className="rounded-2xl border-none shadow-sm">
+                            <CardHeader>
+                                <CardTitle className="text-base">Class Details</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <DetailItem icon={Clock} label="Schedule" value="Mon & Wed • 8:00 AM" />
+                                <DetailItem icon={GraduationCap} label="Room" value="Building B, Room 102" />
+                                <DetailItem icon={BookOpen} label="Credits" value="3.0 Credit Hours" />
+                            </CardContent>
+                        </Card>
+
+                        {/* Quick Reports */}
+                        <Card className="rounded-2xl border-none bg-blue-600 text-white shadow-lg shadow-blue-200">
+                            <CardHeader>
+                                <CardTitle className="text-base text-white">Quick Actions</CardTitle>
+                            </CardHeader>
+                            <CardContent className="grid gap-2">
+                                <Button variant="ghost" className="w-full justify-start text-blue-50 hover:bg-blue-500 hover:text-white">
+                                    <Download className="mr-2 h-4 w-4" /> Download Syllabus
+                                </Button>
+                                <Button variant="ghost" className="w-full justify-start text-blue-50 hover:bg-blue-500 hover:text-white">
+                                    <BarChart3 className="mr-2 h-4 w-4" /> Attendance Report
+                                </Button>
+                            </CardContent>
+                        </Card>
+
+                    </div>
                 </div>
             </div>
         </AppLayout>
+    );
+}
+
+// --- SUB-COMPONENTS for cleanliness ---
+
+function TabTrigger({ value, children }: { value: string; children: React.ReactNode }) {
+    return (
+        <TabsTrigger
+            value={value}
+            className="rounded-none border-b-2 border-transparent px-4 py-3 text-slate-500 hover:text-slate-700 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:text-blue-600 data-[state=active]:shadow-none"
+        >
+            {children}
+        </TabsTrigger>
+    );
+}
+
+function StatCard({ icon: Icon, label, value, color, bg }: any) {
+    return (
+        <Card className="border-none shadow-sm">
+            <CardContent className="flex flex-col items-center justify-center p-6 text-center">
+                <div className={`mb-3 flex h-12 w-12 items-center justify-center rounded-full ${bg} ${color}`}>
+                    <Icon className="h-6 w-6" />
+                </div>
+                <div className="text-2xl font-bold text-slate-900">{value}</div>
+                <div className="text-xs font-medium text-slate-500 uppercase tracking-wide">{label}</div>
+            </CardContent>
+        </Card>
+    );
+}
+
+function DetailItem({ icon: Icon, label, value }: any) {
+    return (
+        <div className="flex items-start gap-3">
+            <Icon className="mt-0.5 h-4 w-4 text-slate-400" />
+            <div>
+                <p className="text-xs font-medium text-slate-500">{label}</p>
+                <p className="text-sm font-medium text-slate-900">{value}</p>
+            </div>
+        </div>
     );
 }

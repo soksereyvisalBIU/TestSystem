@@ -36,6 +36,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function SubjectDetail({ subject }: { subject: any }) {
+
+    console.log(subject)
+    
     const id = subject?.id;
     const assessments = subject?.assessments || [
         // Mock data for UI demonstration if empty
@@ -166,7 +169,8 @@ export default function SubjectDetail({ subject }: { subject: any }) {
                                             <CardTitle>Assessments</CardTitle>
                                             <CardDescription>Manage quizzes, exams, and assignments.</CardDescription>
                                         </div>
-                                        <Button size="sm">Create New</Button>
+                                        {/* <Button size="sm">Create New</Button> */}
+                                        <Link href={route('instructor.classes.subjects.assessments.index' , {class: subject.class_id, subject: subject.id})}>Assessment detail</Link>
                                     </CardHeader>
                                     <CardContent className="grid gap-4">
                                         {assessments.map((assessment) => (
