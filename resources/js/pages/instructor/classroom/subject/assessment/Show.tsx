@@ -1,11 +1,22 @@
-import { Head, Link } from '@inertiajs/react';
-import { motion } from 'framer-motion';
-import { useMemo, useState } from 'react';
-import { route } from 'ziggy-js';
-
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from '@/components/ui/accordion';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Progress } from '@/components/ui/progress';
+import { Separator } from '@/components/ui/separator';
 import {
     Table,
     TableBody,
@@ -14,33 +25,40 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserInfo } from '@/components/user-info';
 import AppLayout from '@/layouts/app-layout';
+import { BreadcrumbItem } from '@/types';
+import { Head, Link } from '@inertiajs/react';
+import { format } from 'date-fns';
+import { motion } from 'framer-motion';
+import {
+    AlertCircle,
+    ArrowRight,
+    BarChart3,
+    BookOpen,
+    Calendar,
+    CheckCircle2,
+    Clock,
+    Download,
+    FileText,
+    MoreHorizontal,
+    Search,
+    Trophy,
+    Users,
+} from 'lucide-react';
+import { useMemo, useState } from 'react';
 import {
     Bar,
     BarChart,
     CartesianGrid,
     Cell,
-    LabelList,
-    ReferenceLine,
     ResponsiveContainer,
     Tooltip,
     XAxis,
     YAxis,
 } from 'recharts';
-
-import {
-    BarChart3,
-    BookOpen,
-    ClipboardList,
-    FileText,
-    Star,
-    Tag,
-    Timer,
-    Users,
-} from 'lucide-react';
-
-import type { BreadcrumbItem } from '@/types';
+import { route } from 'ziggy-js';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Class', href: '/' },
@@ -57,227 +75,207 @@ export default function AssessmentDetail({
     classId: number;
     subjectId: number;
 }) {
-    const id = assessment.id;
     const role = 'editor';
-
     const [studentSearch, setStudentSearch] = useState('');
-    const [studentFilter, setStudentFilter] = useState<
-        'all' | 'draft' | 'submitted' | 'checked'
-    >('all');
+    const [activeTab, setActiveTab] = useState('students');
 
+    // Stats Computation
     const totalQuestions = assessment.questions?.length ?? 0;
-
-    const totalMarks = useMemo(() => {
-        return assessment.questions?.reduce(
-            (a: number, q: any) => a + Number(q.point || 0),
-            0,
-        );
-    }, [assessment.questions]);
-
+    const totalMarks = useMemo(() =>
+        assessment.questions?.reduce((a: number, q: any) => a + Number(q.point || 0), 0),
+    [assessment.questions]);
+    
     const students = assessment?.students ?? [];
+    
+    // Filter Logic
+    const filteredStudents = useMemo(() => {
+        return students.filter((s: any) => 
+            s.name?.toLowerCase().includes(studentSearch.toLowerCase())
+        );
+    }, [students, studentSearch]);
 
-    // Filtering
-    const filteredStudents = students.filter((s: any) => {
-        const status = s.pivot?.status ?? s.status ?? 'draft';
-        const matchFilter = studentFilter === 'all' || status === studentFilter;
-        const matchSearch = s.name
-            ?.toLowerCase()
-            .includes(studentSearch.toLowerCase());
-        return matchFilter && matchSearch;
-    });
-
-    const safeDate = (value: string | null) =>
-        value ? new Date(value).toLocaleString() : '-';
-
+    // Chart Data Preparation
     const chartData = useMemo(() => {
         return students.map((s: any) => ({
-            name: s.name.split(' ')[0], // short name
+            name: s.name.split(' ')[0],
+            fullName: s.name,
             score: Number(s.pivot.score ?? 0),
-        }));
+            status: s.pivot.status
+        })).sort((a: any, b: any) => b.score - a.score); // Sort by highest score
     }, [students]);
 
-    const averageScore =
-        chartData.length > 0
-            ? chartData.reduce((sum, s) => sum + s.score, 0) / chartData.length
-            : 0;
+    const averageScore = chartData.length > 0
+        ? chartData.reduce((sum: number, s: any) => sum + s.score, 0) / chartData.length
+        : 0;
+
+    const submittedCount = students.filter((s: any) => s.pivot?.status === 'submitted' || s.pivot?.status === 'checked').length;
+    const submissionRate = students.length > 0 ? (submittedCount / students.length) * 100 : 0;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Assessment: ${assessment.title}`} />
 
-            <div className="flex flex-col gap-6 p-4">
-                {/* Header */}
-                <motion.div layoutId={`assessment-card-${id}`}>
-                    <Card className="overflow-hidden rounded-2xl shadow-lg">
-                        <CardContent className="flex-col gap-3 px-6">
-                            <div className="flex w-full items-center justify-between">
-                                <CardTitle className="flex items-center gap-2 text-xl font-semibold">
-                                    <ClipboardList className="h-5 w-5" />
-                                    {assessment.title}
-                                </CardTitle>
+            <div className="min-h-screen space-y-6 bg-slate-50/50 p-4 pb-20 md:p-8">
+                
+                {/* HERO SECTION */}
+                <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="border-blue-200 bg-blue-50 text-blue-700">
+                                {assessment.type || 'Exam'}
+                            </Badge>
+                            {assessment.status === 'published' && (
+                                <Badge variant="outline" className="border-green-200 bg-green-50 text-green-700">
+                                    Published
+                                </Badge>
+                            )}
+                        </div>
+                        <h1 className="text-3xl font-bold tracking-tight text-slate-900">{assessment.title}</h1>
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
+                            <span className="flex items-center gap-1.5">
+                                <Calendar className="h-4 w-4" />
+                                {assessment.due_date ? format(new Date(assessment.due_date), 'PPP') : 'No due date'}
+                            </span>
+                            <Separator orientation="vertical" className="h-4" />
+                            <span className="flex items-center gap-1.5">
+                                <Clock className="h-4 w-4" />
+                                {assessment.duration} mins
+                            </span>
+                            <Separator orientation="vertical" className="h-4" />
+                            <span className="flex items-center gap-1.5">
+                                <Trophy className="h-4 w-4" />
+                                {totalMarks} Total Points
+                            </span>
+                        </div>
+                    </div>
 
-                                {/* Status Badge */}
-                                {/* <Badge variant={statusVariant}>
-                                    {statusLabel}
-                                </Badge> */}
-                            </div>
+                    <div className="flex items-center gap-3">
+                        <Button variant="outline" className="bg-white">
+                            <Download className="mr-2 h-4 w-4" /> Export
+                        </Button>
+                        {role === 'editor' && (
+                            <Button className="bg-blue-600 hover:bg-blue-700">
+                                Edit Assessment
+                            </Button>
+                        )}
+                    </div>
+                </div>
 
-                            {/* Quick Stats Row */}
-                            <div className="mt-2 grid grid-cols-2 gap-3 text-sm text-muted-foreground md:grid-cols-4">
-                                <div className="flex items-center gap-2">
-                                    <BookOpen className="h-4 w-4" />
-                                    <span>{totalQuestions} Questions</span>
+                {/* KEY METRICS */}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <MetricCard 
+                        label="Submission Rate" 
+                        value={`${Math.round(submissionRate)}%`} 
+                        subtext={`${submittedCount}/${students.length} students`}
+                        icon={CheckCircle2}
+                        trend="neutral"
+                    />
+                    <MetricCard 
+                        label="Average Score" 
+                        value={averageScore.toFixed(1)} 
+                        subtext={`Out of ${totalMarks}`}
+                        icon={BarChart3}
+                        trend={averageScore > (totalMarks * 0.7) ? "up" : "down"}
+                    />
+                    <MetricCard 
+                        label="Questions" 
+                        value={totalQuestions} 
+                        subtext="Total Items"
+                        icon={BookOpen}
+                        trend="neutral"
+                    />
+                    <MetricCard 
+                        label="Pending Review" 
+                        value={students.filter((s:any) => s.pivot?.status === 'submitted').length} 
+                        subtext="Need grading"
+                        icon={AlertCircle}
+                        trend="neutral"
+                        color="text-amber-600"
+                    />
+                </div>
+
+                {/* TABS CONTENT */}
+                <Tabs defaultValue="students" value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+                    <div className="flex items-center justify-between border-b border-slate-200">
+                        <TabsList className="h-auto bg-transparent p-0">
+                            <TabTrigger value="students">Student Results</TabTrigger>
+                            <TabTrigger value="questions">Questions & Content</TabTrigger>
+                            <TabTrigger value="analytics">Analytics</TabTrigger>
+                        </TabsList>
+                    </div>
+
+                    {/* --- TAB 1: STUDENTS --- */}
+                    <TabsContent value="students" className="space-y-4">
+                        <Card className="border-none shadow-sm">
+                            <CardHeader className="flex flex-row items-center justify-between px-6 pt-6">
+                                <div>
+                                    <CardTitle>Student Performance</CardTitle>
+                                    <CardDescription>View attempts, grade submissions, and provide feedback.</CardDescription>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <Star className="h-4 w-4" />
-                                    <span>{totalMarks} Marks</span>
+                                <div className="relative w-64">
+                                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-500" />
+                                    <Input 
+                                        placeholder="Search student..." 
+                                        className="pl-9 bg-slate-50" 
+                                        value={studentSearch}
+                                        onChange={(e) => setStudentSearch(e.target.value)}
+                                    />
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <Timer className="h-4 w-4" />
-                                    <span>{assessment?.duration} mins</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Tag className="h-4 w-4" />
-                                    <span>{assessment.type}</span>
-                                </div>
-                            </div>
-
-                            {/* Time Progress / Countdown */}
-                            <div className="mt-3 text-sm font-medium text-slate-600">
-                                {/* {timeStatusLabel} */}
-                            </div>
-
-                            {/* Editor Buttons */}
-                            {/* {role === 'editor' && (
-                                <div className="mt-3 flex gap-2 self-end">
-                                    <Button variant="outline" size="sm">
-                                        <Pencil className="h-4 w-4" /> Edit
-                                    </Button>
-                                    <Button variant="destructive" size="sm">
-                                        <Trash className="h-4 w-4" /> Delete
-                                    </Button>
-                                </div>
-                            )} */}
-                        </CardContent>
-                    </Card>
-                </motion.div>
-
-                <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                    {/* Students */}
-                    <motion.div className="space-y-4 lg:col-span-2">
-                        <Card className="rounded-2xl">
-                            <CardHeader className="flex-row items-center justify-between">
-                                <CardTitle className="flex items-center gap-2">
-                                    <Users className="h-5 w-5" /> Students
-                                </CardTitle>
-
-                                <Input
-                                    placeholder="Search student..."
-                                    value={studentSearch}
-                                    onChange={(e) =>
-                                        setStudentSearch(e.target.value)
-                                    }
-                                    className="w-48"
-                                />
                             </CardHeader>
-
-                            <CardContent>
-                                {/* Filters */}
-                                <div className="mb-4 flex gap-2">
-                                    {[
-                                        'all',
-                                        'draft',
-                                        'submitted',
-                                        'checked',
-                                    ].map((f) => (
-                                        <Badge
-                                            key={f}
-                                            className={`cursor-pointer ${
-                                                studentFilter === f
-                                                    ? 'bg-blue-600 text-white'
-                                                    : 'bg-gray-200 text-gray-800'
-                                            }`}
-                                            onClick={() =>
-                                                setStudentFilter(f as any)
-                                            }
-                                        >
-                                            {f.charAt(0).toUpperCase() +
-                                                f.slice(1)}
-                                        </Badge>
-                                    ))}
-                                </div>
-
-                                {/* Student Table */}
+                            <CardContent className="px-0">
                                 <Table>
-                                    <TableHeader>
+                                    <TableHeader className="bg-slate-50">
                                         <TableRow>
-                                            <TableHead>Student</TableHead>
+                                            <TableHead className="pl-6">Student</TableHead>
                                             <TableHead>Status</TableHead>
+                                            <TableHead>Submitted At</TableHead>
                                             <TableHead>Score</TableHead>
-                                            <TableHead className="text-right">
-                                                Action
-                                            </TableHead>
+                                            <TableHead className="pr-6 text-right">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
-
                                     <TableBody>
-                                        {filteredStudents.length > 0 ? (
-                                            filteredStudents.map(
-                                                (s: any, index: number) => (
-                                                    <TableRow key={index}>
-                                                        <TableCell className="flex gap-2">
-                                                            <UserInfo
-                                                                user={s}
-                                                                showEmail
-                                                            />
-                                                        </TableCell>
-
-                                                        <TableCell>
-                                                            {s.pivot?.status ??
-                                                                'draft'}
-                                                        </TableCell>
-
-                                                        <TableCell>
-                                                            {s.pivot?.score ??
-                                                                0}
-                                                        </TableCell>
-
-                                                        <TableCell className="text-right">
-                                                            <Link
-                                                                className="text-blue-600 underline"
-                                                                href={route(
-                                                                    'instructor.classes.subjects.assessments.students.show',
-                                                                    {
-                                                                        class: classId,
-                                                                        subject: subjectId,
-                                                                        assessment: assessment.id,
-                                                                        student:
-                                                                            s?.id,
-                                                                    },
-                                                                )}
-                                                                // href={route(
-                                                                //     'instructor.classes.subjects.assessments.student.attempt',
-                                                                //     [
-                                                                //         classId,
-                                                                //         subjectId,
-                                                                //         assessment.id,
-                                                                //         s.id
-                                                                //     ],
-                                                                // )}
-                                                            >
-                                                                View
-                                                            </Link>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ),
-                                            )
-                                        ) : (
+                                        {filteredStudents.length > 0 ? filteredStudents.map((s: any) => (
+                                            <TableRow key={s.id} className="group hover:bg-slate-50/50">
+                                                <TableCell className="pl-6">
+                                                    <div className="flex items-center gap-3">
+                                                        <Avatar className="h-9 w-9 border border-slate-200">
+                                                            <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${s.name}`} />
+                                                            <AvatarFallback>ST</AvatarFallback>
+                                                        </Avatar>
+                                                        <div>
+                                                            <p className="font-medium text-slate-900">{s.name}</p>
+                                                            <p className="text-xs text-slate-500">{s.email}</p>
+                                                        </div>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <StatusBadge status={s.pivot?.status} />
+                                                </TableCell>
+                                                <TableCell className="text-slate-500 text-sm">
+                                                    {s.pivot?.submitted_at ? format(new Date(s.pivot.submitted_at), 'MMM d, h:mm a') : '-'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={`font-bold ${Number(s.pivot?.score) >= (totalMarks/2) ? 'text-slate-900' : 'text-red-600'}`}>
+                                                            {s.pivot?.score ?? '-'}
+                                                        </span>
+                                                        <span className="text-slate-400">/ {totalMarks}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="pr-6 text-right">
+                                                    <Button asChild size="sm" variant="ghost" className="text-blue-600 hover:bg-blue-50 hover:text-blue-700">
+                                                        <Link href={route('instructor.classes.subjects.assessments.students.show', {
+                                                            class: classId, subject: subjectId, assessment: assessment.id, student: s.id
+                                                        })}>
+                                                            Grade <ArrowRight className="ml-1 h-3 w-3" />
+                                                        </Link>
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        )) : (
                                             <TableRow>
-                                                <TableCell
-                                                    colSpan={4}
-                                                    className="py-4 text-center text-sm text-gray-500"
-                                                >
-                                                    No students found.
+                                                <TableCell colSpan={5} className="h-24 text-center text-slate-500">
+                                                    No students found matching your search.
                                                 </TableCell>
                                             </TableRow>
                                         )}
@@ -285,180 +283,220 @@ export default function AssessmentDetail({
                                 </Table>
                             </CardContent>
                         </Card>
+                    </TabsContent>
 
-                        {/* Questions */}
-                        <Card className="rounded-2xl">
-                            <CardHeader className="flex-row items-center justify-between">
-                                <CardTitle className="flex items-center gap-2">
-                                    <ClipboardList className="h-5 w-5" />
-                                    Questions
-                                </CardTitle>
-
-                                <Link
-                                    href={route(
-                                        'instructor.classes.subjects.assessments.questions.index',
-                                        [classId, subjectId, assessment.id],
-                                    )}
-                                >
-                                    see more
-                                </Link>
-                            </CardHeader>
-
-                            <CardContent className="space-y-3">
-                                {assessment.questions.map((q: any) => (
-                                    <div
-                                        key={q.id}
-                                        className="flex flex-col rounded-xl border p-4"
-                                    >
-                                        <div className="mb-2 flex items-center justify-between">
-                                            <span className="font-semibold">
-                                                {q.question_text}
-                                            </span>
-                                            <Badge className="bg-gray-200 text-gray-800">
-                                                {q.point} pts
-                                            </Badge>
-                                        </div>
-
-                                        {/* <Badge className="mb-2 bg-blue-600 text-white capitalize">
-                                            {q.type}
-                                        </Badge> */}
-
-                                        <div className="text-sm">
-                                            {q.type === 'true_false' && (
-                                                <p>
-                                                    <span className="font-semibold">
-                                                        Answer:
-                                                    </span>{' '}
-                                                    {q.answer
-                                                        ? 'True'
-                                                        : 'False'}
-                                                </p>
-                                            )}
-
-                                            {q.type === 'multiple_choice' &&
-                                                q.options?.map((opt: any) => (
-                                                    <p
-                                                        key={opt.label}
-                                                        className={
-                                                            opt.correct
-                                                                ? 'font-semibold text-green-600'
-                                                                : ''
-                                                        }
-                                                    >
-                                                        {opt.label}. {opt.text}
-                                                    </p>
-                                                ))}
-
-                                            {q.type === 'matching' &&
-                                                q.pairs?.map(
-                                                    (pair: any, i: number) => (
-                                                        <p key={i}>
-                                                            <strong>
-                                                                {pair.left}
-                                                            </strong>{' '}
-                                                            → {pair.right}
-                                                        </p>
-                                                    ),
-                                                )}
-                                        </div>
-                                    </div>
-                                ))}
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-
-                    {/* Charts & Reports */}
-                    <motion.div className="space-y-4">
-                        <Card className="rounded-2xl">
+                    {/* --- TAB 2: QUESTIONS --- */}
+                    <TabsContent value="questions" className="space-y-4">
+                        <Card className="border-none shadow-sm">
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <BarChart3 className="h-5 w-5" />
-                                    Performance Chart
-                                </CardTitle>
+                                <div className="flex items-center justify-between">
+                                    <CardTitle>Assessment Content</CardTitle>
+                                    <Button variant="outline" size="sm">Preview Assessment</Button>
+                                </div>
+                                <CardDescription>
+                                    There are {totalQuestions} questions in this assessment.
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="h-60 w-full">
-                                    <ResponsiveContainer
-                                        width="100%"
-                                        height="100%"
-                                    >
-                                        <BarChart data={chartData} barSize={40}>
-                                            <CartesianGrid
-                                                strokeDasharray="3 3"
-                                                opacity={0.3}
-                                            />
+                                <Accordion type="single" collapsible className="w-full space-y-2">
+                                    {assessment.questions?.map((q: any, index: number) => (
+                                        <AccordionItem key={q.id} value={`item-${q.id}`} className="rounded-lg border border-slate-200 px-4 data-[state=open]:bg-slate-50">
+                                            <AccordionTrigger className="hover:no-underline py-4">
+                                                <div className="flex flex-1 items-center gap-4 text-left">
+                                                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600">
+                                                        {index + 1}
+                                                    </span>
+                                                    <span className="flex-1 font-medium text-slate-900 line-clamp-1">
+                                                        {q.question_text}
+                                                    </span>
+                                                    <Badge variant="secondary" className="mr-2">
+                                                        {q.point} pts
+                                                    </Badge>
+                                                </div>
+                                            </AccordionTrigger>
+                                            <AccordionContent className="pb-4 pt-1 pl-10">
+                                                {/* Logic to display question types nicely */}
+                                                <div className="rounded-md bg-white p-4 border border-slate-100 shadow-sm text-sm text-slate-700">
+                                                    {q.type === 'multiple_choice' && (
+                                                        <ul className="space-y-2">
+                                                            {q.options?.map((opt: any, i:number) => (
+                                                                <li key={i} className={`flex items-center gap-2 ${opt.correct ? 'text-green-700 font-medium' : ''}`}>
+                                                                    <div className={`h-4 w-4 rounded-full border ${opt.correct ? 'border-green-600 bg-green-100' : 'border-slate-300'}`} />
+                                                                    {opt.label}. {opt.text}
+                                                                    {opt.correct && <CheckCircle2 className="h-3 w-3" />}
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    )}
+                                                    {/* Add other types as needed */}
+                                                    {q.type === 'true_false' && (
+                                                        <div className="flex gap-4">
+                                                            <Badge variant={q.answer ? 'success' : 'outline'}>True</Badge>
+                                                            <Badge variant={!q.answer ? 'success' : 'outline'}>False</Badge>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </AccordionContent>
+                                        </AccordionItem>
+                                    ))}
+                                </Accordion>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
 
-                                            <XAxis dataKey="name" />
-                                            <YAxis />
+                    {/* --- TAB 3: ANALYTICS --- */}
+                    <TabsContent value="analytics" className="space-y-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <Card className="lg:col-span-2 border-none shadow-sm">
+                                <CardHeader>
+                                    <CardTitle>Score Distribution</CardTitle>
+                                    <CardDescription>
+                                        How students performed relative to the class average.
+                                        
 
-                                            <Tooltip />
+[Image of normal distribution curve]
 
-                                            {/* Average Line */}
-                                            <ReferenceLine
-                                                y={averageScore}
-                                                stroke="red"
-                                                strokeDasharray="5 5"
-                                                label={{
-                                                    value: `Avg: ${averageScore.toFixed(1)}`,
-                                                    position: 'insideTopRight',
-                                                    fill: 'red',
-                                                }}
-                                            />
-
-                                            <Bar
-                                                dataKey="score"
-                                                radius={[8, 8, 0, 0]}
-                                            >
-                                                {chartData.map(
-                                                    (entry, index) => (
-                                                        <Cell
-                                                            key={`cell-${index}`}
-                                                            fill={
-                                                                entry.score >=
-                                                                averageScore
-                                                                    ? '#3b82f6' // blue-500
-                                                                    : '#94a3b8' // slate-400
-                                                            }
-                                                        />
-                                                    ),
-                                                )}
-
-                                                <LabelList
-                                                    dataKey="score"
-                                                    position="top"
-                                                    fill="#000"
-                                                    fontSize={12}
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="h-[350px] w-full">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                                <XAxis 
+                                                    dataKey="name" 
+                                                    tick={{ fill: '#64748b', fontSize: 12 }} 
+                                                    axisLine={false} 
+                                                    tickLine={false} 
+                                                    dy={10}
                                                 />
-                                            </Bar>
-                                        </BarChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </CardContent>
-                        </Card>
+                                                <YAxis 
+                                                    tick={{ fill: '#64748b', fontSize: 12 }} 
+                                                    axisLine={false} 
+                                                    tickLine={false}
+                                                />
+                                                <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f1f5f9' }} />
+                                                <Bar dataKey="score" radius={[4, 4, 0, 0]}>
+                                                    {chartData.map((entry: any, index: number) => (
+                                                        <Cell 
+                                                            key={`cell-${index}`} 
+                                                            fill={entry.score >= averageScore ? '#3b82f6' : '#94a3b8'} 
+                                                        />
+                                                    ))}
+                                                </Bar>
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </CardContent>
+                            </Card>
 
-                        <Card className="rounded-2xl">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <FileText className="h-5 w-5" />
-                                    Reports
-                                </CardTitle>
-                            </CardHeader>
+                            <Card className="border-none shadow-sm">
+                                <CardHeader>
+                                    <CardTitle>Available Reports</CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-2">
+                                    <ReportLink 
+                                        icon={FileText} 
+                                        title="Full Gradebook" 
+                                        desc="Export all scores as CSV" 
+                                    />
+                                    <ReportLink 
+                                        icon={Users} 
+                                        title="Attendance Report" 
+                                        desc="See who missed the deadline" 
+                                    />
+                                    <ReportLink 
+                                        icon={BarChart3} 
+                                        title="Item Analysis" 
+                                        desc="Breakdown by specific question" 
+                                    />
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </TabsContent>
 
-                            <CardContent className="space-y-2 space-x-2 text-sm">
-                                <Link href="#" className="text-blue-600">
-                                    Overall Report
-                                </Link>
-                                <Link href="#" className="text-blue-600">
-                                    Attendance Report
-                                </Link>
-                                <Link href="#" className="text-blue-600">
-                                    Score by Topic
-                                </Link>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-                </div>
+                </Tabs>
             </div>
         </AppLayout>
     );
 }
+
+// --- SUB-COMPONENTS for cleaner code ---
+
+function TabTrigger({ value, children }: { value: string, children: React.ReactNode }) {
+    return (
+        <TabsTrigger 
+            value={value}
+            className="rounded-none border-b-2 border-transparent px-6 py-3 text-slate-500 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:shadow-none"
+        >
+            {children}
+        </TabsTrigger>
+    )
+}
+
+function MetricCard({ label, value, subtext, icon: Icon, trend, color }: any) {
+    return (
+        <Card className="border-none shadow-sm">
+            <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <p className="text-sm font-medium text-slate-500">{label}</p>
+                        <h3 className={`mt-2 text-2xl font-bold ${color || 'text-slate-900'}`}>{value}</h3>
+                        <p className="mt-1 text-xs text-slate-400">{subtext}</p>
+                    </div>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-50">
+                        <Icon className="h-6 w-6 text-slate-500" />
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
+
+function StatusBadge({ status }: { status: string }) {
+    const styles: Record<string, string> = {
+        submitted: "bg-blue-100 text-blue-700 hover:bg-blue-200",
+        checked: "bg-green-100 text-green-700 hover:bg-green-200",
+        draft: "bg-slate-100 text-slate-700 hover:bg-slate-200",
+        late: "bg-red-100 text-red-700 hover:bg-red-200"
+    };
+
+    const label = status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Pending';
+    
+    return (
+        <Badge variant="secondary" className={`${styles[status] || styles.draft} font-normal`}>
+            {label}
+        </Badge>
+    );
+}
+
+function ReportLink({ icon: Icon, title, desc }: any) {
+    return (
+        <Link href="#" className="flex items-start gap-3 rounded-lg border border-slate-100 bg-white p-3 transition hover:border-blue-200 hover:shadow-sm">
+            <div className="mt-1 flex h-8 w-8 items-center justify-center rounded-md bg-blue-50 text-blue-600">
+                <Icon className="h-4 w-4" />
+            </div>
+            <div>
+                <p className="font-medium text-slate-900">{title}</p>
+                <p className="text-xs text-slate-500">{desc}</p>
+            </div>
+        </Link>
+    )
+}
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+        return (
+            <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
+                <p className="font-semibold text-slate-900">{payload[0].payload.fullName}</p>
+                <p className="text-sm text-blue-600">
+                    Score: {payload[0].value}
+                </p>
+                <p className="text-xs text-slate-500 capitalize">
+                    Status: {payload[0].payload.status || 'Draft'}
+                </p>
+            </div>
+        );
+    }
+    return null;
+};

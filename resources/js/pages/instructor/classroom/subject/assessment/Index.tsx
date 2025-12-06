@@ -2,18 +2,49 @@ import AssessmentModal from '@/components/instructor/modal/assessment-modal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
+import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { Edit2Icon, GridIcon, ListIcon, PlusIcon } from 'lucide-react';
+import {
+    CalendarIcon,
+    ClockIcon,
+    FileTextIcon,
+    FilterIcon,
+    GridIcon,
+    LayoutListIcon,
+    MoreHorizontalIcon,
+    PencilIcon,
+    PlusIcon,
+    SearchIcon,
+    TrashIcon,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { route } from 'ziggy-js';
@@ -25,10 +56,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function AssessmentPage({ subject }: { subject: any }) {
-    const role = 'editor'; // simulate role
+    const role = 'editor';
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
     const [statusFilter, setStatusFilter] = useState<'all' | string>('all');
-
+    const [searchQuery, setSearchQuery] = useState('');
     const [openAssessmentModal, setOpenAssessmentModal] = useState(false);
 
     const { flash } = usePage().props as {
@@ -38,229 +69,141 @@ export default function AssessmentPage({ subject }: { subject: any }) {
     const classId = subject.class_id;
     const subjectId = subject.id;
 
-    console.log('Subject Data:', subject);
-
-    // Show flash messages
     useEffect(() => {
         if (flash?.success) toast.success(flash.success);
         if (flash?.error) toast.error(flash.error);
     }, [flash]);
 
-    // ---- REAL BACKEND DATA ----
+    // Data Processing
     const assessments = subject.assessments || [];
-
-    // If you want to compute statuses automatically, you can enhance here.
-    // For now we assume status is included or fallback to 'active'.
-    const filtered =
-        statusFilter === 'all'
-            ? assessments
-            : assessments.filter((a: any) => a.status === statusFilter);
-
-    const isLoading = false;
-
-    const onEdit = (a: any) => {
-        toast.info('Edit mode not implemented yet: ' + a.title);
-    };
 
     const getAssessmentStatus = (start: string | null, end: string | null) => {
         const now = new Date();
-
         const startTime = start ? new Date(start) : null;
         const endTime = end ? new Date(end) : null;
 
         if (startTime && now < startTime) return 'upcoming';
-        if (startTime && endTime && now >= startTime && now <= endTime)
-            return 'ongoing';
+        if (startTime && endTime && now >= startTime && now <= endTime) return 'ongoing';
         if (endTime && now > endTime) return 'closed';
+        return 'draft'; // Default fallback
+    };
+    
+    // 
+    // Visualizing the logic above: Draft -> Upcoming -> Ongoing -> Closed
 
-        return 'unknown';
-    };
-    const statusColors: Record<string, string> = {
-        upcoming: 'bg-blue-500',
-        ongoing: 'bg-green-500',
-        closed: 'bg-red-500',
-        unknown: 'bg-gray-500',
-    };
+    const filtered = assessments.filter((a: any) => {
+        const status = getAssessmentStatus(a.start_time, a.end_time);
+        const matchesStatus = statusFilter === 'all' || status === statusFilter;
+        const matchesSearch = a.title.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesStatus && matchesSearch;
+    });
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Assessments" />
 
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="rounded-xl border p-5 shadow-sm">
-                    {/* Header */}
-                    <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                        <h2 className="text-xl font-bold">Assessments</h2>
+            <div className="flex h-full min-h-screen w-full flex-col space-y-6 bg-slate-50/50 p-6 md:p-8">
+                
+                {/* PAGE HEADER */}
+                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Assessments</h1>
+                        <p className="text-muted-foreground">
+                            Manage quizzes, exams, and assignments for <span className="font-medium text-slate-700">{subject.name}</span>.
+                        </p>
+                    </div>
+                    {role === 'editor' && (
+                        <Button onClick={() => setOpenAssessmentModal(true)} size="lg" className="shadow-lg shadow-blue-500/20">
+                            <PlusIcon className="mr-2 h-4 w-4" /> Create Assessment
+                        </Button>
+                    )}
+                </div>
 
-                        <div className="flex items-center gap-3">
-                            {/* Status Filter */}
-                            <Select
-                                value={statusFilter}
-                                onValueChange={(v) => setStatusFilter(v)}
-                            >
-                                <SelectTrigger className="w-[140px]">
+                <Separator />
+
+                {/* FILTERS & CONTROLS */}
+                <div className="flex flex-col gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-900/5 md:flex-row md:items-center md:justify-between">
+                    <div className="relative flex-1 md:max-w-md">
+                        <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                            placeholder="Search assessments..."
+                            className="pl-9 bg-slate-50 border-slate-200"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3">
+                        <Select value={statusFilter} onValueChange={setStatusFilter}>
+                            <SelectTrigger className="w-[160px] bg-slate-50">
+                                <div className="flex items-center gap-2">
+                                    <FilterIcon className="h-3.5 w-3.5 text-muted-foreground" />
                                     <SelectValue placeholder="Filter status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="active">
-                                        Active
-                                    </SelectItem>
-                                    <SelectItem value="upcoming">
-                                        Upcoming
-                                    </SelectItem>
-                                    <SelectItem value="closed">
-                                        Closed
-                                    </SelectItem>
-                                    <SelectItem value="all">All</SelectItem>
-                                </SelectContent>
-                            </Select>
+                                </div>
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Statuses</SelectItem>
+                                <SelectItem value="upcoming">Upcoming</SelectItem>
+                                <SelectItem value="ongoing">Ongoing</SelectItem>
+                                <SelectItem value="closed">Closed</SelectItem>
+                            </SelectContent>
+                        </Select>
 
-                            {/* Switch View */}
-                            <ToggleGroup
-                                type="single"
-                                value={viewMode}
-                                onValueChange={(v) => v && setViewMode(v)}
-                            >
-                                <ToggleGroupItem
-                                    value="list"
-                                    aria-label="List view"
-                                >
-                                    <ListIcon className="h-4 w-4" />
-                                </ToggleGroupItem>
+                        <div className="h-8 w-px bg-slate-200 hidden md:block" />
 
-                                <ToggleGroupItem
-                                    value="grid"
-                                    aria-label="Grid view"
-                                >
-                                    <GridIcon className="h-4 w-4" />
-                                </ToggleGroupItem>
-                            </ToggleGroup>
+                        <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v)}>
+                            <ToggleGroupItem value="list" aria-label="List view" size="sm">
+                                <LayoutListIcon className="h-4 w-4" />
+                            </ToggleGroupItem>
+                            <ToggleGroupItem value="grid" aria-label="Grid view" size="sm">
+                                <GridIcon className="h-4 w-4" />
+                            </ToggleGroupItem>
+                        </ToggleGroup>
+                    </div>
+                </div>
 
-                            {role === 'editor' && (
-                                <Button
-                                    onClick={() => setOpenAssessmentModal(true)}
-                                    className="gap-2"
-                                >
-                                    <PlusIcon className="h-4 w-4" /> New
+                {/* GRID / LIST CONTENT */}
+                <motion.div
+                    layout
+                    className={
+                        viewMode === 'grid'
+                            ? 'grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                            : 'space-y-4'
+                    }
+                >
+                    {filtered.length > 0 ? (
+                        filtered.map((assessment: any) => (
+                            <AssessmentCard
+                                key={assessment.id}
+                                assessment={assessment}
+                                viewMode={viewMode}
+                                classId={classId}
+                                subjectId={subjectId}
+                                getStatus={getAssessmentStatus}
+                            />
+                        ))
+                    ) : (
+                        /* EMPTY STATE */
+                        <div className="col-span-full flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 py-16 text-center bg-slate-50/50">
+                            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
+                                <FileTextIcon className="h-8 w-8 text-slate-400" />
+                            </div>
+                            <h3 className="mt-4 text-lg font-semibold text-slate-900">No assessments found</h3>
+                            <p className="mt-2 text-sm text-slate-500 max-w-sm">
+                                {searchQuery 
+                                    ? `No results found for "${searchQuery}". Try adjusting your filters.` 
+                                    : "Get started by creating a new assessment for your students."}
+                            </p>
+                            {!searchQuery && (
+                                <Button variant="link" onClick={() => setOpenAssessmentModal(true)} className="mt-4 text-blue-600">
+                                    Create your first assessment
                                 </Button>
                             )}
                         </div>
-                    </div>
-
-                    {/* Loading */}
-                    {isLoading && (
-                        <p className="py-6 text-center text-sm text-gray-500">
-                            Loading assessments...
-                        </p>
                     )}
-
-                    {/* Content */}
-                    {!isLoading && filtered.length > 0 ? (
-                        <motion.div
-                            initial="hidden"
-                            animate="show"
-                            variants={{
-                                hidden: {},
-                                show: { transition: { staggerChildren: 0.1 } },
-                            }}
-                            className={
-                                viewMode === 'grid'
-                                    ? 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'
-                                    : 'space-y-3'
-                            }
-                        >
-                            {filtered.map((a: any) => {
-                                const status = getAssessmentStatus(
-                                    a.start_time,
-                                    a.end_time,
-                                );
-
-                                return (
-                                    <motion.div
-                                        key={a.id}
-                                        variants={{
-                                            hidden: { opacity: 0, y: 20 },
-                                            show: {
-                                                opacity: 1,
-                                                y: 0,
-                                                transition: { duration: 0.35 },
-                                            },
-                                        }}
-                                        className={`group relative block rounded-lg border p-4 transition hover:shadow-md ${
-                                            viewMode === 'list'
-                                                ? 'flex items-start justify-between'
-                                                : ''
-                                        }`}
-                                    >
-                                        <Link
-                                            href={route(
-                                                'instructor.classes.subjects.assessments.show',
-                                                [classId, subjectId, a.id],
-                                            )}
-                                            className={
-                                                viewMode === 'list'
-                                                    ? 'flex-1'
-                                                    : ''
-                                            }
-                                        >
-                                            <div className="space-y-1">
-                                                <h3 className="text-base leading-tight font-semibold">
-                                                    {a.title}{' '}
-                                                    {/* NEW: STATUS BADGE */}
-                                                    <Badge
-                                                        className={`text-white capitalize ${statusColors[status]}`}
-                                                    >
-                                                        {status}
-                                                    </Badge>
-                                                </h3>
-
-                                                <p className="text-xs text-gray-500">
-                                                    {a.start_time
-                                                        ? new Date(
-                                                              a.start_time,
-                                                          ).toLocaleString()
-                                                        : ''}{' '}
-                                                    –{' '}
-                                                    {a.end_time
-                                                        ? new Date(
-                                                              a.end_time,
-                                                          ).toLocaleString()
-                                                        : ''}
-                                                </p>
-                                            </div>
-
-                                            <span className="mt-1 text-xs text-gray-400">
-                                                {a.questions_count ?? 0}{' '}
-                                                Questions
-                                            </span>
-                                        </Link>
-
-                                        {role === 'editor' && (
-                                            <Button
-                                                type="button"
-                                                size="sm"
-                                                variant="outline"
-                                                onClick={() => onEdit(a)}
-                                                className="absolute top-2 right-2 p-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-                                            >
-                                                <Edit2Icon className="h-4 w-4" />
-                                            </Button>
-                                        )}
-                                    </motion.div>
-                                );
-                            })}
-                        </motion.div>
-                    ) : (
-                        !isLoading && (
-                            <p className="py-6 text-center text-sm text-gray-500">
-                                No assessments found.
-                            </p>
-                        )
-                    )}
-                </div>
+                </motion.div>
             </div>
 
-            {/* Create Modal */}
             <AssessmentModal
                 isOpen={openAssessmentModal}
                 setIsOpen={setOpenAssessmentModal}
@@ -269,5 +212,142 @@ export default function AssessmentPage({ subject }: { subject: any }) {
                 mode="create"
             />
         </AppLayout>
+    );
+}
+
+// --- SUB-COMPONENTS ---
+
+function AssessmentCard({ assessment, viewMode, classId, subjectId, getStatus }: any) {
+    const status = getStatus(assessment.start_time, assessment.end_time);
+
+    const statusStyles: Record<string, string> = {
+        upcoming: 'bg-blue-50 text-blue-700 border-blue-200',
+        ongoing: 'bg-green-50 text-green-700 border-green-200 animate-pulse',
+        closed: 'bg-slate-100 text-slate-700 border-slate-200',
+        draft: 'bg-amber-50 text-amber-700 border-amber-200',
+    };
+
+    const StatusBadge = () => (
+        <Badge variant="outline" className={`gap-1.5 capitalize font-medium ${statusStyles[status]}`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${status === 'ongoing' ? 'bg-green-600' : 'bg-current'}`} />
+            {status}
+        </Badge>
+    );
+
+    if (viewMode === 'list') {
+        return (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <Card className="flex items-center justify-between p-4 transition-all hover:border-blue-300 hover:shadow-md">
+                    <div className="flex items-center gap-4">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                            <FileTextIcon className="h-5 w-5" />
+                        </div>
+                        <div>
+                            <Link 
+                                href={route('instructor.classes.subjects.assessments.show', [classId, subjectId, assessment.id])}
+                                className="font-semibold text-slate-900 hover:text-blue-600 hover:underline"
+                            >
+                                {assessment.title}
+                            </Link>
+                            <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                                <span className="flex items-center gap-1">
+                                    <CalendarIcon className="h-3 w-3" />
+                                    {assessment.start_time ? format(new Date(assessment.start_time), 'MMM d, yyyy') : 'TBA'}
+                                </span>
+                                <span>•</span>
+                                <span>{assessment.questions_count || 0} Questions</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <StatusBadge />
+                        <AssessmentActions assessment={assessment} />
+                    </div>
+                </Card>
+            </motion.div>
+        );
+    }
+
+    // Grid View
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -4 }}
+            transition={{ duration: 0.2 }}
+        >
+            <Card className="group relative overflow-hidden border-slate-200 transition-all hover:border-blue-300 hover:shadow-lg">
+                {/* Decorative top colored line based on status */}
+                <div className={`absolute top-0 left-0 h-1 w-full ${status === 'ongoing' ? 'bg-green-500' : status === 'upcoming' ? 'bg-blue-500' : 'bg-slate-300'}`} />
+
+                <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2 pt-5">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-600 transition-colors group-hover:bg-blue-50 group-hover:text-blue-600">
+                        <FileTextIcon className="h-5 w-5" />
+                    </div>
+                    <AssessmentActions assessment={assessment} />
+                </CardHeader>
+                
+                <CardContent className="pb-3">
+                    <Link href={route('instructor.classes.subjects.assessments.show', [classId, subjectId, assessment.id])}>
+                        <CardTitle className="line-clamp-1 text-lg font-bold group-hover:text-blue-700">
+                            {assessment.title}
+                        </CardTitle>
+                        <CardDescription className="mt-1 line-clamp-2 text-xs">
+                           Description goes here if available...
+                        </CardDescription>
+                    </Link>
+                    
+                    <div className="mt-4 space-y-2">
+                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <CalendarIcon className="h-4 w-4 text-slate-400" />
+                            <span className="text-xs font-medium">
+                                {assessment.start_time ? format(new Date(assessment.start_time), 'MMM d') : 'TBA'} 
+                                {' - '}
+                                {assessment.end_time ? format(new Date(assessment.end_time), 'MMM d, yyyy') : ''}
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <ClockIcon className="h-4 w-4 text-slate-400" />
+                            <span className="text-xs font-medium">
+                                {assessment.start_time ? format(new Date(assessment.start_time), 'h:mm a') : '--:--'}
+                            </span>
+                        </div>
+                    </div>
+                </CardContent>
+
+                <CardFooter className="flex items-center justify-between border-t bg-slate-50/50 px-4 py-3">
+                    <StatusBadge />
+                    <span className="text-xs font-medium text-slate-500">
+                        {assessment.questions_count || 0} Qs
+                    </span>
+                </CardFooter>
+            </Card>
+        </motion.div>
+    );
+}
+
+function AssessmentActions({ assessment }: { assessment: any }) {
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0 text-slate-400 hover:text-slate-900">
+                    <span className="sr-only">Open menu</span>
+                    <MoreHorizontalIcon className="h-4 w-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[160px]">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem>
+                    <PencilIcon className="mr-2 h-4 w-4" /> Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                    <FileTextIcon className="mr-2 h-4 w-4" /> View Results
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-red-600 focus:text-red-600 focus:bg-red-50">
+                    <TrashIcon className="mr-2 h-4 w-4" /> Delete
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 }

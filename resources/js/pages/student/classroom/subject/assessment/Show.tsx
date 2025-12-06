@@ -27,38 +27,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function AssessmentDetail({ assessment , classId, subjectId }: { assessment: any }) {
     
-    console.log('Assessment Data:', assessment);
-    // {
-    //     "id": 1,
-    //     "name": "C++ programming I",
-    //     "description": null,
-    //     "class_id": 1,
-    //     "visibility": "public",
-    //     "cover": "subjects/qYrvPjtHEcqeIGwQga3hYqXe5uEcmMjFAyG1AmMX.png",
-    //     "created_at": "2025-11-29T08:49:17.000000Z",
-    //     "updated_at": "2025-11-29T08:49:17.000000Z",
-    //     "assessments": [
-    //         {
-    //             "id": 4,
-    //             "title": "Id assumenda dolore",
-    //             "description": "Atque aliquam facili",
-    //             "type": "quiz",
-    //             "start_time": "2025-11-29 14:29:00",
-    //             "end_time": "2025-11-30 10:23:00",
-    //             "duration": null,
-    //             "max_attempts": 3,
-    //             "created_by": null,
-    //             "created_at": "2025-11-29T09:30:34.000000Z",
-    //             "updated_at": "2025-11-29T09:30:34.000000Z",
-    //             "questions_count": 0,
-    //             "pivot": {
-    //                 "subject_id": 1,
-    //                 "assessment_id": 4
-    //             }
-    //         }
-    //     ]
-    // }
-    
     const role = 'editor';
     const id = assessment.id;
 
