@@ -11,6 +11,11 @@ import { route } from 'ziggy-js';
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Class', href: '/' }];
 
 export default function SubjectShow({ classroom }: { classroom: any }) {
+
+    const page = usePage();
+
+    console.log(page.props)
+    
     const subjects = classroom?.subjects ?? [];
     const [openSubjectModal, setOpenSubjectModal] = useState(false);
 
@@ -103,9 +108,15 @@ export default function SubjectShow({ classroom }: { classroom: any }) {
                 <div>
                     <div className="flex items-center justify-between">
                         <h1 className="mb-4 text-xl font-semibold">Subjects</h1>
+                        {page.props.auth.can.access_instructor_page && (
+                            // <Link href={route('instructor.classes.index')}>
+                            //     Instructor Dashboard
+                            // </Link>
                         <Button onClick={() => setOpenSubjectModal(true)}>
                             + Add Subject
                         </Button>
+                        )}
+
                     </div>
 
                     <motion.div

@@ -69,7 +69,7 @@ createInertiaApp({
         root.render(
             <StrictMode>
                 <Root />
-            </StrictMode>,
+            </StrictMode>
         );
     },
     progress: { color: '#4B5563', showSpinner: true },

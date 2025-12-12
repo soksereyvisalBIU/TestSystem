@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Instructor;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Instructor\AssessmentResource;
 use App\Models\Assessment;
+use App\Models\Classroom;
 use App\Models\Subject;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
@@ -17,13 +19,39 @@ class AssessmentController extends Controller
      */
     public function index($classId, $subjectId)
     {
+        $availableClasses = Classroom::with('subjects')
+            ->get(['id', 'name'])
+            ->map(function ($class) {
+                return [
+                    'id' => $class->id,
+                    'name' => $class->name,
+                    'subjects' => $class->subjects->map->only(['id', 'name'])->toArray(),
+                ];
+            });
+        // $availableClasses = Classroom::with('subjects')
+        //     ->whereIn('id', $instructor->class_ids) // Authorization/Scope check
+        //     ->get(['id', 'name'])
+        //     ->map(function ($class) {
+        //         return [
+        //             'id' => $class->id,
+        //             'name' => $class->name,
+        //             'subjects' => $class->subjects->map->only(['id', 'name'])->toArray(),
+        //         ];
+        //     });
+
+        // return Inertia::render('Instructor/Assessments/AssessmentPage', [
+        //     'subject' => $subject->load('assessments.questions'),
+        //     'availableClasses' => $availableClasses, // 👈 New data
+        // ]);
+
+
         $subject = Subject::with([
             'assessments' => function ($query) {
                 $query->withCount('questions');   // count questions per assessment
             }
         ])->findOrFail($subjectId);
 
-        return Inertia::render('instructor/classroom/subject/assessment/Index', compact('subject'));
+        return Inertia::render('instructor/classroom/subject/assessment/Index', compact('subject', 'availableClasses'));
     }
 
 
@@ -107,5 +135,107 @@ class AssessmentController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+
+
+    public function copy(Request $request, $assessment)
+    {
+        $request->validate([
+            'targets' => ['required', 'array', 'min:1'],
+            'targets.*.class_id' => ['required', 'integer', 'exists:classrooms,id'],
+            'targets.*.subject_ids' => ['required', 'array', 'min:1'],
+            'targets.*.subject_ids.*' => ['required', 'integer', 'exists:subjects,id'],
+        ]);
+
+        // Load assessment and questions
+        $source = Assessment::with('questions')->findOrFail($assessment);
+
+        foreach ($request->targets as $target) {
+            foreach ($target['subject_ids'] as $subjectId) {
+
+                // 1. Prevent duplicate assessment inside same subject
+                $alreadyExists = Subject::find($subjectId)
+                    ->assessments()
+                    ->where('title', $source->title)
+                    ->exists();
+
+                if ($alreadyExists) {
+                    // Skip this subject because a copy exists
+                    continue;
+                }
+
+                // 2. Clone the assessment
+                $newAssessment = $source->replicate();
+                $newAssessment->created_at = now();
+                $newAssessment->updated_at = now();
+                $newAssessment->save();
+
+                // 3. Clone the questions
+                foreach ($source->questions as $q) {
+                    $newQuestion = $q->replicate();
+                    $newQuestion->assessment_id = $newAssessment->id;
+                    $newQuestion->save();
+                }
+
+                // 4. Attach to subject
+                $newAssessment->subjects()->attach($subjectId);
+            }
+        }
+        // Use a database transaction to ensure atomicity (all copies succeed or all fail)
+        // DB::transaction(function () use ($sourceAssessment, $targets) {
+
+        //     // Loop through each Class target
+        //     foreach ($targets as $target) {
+        //         $classId = $target['class_id'];
+        //         $subjectIds = $target['subject_ids'];
+
+        //         // Loop through each Subject within the Class target
+        //         foreach ($subjectIds as $subjectId) {
+
+        //             // 2. Duplicate the Assessment (Shallow Copy)
+        //             $newAssessment = $sourceAssessment->replicate();
+
+        //             // Modify necessary attributes for the copy (optional, e.g., prepending "Copy of")
+        //             $newAssessment->title = "Copy of {$sourceAssessment->title}";
+        //             $newAssessment->save();
+
+        //             // 3. Attach the New Assessment to the Target Subject
+        //             // Assuming Assessment has a many-to-many relationship with Subject
+        //             // We don't need the class ID here, only the subject ID (as subjects are attached to classes)
+        //             $subject = Subject::findOrFail($subjectId);
+        //             $subject->assessments()->attach($newAssessment->id);
+
+        //             // 4. Duplicate and Attach Questions (Deep Copy)
+        //             if ($sourceAssessment->questions->isNotEmpty()) {
+        //                 // Collect all new question instances
+        //                 $newQuestions = $sourceAssessment->questions->map(function ($question) {
+        //                     return $question->replicate();
+        //                 });
+
+        //                 // Save all new questions simultaneously
+        //                 // Assumes a one-to-many relationship: Assessment hasMany Questions
+        //                 $newAssessment->questions()->saveMany($newQuestions);
+
+        //                 // You may need to handle copying related models (e.g., question answers/options) here
+        //                 // If Question has many Options:
+        //                 /*
+        //             foreach ($sourceAssessment->questions as $index => $sourceQuestion) {
+        //                 $newQuestion = $newQuestions[$index]; // Match the new question to its source
+        //                 $newOptions = $sourceQuestion->options->map(fn ($option) => $option->replicate());
+        //                 $newQuestion->options()->saveMany($newOptions);
+        //             }
+        //             */
+        //             }
+        //         }
+        //     }
+        // });
+
+        // 5. Successful Response
+        return redirect()->back()->with(
+            'success',
+            'Assessment copied successfully to class(es) and its selected subjects.'
+            // 'Assessment copied successfully to ' . count($targets) . ' class(es) and its selected subjects.'
+        );
     }
 }

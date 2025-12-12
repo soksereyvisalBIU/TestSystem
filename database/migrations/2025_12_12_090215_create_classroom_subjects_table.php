@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subject_assessment', function (Blueprint $table) {
+        Schema::create('classroom_subjects', function (Blueprint $table) {
             $table->id();
+            $table->integer('classroom_id');
             $table->integer('subject_id');
-            $table->integer('assessment_id');
-            $table->integer('from_id')->nullable();
+            $table->integer('parent_id')->nullable();
+
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subject_assessment');
+        Schema::dropIfExists('classroom_subjects');
     }
 };

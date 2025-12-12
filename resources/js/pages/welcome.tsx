@@ -1,8 +1,14 @@
-import { type SharedData } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
-import { motion } from 'framer-motion';
-import { Book, Calculator, FileText, GraduationCap, PenLine } from 'lucide-react';
 import AppearanceTabsHeader from '@/components/appearance-tabs-header';
+import { type SharedData } from '@/types';
+import { Head, Link, usePage } from '@inertiajs/react';
+import { motion } from 'framer-motion';
+import {
+    Book,
+    Calculator,
+    FileText,
+    GraduationCap,
+    PenLine,
+} from 'lucide-react';
 
 export default function Welcome() {
     const { auth } = usePage<SharedData>().props;
@@ -34,8 +40,7 @@ export default function Welcome() {
             </Head>
 
             {/* 🔥 FIX: Replace <body> with a div */}
-            <div className="bg-white font-body text-gray-800 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100 min-h-screen">
-
+            <div className="font-body min-h-screen bg-white text-gray-800 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
                 {/* Header */}
                 <header className="fixed inset-x-0 z-20 flex items-center justify-between bg-white/30 px-6 py-4 shadow-md backdrop-blur-md md:px-12 lg:px-24 dark:bg-gray-900/30">
                     <img
@@ -53,18 +58,18 @@ export default function Welcome() {
                             </a>
                         ) : (
                             <>
-                                <a
-                                    href="/login"
+                                <Link
+                                    href={'/login'}
                                     className="rounded-lg bg-indigo-600 px-4 py-2 text-white transition hover:bg-indigo-700"
                                 >
                                     Login
-                                </a>
-                                <a
-                                    href="/register"
+                                </Link>
+                                <Link
+                                    href={"/register"}
                                     className="rounded-lg bg-gray-200 px-4 py-2 text-gray-800 transition hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
                                 >
                                     Register
-                                </a>
+                                </Link>
                             </>
                         )}
 
@@ -74,21 +79,25 @@ export default function Welcome() {
 
                 {/* Hero Section */}
                 <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 md:px-12 lg:px-24">
-
                     {/* Background */}
                     <div className="absolute inset-0 overflow-hidden">
-
                         <div className="absolute inset-0 [background-image:linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] [background-size:40px_40px] opacity-[0.05] dark:opacity-[0.08]"></div>
 
                         {/* Blobs */}
                         <motion.div
                             className="absolute -top-16 -left-16 h-72 w-72 rounded-full bg-indigo-300 opacity-30 mix-blend-multiply dark:bg-indigo-700"
-                            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+                            animate={{
+                                scale: [1, 1.2, 1],
+                                opacity: [0.3, 0.5, 0.3],
+                            }}
                             transition={{ duration: 6, repeat: Infinity }}
                         />
                         <motion.div
                             className="absolute -right-24 -bottom-24 h-96 w-96 rounded-full bg-pink-300 opacity-25 mix-blend-multiply dark:bg-pink-700"
-                            animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
+                            animate={{
+                                scale: [1, 1.3, 1],
+                                opacity: [0.2, 0.4, 0.2],
+                            }}
                             transition={{ duration: 7, repeat: Infinity }}
                         />
 
@@ -146,13 +155,19 @@ export default function Welcome() {
                         <motion.div
                             className="clip-triangle absolute h-24 w-24 bg-pink-400 opacity-20 dark:bg-pink-600"
                             style={{ top: '15%', left: '75%' }}
-                            animate={{ rotate: [0, 90, 180, 360], scale: [1, 1.1, 1] }}
+                            animate={{
+                                rotate: [0, 90, 180, 360],
+                                scale: [1, 1.1, 1],
+                            }}
                             transition={{ duration: 12, repeat: Infinity }}
                         />
                         <motion.div
                             className="clip-triangle absolute h-32 w-32 bg-indigo-400 opacity-15 dark:bg-indigo-600"
                             style={{ top: '60%', left: '20%' }}
-                            animate={{ rotate: [360, 270, 180, 0], scale: [1, 1.15, 1] }}
+                            animate={{
+                                rotate: [360, 270, 180, 0],
+                                scale: [1, 1.15, 1],
+                            }}
                             transition={{ duration: 15, repeat: Infinity }}
                         />
 
@@ -177,22 +192,31 @@ export default function Welcome() {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 1, delay: 0.3 }}
                         >
-                            <h1 className="mb-4 font-heading text-4xl font-bold md:text-5xl">
-                                Learn, Test, and Achieve — BIU Online Testing System
+                            <h1 className="font-heading mb-4 text-4xl font-bold md:text-5xl">
+                                Learn, Test, and Achieve — BIU Online Testing
+                                System
                             </h1>
-                            <p className="mb-6 font-body leading-relaxed text-gray-700 dark:text-gray-300">
-                                Welcome to the official online testing system of Beltei International University. Designed
-                                exclusively for BIU students, this platform allows you to take quizzes, midterms, and final
+                            <p className="font-body mb-6 leading-relaxed text-gray-700 dark:text-gray-300">
+                                Welcome to the official online testing system of
+                                Beltei International University. Designed
+                                exclusively for BIU students, this platform
+                                allows you to take quizzes, midterms, and final
                                 exams securely — anytime, anywhere.
                             </p>
-                            <motion.a
-                                href="#"
-                                className="inline-block rounded-full bg-[#03b7ce] px-8 py-3 font-semibold text-white shadow transition-all duration-200 hover:bg-indigo-700 dark:bg-[#069dc1] dark:hover:bg-[#038eb1]"
-                                whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(3,183,206,0.6)' }}
-                                whileTap={{ scale: 0.97 }}
-                            >
-                                Start now
-                            </motion.a>
+                            <Link href={'/login'}>
+                                <motion.a
+                                    // href="/login"
+                                    className="inline-block rounded-full bg-[#03b7ce] px-8 py-3 font-semibold text-white shadow transition-all duration-200 hover:bg-indigo-700 dark:bg-[#069dc1] dark:hover:bg-[#038eb1]"
+                                    whileHover={{
+                                        scale: 1.05,
+                                        boxShadow:
+                                            '0 0 20px rgba(3,183,206,0.6)',
+                                    }}
+                                    whileTap={{ scale: 0.97 }}
+                                >
+                                    Start now
+                                </motion.a>
+                            </Link>
                         </motion.div>
 
                         {/* Image */}
@@ -205,10 +229,20 @@ export default function Welcome() {
                             <div className="relative">
                                 <motion.div
                                     className="absolute -inset-4 rotate-12 rounded-full bg-indigo-600 opacity-10 blur-2xl dark:bg-indigo-500 dark:opacity-30"
-                                    animate={{ rotate: [12, 18, 12], scale: [1, 1.05, 1] }}
-                                    transition={{ duration: 5, repeat: Infinity }}
+                                    animate={{
+                                        rotate: [12, 18, 12],
+                                        scale: [1, 1.05, 1],
+                                    }}
+                                    transition={{
+                                        duration: 5,
+                                        repeat: Infinity,
+                                    }}
                                 />
-                                <img src="/assets/img/t.png" alt="BIU Student" className="relative rounded-2xl" />
+                                <img
+                                    src="/assets/img/t.png"
+                                    alt="BIU Student"
+                                    className="relative rounded-2xl"
+                                />
                             </div>
                         </motion.div>
                     </motion.div>

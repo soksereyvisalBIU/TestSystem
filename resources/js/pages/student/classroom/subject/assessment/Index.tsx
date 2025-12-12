@@ -17,6 +17,7 @@ import { Edit2Icon, GridIcon, ListIcon, PlusIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
+
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Class', href: '/' },
     { title: 'Subjects', href: '/subjects' },

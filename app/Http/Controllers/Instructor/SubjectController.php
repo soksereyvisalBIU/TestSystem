@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Classroom;
 use App\Models\Subject;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class SubjectController extends Controller
@@ -70,11 +73,11 @@ class SubjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, $classId , $subjectId)
+    public function show(Request $request, $classId, $subjectId)
     {
 
         // dd('show subject', $subjectId);
-        
+
         $subject = Subject::with('assessments')->findOrFail($subjectId);
         // return Inertia::render('instructor/classroom/subject/Show', compact('subject'));
         return Inertia::render('instructor/classroom/subject/Index', compact('subject'));
@@ -102,5 +105,104 @@ class SubjectController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function copy(Request $request, $class, $subject)
+    {
+        // 1. Validate input
+        $request->validate([
+            'targets' => 'required|array|min:1',
+            'targets.*.class_id' => 'required|exists:classrooms,id',
+        ]);
+
+        // 2. Get source subject
+        $sourceSubject = Subject::findOrFail($subject);
+
+        DB::beginTransaction();
+        $copiedCount = 0;
+
+        try {
+            foreach ($request->targets as $target) {
+                $targetClassId = $target['class_id'];
+
+                // Skip: copy into same class
+                if ($targetClassId == $sourceSubject->class_id) {
+                    continue;
+                }
+
+                // Skip: subject with same name already exists
+                if (Subject::where('class_id', $targetClassId)
+                    ->where('name', $sourceSubject->name)
+                    ->exists()
+                ) {
+                    continue;
+                }
+
+                /*
+            |--------------------------------------------------------------------------
+            | 3. Clone Subject
+            |--------------------------------------------------------------------------
+            */
+                $newSubject = $sourceSubject->replicate();
+                $newSubject->class_id = $targetClassId;
+                $newSubject->created_at = now();
+                $newSubject->updated_at = now();
+
+                // Clone cover image
+                if ($sourceSubject->cover && Storage::disk('public')->exists($sourceSubject->cover)) {
+                    $newCoverPath = 'subjects/' . uniqid() . '-' . basename($sourceSubject->cover);
+                    Storage::disk('public')->copy($sourceSubject->cover, $newCoverPath);
+                    $newSubject->cover = $newCoverPath;
+                }
+
+                $newSubject->save();
+                $copiedCount++;
+
+                /*
+            |--------------------------------------------------------------------------
+            | 4. Deep Copy: Assessments + Questions
+            |--------------------------------------------------------------------------
+            */
+                foreach ($sourceSubject->assessments as $assessment) {
+
+                    // Prevent duplicate assessments by title
+                    $assessmentExists = $newSubject->assessments()
+                        ->where('title', $assessment->title)
+                        ->exists();
+
+                    if ($assessmentExists) {
+                        continue;
+                    }
+
+                    // Clone Assessment (without pivot)
+                    $newAssessment = $assessment->replicate();
+                    $newAssessment->created_at = now();
+                    $newAssessment->updated_at = now();
+                    $newAssessment->save();
+
+                    // Attach to new subject via pivot
+                    $newAssessment->subjects()->attach($newSubject->id);
+
+                    // Clone questions
+                    foreach ($assessment->questions as $question) {
+                        $newQuestion = $question->replicate();
+                        $newQuestion->assessment_id = $newAssessment->id;
+                        $newQuestion->save();
+                    }
+                }
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Copy subject failed: ' . $e->getMessage());
+            return back()->with('error', 'Failed to copy subject.');
+        }
+
+        if ($copiedCount === 0) {
+            return back()->with('error', 'No subjects copied. They may already exist in target classes.');
+        }
+
+        return back()->with('success', "Subject \"{$sourceSubject->name}\" copied to {$copiedCount} class(es).");
     }
 }

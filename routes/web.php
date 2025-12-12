@@ -22,18 +22,36 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ========================================================
     //              Instructor
     // ========================================================
-    Route::prefix('instructor')->as('instructor.')->group(function () {
-        Route::resource('classes', App\Http\Controllers\Instructor\ClassroomController::class)->names('classes');
-        Route::resource('classes.subject', App\Http\Controllers\Instructor\SubjectController::class)->names('classes.subjects');
-        Route::resource('classes.subject.assessment', App\Http\Controllers\Instructor\AssessmentController::class)->names('classes.subjects.assessments');
-        Route::resource('classes.subject.assessment.question', App\Http\Controllers\Instructor\QuestionController::class)->names('classes.subjects.assessments.questions');
-        Route::resource('classes.subject.assessment.student', App\Http\Controllers\Instructor\StudentController::class)->names('classes.subjects.assessments.students');
+    Route::prefix('instructor')
+        ->as('instructor.')
+        ->middleware(['can:access-instructor-page'])
+        ->group(function () {
+            Route::resource('classes', App\Http\Controllers\Instructor\ClassroomController::class)->names('classes');
+            Route::resource('classes.subjects', App\Http\Controllers\Instructor\SubjectController::class)->names('classes.subjects');
+            Route::post('classes/{class}/subjects/{subject}/copy', [App\Http\Controllers\Instructor\SubjectController::class , 'copy'])->name('classes.subjects.copy');
+            Route::resource('classes.subjects.assessment', App\Http\Controllers\Instructor\AssessmentController::class)->names('classes.subjects.assessments');
+            Route::post('classes/subjects/assessment/{assessment}/copy', [App\Http\Controllers\Instructor\AssessmentController::class , 'copy'])->name('classes.subjects.assessments.copy');
+            Route::resource('classes.subjects.assessment.question', App\Http\Controllers\Instructor\QuestionController::class)->names('classes.subjects.assessments.questions');
+            Route::resource('classes.subjects.assessment.student', App\Http\Controllers\Instructor\StudentController::class)->names('classes.subjects.assessments.students');
 
-        Route::get(
-            'classes/{class}/subject/{subject}/assessment/{assessment}/student/{student}/check',
-            [App\Http\Controllers\Instructor\StudentController::class, 'check']
-        )->name('classes.subjects.assessments.students.check');
-    });
+
+
+            Route::get(
+                'classes/{class}/subject/{subject}/assessment/{assessment}/student/{student}/check',
+                [App\Http\Controllers\Instructor\StudentController::class, 'check']
+            )->name('classes.subjects.assessments.students.check');
+
+
+            // Route::resource('classes', ClassroomController::class);
+            // Route::resource('classes.subjects', SubjectController::class)->shallow();
+            // Route::resource('subjects.assessments', AssessmentController::class)->shallow();
+            // Route::resource('assessments.questions', QuestionController::class)->shallow();
+            // Route::resource('assessments.students', StudentController::class)->shallow();
+            // Route::post(
+            //     'students/{student}/check',
+            //     [StudentController::class, 'check']
+            // )->name('students.check');
+        });
 
 
     // ========================================================
@@ -44,27 +62,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('classes', App\Http\Controllers\Student\ClassroomController::class)
             ->names('classes');
 
-        Route::resource('classes.subject', App\Http\Controllers\Student\SubjectController::class)
+        Route::resource('classes.subjects', App\Http\Controllers\Student\SubjectController::class)
             ->names('classes.subjects');
 
-        Route::resource('classes.subject.assessment', App\Http\Controllers\Student\AssessmentController::class)
+        Route::resource('classes.subjects.assessment', App\Http\Controllers\Student\AssessmentController::class)
             ->names('classes.subjects.assessments');
 
         // ---- Add this (REST compliant) ----
         Route::post(
-            'classes/{class_id}/subject/{subject_id}/assessment/{assessment_id}/request',
+            'classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/request',
             [App\Http\Controllers\Student\AssessmentController::class, 'request']
         )->name('classes.subjects.assessments.request');
         Route::get(
-            'classes/{class_id}/subject/{subject_id}/assessment/{assessment_id}/review',
+            'classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/review',
             [App\Http\Controllers\Student\AttemptController::class, 'review']
         )->name('classes.subjects.assessments.attempt.review');
         Route::get(
-            'classes/{class_id}/subject/{subject_id}/assessment/{assessment_id}/attempt',
+            'classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/attempt',
             [App\Http\Controllers\Student\AttemptController::class, 'attempt']
         )->name('classes.subjects.assessments.attempt');
         Route::post(
-            'classes/{class_id}/subject/{subject_id}/assessment/{assessment_id}/attempt/store',
+            'classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/attempt/store',
             [App\Http\Controllers\Student\AttemptController::class, 'store']
         )->name('classes.subjects.assessments.attempt.store');
     });
