@@ -290,9 +290,6 @@ export default function SubjectDetail({ subject }: { subject: any }) {
                                                     >
                                                         <FileText className="h-5 w-5" />
                                                     </div>
-
-
-                                                    
                                                     <div>
                                                         <motion.div layoutId={`assessment-title-${assessment.id}`}>
                                                             <h4 className="font-semibold text-slate-900">
