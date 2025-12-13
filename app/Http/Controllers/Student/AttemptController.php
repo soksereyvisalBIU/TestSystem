@@ -35,9 +35,13 @@ class AttemptController extends Controller
                 ->get()
         );
 
+        $studentAssessmentAttempt = StudentAssessmentAttempt::findOrFail(
+            $request->input('student_assessment_attempt_id')
+        );
+
         return Inertia::render(
             'student/classroom/subject/assessment/attempt/Index',
-            compact('assessment', 'questions', 'student_assessment_attempt_id')
+            compact('assessment', 'questions', 'student_assessment_attempt_id' , 'studentAssessmentAttempt')
         );
     }
 

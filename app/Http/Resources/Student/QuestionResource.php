@@ -99,13 +99,13 @@ class QuestionResource extends JsonResource
                 // LEFT SIDE (match_key)
                 $left = $options->map(fn($opt) => [
                     'id' => $opt->id,
-                    'text' => $opt->option_text,
+                    'text' => $opt->match_key,
                 ])->values()->toArray();
 
                 // RIGHT SIDE (option_text) — shuffled
                 $right = $options->map(fn($opt) => [
                     // 'id' => $opt->id,
-                    'text' => $opt->match_key,
+                    'text' => $opt->option_text,
                 ])->shuffle()->values()->toArray();
 
                 return [
