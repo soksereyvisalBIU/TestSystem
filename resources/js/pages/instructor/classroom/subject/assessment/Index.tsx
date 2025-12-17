@@ -114,11 +114,11 @@ export default function AssessmentPage({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Assessments" />
 
-            <div className="flex h-full min-h-screen w-full flex-col space-y-6 bg-slate-50/50 p-6 md:p-8">
+            <div className="flex h-full min-h-screen w-full flex-col space-y-6  p-6 md:p-8">
                 {/* PAGE HEADER */}
                 <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+                        <h1 className="text-3xl font-bold tracking-tight ">
                             Assessments
                         </h1>
                         <motion.div layoutId={`subject-title-${id}`}>
@@ -187,6 +187,7 @@ export default function AssessmentPage({
                         <div className="hidden h-8 w-px bg-slate-200 md:block" />
 
                         <ToggleGroup
+                            variant={'outline'}
                             type="single"
                             value={viewMode}
                             onValueChange={(v) => v && setViewMode(v)}

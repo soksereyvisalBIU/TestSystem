@@ -37,6 +37,7 @@ import {
     BookOpen,
     Calendar,
     CheckCircle2,
+    ChevronRight,
     Clock,
     Download,
     FileText,
@@ -229,7 +230,7 @@ export default function AssessmentDetail({
                     defaultValue="students"
                     value={activeTab}
                     onValueChange={setActiveTab}
-                    className="space-y-6"
+                    className=""
                 >
                     <div className="flex items-center justify-between border-b border-slate-200">
                         <TabsList className="h-auto bg-transparent p-0">
@@ -244,9 +245,9 @@ export default function AssessmentDetail({
                     </div>
 
                     {/* --- TAB 1: STUDENTS --- */}
-                    <TabsContent value="students" className="space-y-4">
+                    <TabsContent value="students" className="">
                         <Card className="border-none shadow-sm">
-                            <CardHeader className="flex flex-row items-center justify-between px-6 pt-6">
+                            <CardHeader className="flex flex-row items-center justify-between px-6">
                                 <div>
                                     <CardTitle>Student Performance</CardTitle>
                                     <CardDescription>
@@ -401,7 +402,13 @@ export default function AssessmentDetail({
                                         )}
                                         className=""
                                     >
-                                        Question
+                                        <Button
+                                            size="sm"
+                                            className="shadow-lg     cursor-pointer transition-shadow hover:shadow-xl"
+                                        >
+                                            Question Detail
+                                            <ChevronRight />
+                                        </Button>
                                     </Link>
                                 </div>
                                 <CardDescription>

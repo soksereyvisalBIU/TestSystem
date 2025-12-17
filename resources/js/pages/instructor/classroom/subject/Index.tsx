@@ -159,10 +159,7 @@ export default function SubjectDetail({ subject }: { subject: any }) {
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
                     {/* LEFT COLUMN (Main Content) - Spans 8 cols */}
                     <div className="lg:col-span-8">
-                        <Tabs
-                            defaultValue="overview"
-                            className="w-full space-y-6"
-                        >
+                        <Tabs defaultValue="overview" className="w-full">
                             <TabsList className="h-auto w-full justify-start gap-2 rounded-none border-b bg-transparent p-0 pb-1">
                                 <TabTrigger value="overview">
                                     Overview
@@ -275,7 +272,13 @@ export default function SubjectDetail({ subject }: { subject: any }) {
                                                 },
                                             )}
                                         >
-                                            Assessment detail
+                                            <Button
+                                                size="sm"
+                                                className="cursor-pointer shadow-lg transition-shadow hover:shadow-xl"
+                                            >
+                                                Assessment Detail
+                                                <ChevronRight />
+                                            </Button>
                                         </Link>
                                     </CardHeader>
                                     <CardContent className="grid gap-4">
@@ -291,7 +294,9 @@ export default function SubjectDetail({ subject }: { subject: any }) {
                                                         <FileText className="h-5 w-5" />
                                                     </div>
                                                     <div>
-                                                        <motion.div layoutId={`assessment-title-${assessment.id}`}>
+                                                        <motion.div
+                                                            layoutId={`assessment-title-${assessment.id}`}
+                                                        >
                                                             <h4 className="font-semibold text-slate-900">
                                                                 {
                                                                     assessment.title
