@@ -181,7 +181,7 @@ export default function AssessmentDetail({
                             <Download className="mr-2 h-4 w-4" /> Export
                         </Button>
                         {role === 'editor' && (
-                            <Button className="bg-blue-600 hover:bg-blue-700">
+                            <Button className="">
                                 Edit Assessment
                             </Button>
                         )}

@@ -14,6 +14,8 @@ import {
 } from '@dnd-kit/sortable';
 import { useEffect, useMemo, useState } from 'react';
 import SortableItem from '../SortableItem';
+import { GripHorizontal, GripVertical, Save, LayoutList, Hash } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function OrderQuestionByTypeSetting({
     questions,
@@ -22,9 +24,6 @@ export default function OrderQuestionByTypeSetting({
     questions: any[];
     onSave: (newOrder: any[]) => void;
 }) {
-    // ===========================
-    // 🧩 Group questions by type
-    // ===========================
     const grouped = useMemo(() => {
         const map = new Map<string, any[]>();
         questions.forEach((q) => {
@@ -43,22 +42,12 @@ export default function OrderQuestionByTypeSetting({
         setOrderedGroups(grouped);
     }, [grouped]);
 
-    // ==============================
-    // ⚙️ Sensors setup (NEW)
-    // ==============================
-    // 🟢 UPDATED / IMPORTANT:
-    // Using PointerSensor with activationConstraint makes drag smoother and avoids accidental drags.
     const sensors = useSensors(
         useSensor(PointerSensor, {
-            activationConstraint: { distance: 5 }, // drag only starts after moving 5px
+            activationConstraint: { distance: 5 },
         }),
     );
 
-    // ==============================
-    // 🔹 Handle group-level drag end
-    // ==============================
-    // 🟢 UPDATED / IMPORTANT:
-    // This only manages top-level group reordering (no interference with inner drags)
     const handleGroupDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
         if (!over || active.id === over.id) return;
@@ -73,12 +62,6 @@ export default function OrderQuestionByTypeSetting({
         setOrderedGroups((prev) => arrayMove(prev, oldIndex, newIndex));
     };
 
-    // ==============================
-    // 🔹 Handle question-level drag end
-    // ==============================
-    // 🟢 UPDATED / IMPORTANT:
-    // Each group has its own inner DnD context, so this handler is called per-group.
-    // Prevents parent group flickering when moving inner items.
     const handleQuestionDragEnd = (groupType: string, event: DragEndEvent) => {
         const { active, over } = event;
         if (!over || active.id === over.id) return;
@@ -89,16 +72,9 @@ export default function OrderQuestionByTypeSetting({
         setOrderedGroups((prev) =>
             prev.map((group) => {
                 if (group.type !== groupType) return group;
-
-                const oldIndex = group.questions.findIndex(
-                    (q) => q.id.toString() === activeId,
-                );
-                const newIndex = group.questions.findIndex(
-                    (q) => q.id.toString() === overId,
-                );
-
+                const oldIndex = group.questions.findIndex((q) => q.id.toString() === activeId);
+                const newIndex = group.questions.findIndex((q) => q.id.toString() === overId);
                 if (oldIndex === -1 || newIndex === -1) return group;
-
                 return {
                     ...group,
                     questions: arrayMove(group.questions, oldIndex, newIndex),
@@ -107,7 +83,6 @@ export default function OrderQuestionByTypeSetting({
         );
     };
 
-    // ✅ Save Order (flatten + update order numbers)
     const handleSaveOrder = () => {
         const reordered = orderedGroups.flatMap((g) => g.questions);
         const updatedQuestions = reordered.map((q, i) => ({
@@ -116,103 +91,108 @@ export default function OrderQuestionByTypeSetting({
             updated: true,
         }));
         onSave(updatedQuestions);
-        console.log('Updated nested order:', updatedQuestions);
     };
 
     return (
-        <div className="min-w-[20rem] rounded-xl border border-sidebar-border/70 bg-card p-4 shadow-sm dark:border-sidebar-border">
-            <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Order Questions</h3>
-                <Button variant="default" size="sm" onClick={handleSaveOrder}>
+        <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+            {/* Header Section */}
+            <div className="bg-slate-50/80 px-5 py-4 flex items-center justify-between border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                    <div className="p-1.5 bg-primary/10 rounded-lg">
+                        <LayoutList className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-800">Quiz Structure</h3>
+                        <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">Grouped by Type</p>
+                    </div>
+                </div>
+                <Button 
+                    variant="default" 
+                    size="sm" 
+                    onClick={handleSaveOrder}
+                    className="h-8 gap-2 bg-primary hover:bg-primary/90 shadow-sm transition-all active:scale-95"
+                >
+                    <Save className="w-3.5 h-3.5" />
                     Save Order
                 </Button>
             </div>
 
-            <hr className="mb-4 border-sidebar-border/50" />
-
-            {/* ================== */}
-            {/* 🌐 Group DnD Context */}
-            {/* ================== */}
-            {/* 🟢 UPDATED / IMPORTANT:
-                - Outer DndContext manages only group-level drags.
-                - Each group is a SortableItem.
-                - Inner contexts (questions) have their own DndContext to prevent conflicts.
-            */}
-            <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleGroupDragEnd}
-            >
-                <SortableContext
-                    items={orderedGroups.map((g) => `group:${g.type}`)}
-                    strategy={verticalListSortingStrategy}
+            <div className="p-4 overflow-y-auto max-h-[60vh] custom-scrollbar">
+                <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleGroupDragEnd}
                 >
-                    <div className="space-y-3">
-                        {orderedGroups.map((group) => (
-                            <SortableItem
-                                key={`group:${group.type}`}
-                                id={`group:${group.type}`}
-                            >
-                                <div className="cursor-move rounded-md border border-muted/30 bg-muted/10 p-3 hover:bg-muted/20">
-                                    <div className="mb-2 text-sm font-medium">
-                                        {group.type
-                                            .replaceAll('_', ' ')
-                                            .toUpperCase()}
-                                    </div>
+                    <SortableContext
+                        items={orderedGroups.map((g) => `group:${g.type}`)}
+                        strategy={verticalListSortingStrategy}
+                    >
+                        <div className="space-y-4">
+                            {orderedGroups.map((group) => (
+                                <SortableItem
+                                    key={`group:${group.type}`}
+                                    id={`group:${group.type}`}
+                                >
+                                    <div className="group/parent relative rounded-xl border border-slate-200 bg-white p-1 transition-all hover:border-primary/30 hover:shadow-md">
+                                        {/* Group Label / Drag Handle */}
+                                        <div className="flex items-center justify-between px-3 py-2 bg-slate-50/50 rounded-t-lg border-b border-slate-50 cursor-grab active:cursor-grabbing">
+                                            <div className="flex items-center gap-2">
+                                                <GripHorizontal className="w-4 h-4 text-slate-300 group-hover/parent:text-primary transition-colors" />
+                                                <span className="text-[11px] font-black text-slate-500 uppercase tracking-widest">
+                                                    {group.type.replaceAll('_', ' ')}
+                                                </span>
+                                            </div>
+                                            <span className="text-[10px] bg-white border border-slate-200 px-2 py-0.5 rounded-full font-bold text-slate-400">
+                                                {group.questions.length} Items
+                                            </span>
+                                        </div>
 
-                                    {/* 🧩 Nested question DnD Context */}
-                                    {/* 🟢 UPDATED / IMPORTANT:
-                                        Each group has its own DndContext and SortableContext.
-                                        This completely isolates child dragging from parent dragging.
-                                    */}
-                                    <DndContext
-                                        sensors={sensors}
-                                        collisionDetection={closestCenter}
-                                        onDragEnd={(e) =>
-                                            handleQuestionDragEnd(group.type, e)
-                                        }
-                                    >
-                                        <SortableContext
-                                            items={group.questions.map(
-                                                (q) => `${group.type}:${q.id}`,
-                                            )}
-                                            strategy={
-                                                verticalListSortingStrategy
-                                            }
-                                        >
-                                            <ul className="space-y-1 pl-2 text-xs text-muted-foreground">
-                                                {group.questions.map(
-                                                    (q, index) => (
-                                                        <SortableItem
-                                                            key={`${group.type}:${q.id}`}
-                                                            id={`${group.type}:${q.id}`}
-                                                        >
-                                                            <li className="rounded border border-border/40 bg-muted/20 px-2 py-1 text-[13px] hover:bg-muted/30">
-                                                                {q.order+'. ' ||
-                                                                    index +
-                                                                        1 +
-                                                                        '. '}
-                                                                {q.question_text?.slice(
-                                                                    0,
-                                                                    60,
-                                                                ) ||
-                                                                    q.question}
-                                                                {q.question
-                                                                    ?.length >
-                                                                    60 && '...'}
-                                                            </li>
-                                                        </SortableItem>
-                                                    ),
-                                                )}
-                                            </ul>
-                                        </SortableContext>
-                                    </DndContext>
-                                </div>
-                            </SortableItem>
-                        ))}
-                    </div>
-                </SortableContext>
-            </DndContext>
+                                        <div className="p-2">
+                                            <DndContext
+                                                sensors={sensors}
+                                                collisionDetection={closestCenter}
+                                                onDragEnd={(e) => handleQuestionDragEnd(group.type, e)}
+                                            >
+                                                <SortableContext
+                                                    items={group.questions.map((q) => `${group.type}:${q.id}`)}
+                                                    strategy={verticalListSortingStrategy}
+                                                >
+                                                    <div className="space-y-1">
+                                                        {group.questions.map((q, index) => (
+                                                            <SortableItem
+                                                                key={`${group.type}:${q.id}`}
+                                                                id={`${group.type}:${q.id}`}
+                                                            >
+                                                                <div className="group/item flex items-center gap-3 rounded-lg border border-transparent hover:border-slate-100 hover:bg-slate-50/50 px-3 py-2 cursor-grab active:cursor-grabbing transition-all">
+                                                                    <GripVertical className="w-3.5 h-3.5 text-slate-200 group-hover/item:text-slate-400" />
+                                                                    <div className="flex items-center gap-2 overflow-hidden">
+                                                                        <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded-md bg-white border border-slate-100 text-[10px] font-black text-slate-400">
+                                                                            {index + 1}
+                                                                        </span>
+                                                                        <span className="text-xs text-slate-600 font-medium truncate">
+                                                                            {q.question_text || q.question}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </SortableItem>
+                                                        ))}
+                                                    </div>
+                                                </SortableContext>
+                                            </DndContext>
+                                        </div>
+                                    </div>
+                                </SortableItem>
+                            ))}
+                        </div>
+                    </SortableContext>
+                </DndContext>
+            </div>
+
+            <div className="p-3 bg-slate-50 border-t border-slate-100">
+                <p className="text-[10px] text-center text-slate-400 font-medium">
+                    Drag blocks to reorder types, or items to reorder questions.
+                </p>
+            </div>
         </div>
     );
 }

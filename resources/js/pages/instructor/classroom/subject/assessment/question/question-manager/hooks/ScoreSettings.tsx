@@ -4,11 +4,15 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
+    CardDescription,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Progress } from '@/components/ui/progress'; // Assuming you have this shadcn component
 import { useEffect } from 'react';
+import { Target, Percent, Sparkles, AlertCircle, CheckCircle2, Hash } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function ScoreSettings({
     totalScore,
@@ -23,116 +27,151 @@ export default function ScoreSettings({
     setTotalScore: (val: number) => void;
     typePercentages: Record<string, number>;
     setTypePercentages: (val: Record<string, number>) => void;
-    questionTypes: { type: string; count: number }[]; // 👈 updated
+    questionTypes: { type: string; count: number }[];
     autoPoints: boolean;
     setAutoPoints: (val: boolean) => void;
 }) {
-    // =======================================================
-    // 🔹 Step 1: Auto-distribute percentages equally (only once when loading)
-    // =======================================================
     useEffect(() => {
-        if (
-            questionTypes.length > 0 &&
-            Object.keys(typePercentages).length === 0
-        ) {
-            const equalShare = parseFloat(
-                (100 / questionTypes.length).toFixed(2),
-            );
-            const distributed = questionTypes.reduce(
-                (acc, { type }, i) => {
-                    if (i === questionTypes.length - 1) {
-                        const remainder =
-                            100 - equalShare * (questionTypes.length - 1);
-                        acc[type] = parseFloat(remainder.toFixed(2));
-                    } else {
-                        acc[type] = equalShare;
-                    }
-                    return acc;
-                },
-                {} as Record<string, number>,
-            );
+        if (questionTypes.length > 0 && Object.keys(typePercentages).length === 0) {
+            const equalShare = parseFloat((100 / questionTypes.length).toFixed(2));
+            const distributed = questionTypes.reduce((acc, { type }, i) => {
+                if (i === questionTypes.length - 1) {
+                    const remainder = 100 - equalShare * (questionTypes.length - 1);
+                    acc[type] = parseFloat(remainder.toFixed(2));
+                } else {
+                    acc[type] = equalShare;
+                }
+                return acc;
+            }, {} as Record<string, number>);
             setTypePercentages(distributed);
         }
     }, [questionTypes, typePercentages, setTypePercentages]);
 
-    // =======================================================
-    // 🔹 Step 2: Handle user changing individual percentage
-    // =======================================================
     const handlePercentageChange = (type: string, value: string) => {
         const val = Math.min(100, Math.max(0, Number(value)));
         setTypePercentages((prev) => ({ ...prev, [type]: val }));
     };
 
-    // =======================================================
-    // 🔹 Step 3: Calculate total & color
-    // =======================================================
     const totalPct = Object.values(typePercentages).reduce((a, b) => a + b, 0);
-    const pctColor = totalPct === 100 ? 'text-green-600' : 'text-red-500';
+    const isError = totalPct !== 100;
 
     return (
-        <>
-            <Card className="gap-4">
-                <CardHeader>
-                    <CardTitle>Score Settings</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    {/* Total Score Input */}
-                    <div className="mt-3 mb-3">
-                        <Label>Total Score</Label>
+        <Card className="border-slate-200 shadow-xl shadow-slate-200/50 overflow-hidden">
+            <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-2">
+                    <Target className="w-5 h-5 text-primary" />
+                    <CardTitle className="text-lg">Scoring Logic</CardTitle>
+                </div>
+                <CardDescription>
+                    Define how points are distributed across your quiz.
+                </CardDescription>
+            </CardHeader>
+            
+            <CardContent className="pt-6 space-y-6">
+                {/* Total Score Input */}
+                <div className="space-y-2">
+                    <Label className="text-sm font-bold text-slate-700">Quiz Total Points</Label>
+                    <div className="relative">
                         <Input
                             type="number"
                             min={1}
+                            className="h-12 text-lg font-black pl-10 border-slate-200 focus:ring-primary/10"
                             value={totalScore}
-                            onChange={(e) =>
-                                setTotalScore(Number(e.target.value))
-                            }
+                            onChange={(e) => setTotalScore(Number(e.target.value))}
                         />
+                        <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    </div>
+                </div>
+
+                <hr className="border-slate-100" />
+
+                {/* Percentage Distribution */}
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <Label className="text-sm font-bold text-slate-700">Weighting by Type</Label>
+                        <div className={cn(
+                            "flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter transition-colors",
+                            isError ? "bg-rose-50 text-rose-600" : "bg-emerald-50 text-emerald-600"
+                        )}>
+                            {isError ? <AlertCircle className="w-3 h-3" /> : <CheckCircle2 className="w-3 h-3" />}
+                            {totalPct}% / 100%
+                        </div>
                     </div>
 
-                    {/* Percentage by Question Type */}
-                    <div className="space-y-2">
-                        <Label>Percentage by Question Type</Label>
+                    <div className="space-y-3 bg-slate-50/50 p-4 rounded-xl border border-slate-100">
                         {questionTypes.map(({ type, count }) => (
-                            <div
-                                key={type}
-                                className="flex items-center justify-between gap-2 text-sm"
-                            >
-                                <span className=" text-xs capitalize">
-                                    {type.replace('_', ' ')} ({count})
-                                </span>
-                                <div className='flex items-center gap-2'>
-                                    <Input
-                                        type="number"
-                                        min={0}
-                                        max={100}
-                                        value={typePercentages[type] ?? 0}
-                                        onChange={(e) =>
-                                            handlePercentageChange(
-                                                type,
-                                                e.target.value,
-                                            )
-                                        }
-                                        className="w-20"
-                                    />
-                                    <span>%</span>
+                            <div key={type} className="flex items-center justify-between gap-4 group">
+                                <div className="flex flex-col">
+                                    <span className="text-xs font-bold text-slate-600 capitalize">
+                                        {type.replace('_', ' ')}
+                                    </span>
+                                    <span className="text-[10px] text-slate-400 font-medium italic">
+                                        {count} {count === 1 ? 'Question' : 'Questions'}
+                                    </span>
+                                </div>
+                                
+                                <div className="flex items-center gap-2">
+                                    <div className="relative">
+                                        <Input
+                                            type="number"
+                                            min={0}
+                                            max={100}
+                                            value={typePercentages[type] ?? 0}
+                                            onChange={(e) => handlePercentageChange(type, e.target.value)}
+                                            className="w-20 h-9 pr-7 text-right font-bold text-slate-700 border-slate-200 focus:ring-primary/10"
+                                        />
+                                        <Percent className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" />
+                                    </div>
                                 </div>
                             </div>
                         ))}
                     </div>
 
-                    <p className={`mt-2 text-xs font-medium ${pctColor}`}>
-                        Total: {totalPct}% (must equal 100%)
+                    {/* Progress Bar Visualization */}
+                    <div className="space-y-1.5 px-1">
+                        <Progress 
+                            value={totalPct} 
+                            className={cn(
+                                "h-1.5 transition-all", 
+                                isError ? "[&>div]:bg-rose-500" : "[&>div]:bg-emerald-500"
+                            )} 
+                        />
+                        <p className={cn(
+                            "text-[10px] font-medium text-center",
+                            isError ? "text-rose-500 italic" : "text-emerald-500"
+                        )}>
+                            {isError 
+                                ? `Error: Total weighting must equal 100% (currently ${totalPct}%)` 
+                                : "Weighting is balanced perfectly!"}
+                        </p>
+                    </div>
+                </div>
+            </CardContent>
+
+            <CardFooter className="bg-slate-50/50 border-t border-slate-100 p-6 flex items-center justify-between">
+                <div className="space-y-0.5">
+                    <Label htmlFor="auto" className="text-sm font-bold text-slate-700 cursor-pointer">
+                        Smart Point Allocation
+                    </Label>
+                    <p className="text-[10px] text-slate-400 font-medium">
+                        Automatically divide total score by type weights.
                     </p>
-                </CardContent>
-                <CardFooter className="flex items-center gap-2">
-                    <Label htmlFor="auto">Auto Points</Label>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className={cn(
+                        "p-1.5 rounded-lg transition-colors",
+                        autoPoints ? "bg-primary/10 text-primary" : "bg-slate-200 text-slate-400"
+                    )}>
+                        <Sparkles className="w-4 h-4" />
+                    </div>
                     <Switch
                         id="auto"
                         checked={autoPoints}
                         onCheckedChange={setAutoPoints}
+                        className="data-[state=checked]:bg-primary"
                     />
-                </CardFooter>
-            </Card>
-        </>
+                </div>
+            </CardFooter>
+        </Card>
     );
 }

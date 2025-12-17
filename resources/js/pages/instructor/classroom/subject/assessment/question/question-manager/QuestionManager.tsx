@@ -1,6 +1,6 @@
 import QuestionActions from './QuestionActions';
-import QuestionList from './QuestionList';
 import QuestionFormModal from './QuestionFormModal';
+import QuestionList from './QuestionList';
 import OrderQuestionByTypeSetting from './components/OrderQuestion';
 import ScoreSettings from './hooks/ScoreSettings';
 import { useQuestionManager } from './hooks/useQuestionManager';
@@ -53,36 +53,29 @@ export default function QuestionManager({
         setQuestions(newOrder);
     };
 
+    // Inside QuestionManager.tsx
     return (
-        <div className="flex gap-4">
-            <div className="min-w-128 rounded-xl border border-sidebar-border/70 p-4 md:min-h-min dark:border-sidebar-border">
-                <QuestionActions
-                    onAdd={() => setModalOpen(true)}
-                    onSave={handleSubmitAll}
-                    hasChanges={hasChanges}
-                />
+        <div className="mx-auto flex max-w-[1600px] animate-in flex-col gap-6 p-4 duration-700 fade-in lg:flex-row">
+            {/* Main Content: Question List */}
+            <div className="min-w-0 flex-1 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <div className="p-6">
+                    <QuestionActions
+                        onAdd={() => setModalOpen(true)}
+                        onSave={handleSubmitAll}
+                        hasChanges={hasChanges}
+                    />
 
-                <QuestionFormModal
-                    assessmentId={assessmentId}
-                    isOpen={isModalOpen}
-                    setIsOpen={setModalOpen}
-                    onClose={() => setModalOpen(false)}
-                    onSave={handleAddQuestion}
-                    question={selectedQuestion}
-                    defaultData={
-                        editIndex !== null ? questions[editIndex] : undefined
-                    }
-                />
-
-                <QuestionList
-                    questions={questions}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    onDragEnd={handleDragEnd}
-                />
+                    <QuestionList
+                        questions={questions}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        onDragEnd={handleDragEnd}
+                    />
+                </div>
             </div>
 
-            <div className="flex flex-col gap-4">
+            {/* Sidebar: Scoring & Organization */}
+            <aside className="w-full space-y-6 lg:w-[380px]">
                 <ScoreSettings
                     totalScore={totalScore}
                     setTotalScore={setTotalScore}
@@ -97,7 +90,20 @@ export default function QuestionManager({
                     questions={questions}
                     onSave={handleSaveGroupedOrder}
                 />
-            </div>
+            </aside>
+
+            {/* Modal remains the same */}
+            <QuestionFormModal
+                assessmentId={assessmentId}
+                isOpen={isModalOpen}
+                setIsOpen={setModalOpen}
+                onClose={() => setModalOpen(false)}
+                onSave={handleAddQuestion}
+                question={selectedQuestion}
+                defaultData={
+                    editIndex !== null ? questions[editIndex] : undefined
+                }
+            />
         </div>
     );
 }
