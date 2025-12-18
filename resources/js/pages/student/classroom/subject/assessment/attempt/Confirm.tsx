@@ -13,6 +13,7 @@ import utc from 'dayjs/plugin/utc';
 import { route } from 'ziggy-js';
 // Import Confetti
 import confetti from 'canvas-confetti';
+import { motion } from 'framer-motion';
 
 // Enable dayjs plugins
 dayjs.extend(utc);
@@ -20,17 +21,6 @@ dayjs.extend(timezone);
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
 
-const SimpleLayout = ({
-    children,
-    title,
-}: {
-    children: React.ReactNode;
-    title: string;
-}) => (
-    <div className="min-h-screen bg-gray-50 p-4 text-gray-900 sm:p-8 dark:bg-gray-900">
-        <main className="mx-auto max-w-5xl">{children}</main>
-    </div>
-);
 
 type DashboardProps = {
     assessment: {
@@ -245,12 +235,8 @@ export default function Confirm({
         }
     }, [showResult, isPassing]);
 
-    if (!assessment || !serverNow)
-        return (
-            <SimpleLayout title="Loading...">
-                <div className="p-10 text-center text-gray-400">Loading...</div>
-            </SimpleLayout>
-        );
+    // if (!assessment || !serverNow)
+    //     return ;
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Class', href: '#' },
@@ -262,16 +248,15 @@ export default function Confirm({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={assessment.title} />
 
-            <SimpleLayout title={assessment.title}>
                 {/* Main Container with Entrance Animation */}
-                <div
+                <motion.div layoutId={`asssessment-card-${assessment.id}`}
                     className={`flex flex-col items-center justify-center py-6 transition-all duration-700 ease-out ${
                         showContent
                             ? 'translate-y-0 opacity-100'
                             : 'translate-y-10 opacity-0'
                     }`}
                 >
-                    <div className="relative flex w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-800">
+                    <div  className="relative flex w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-800">
                         {/* Header */}
                         <div className="bg-gray-50/50 p-8 text-center dark:bg-gray-800/50">
                             <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl dark:text-white">
@@ -513,8 +498,7 @@ export default function Confirm({
                             </div>
                         </div>
                     </div>
-                </div>
-            </SimpleLayout>
+                </motion.div>
         </AppLayout>
     );
 }

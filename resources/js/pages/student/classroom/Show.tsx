@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { route } from 'ziggy-js';
-
+import { LayoutGrid, Plus, ArrowLeft } from 'lucide-react';
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Class', href: '/' }];
 
 export default function SubjectShow({ classroom }: { classroom: any }) {
@@ -59,189 +59,77 @@ export default function SubjectShow({ classroom }: { classroom: any }) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Class Details" />
+            <Head title={`${classroom.name} | Details`} />
 
-            <div className="flex flex-col gap-6 p-4">
-                {/* ---------------- CLASS HEADER ---------------- */}
+            <div className="flex flex-col gap-8 p-6">
+                {/* Cinematic Header Card */}
                 <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="group relative h-[280px] w-full overflow-hidden rounded-[2.5rem] shadow-2xl"
                     layoutId={`class-card-${classroom.id}`}
-                    className="relative overflow-hidden rounded-3xl shadow-xl"
                 >
                     <motion.div
-                        layoutId={`class-bg-${classroom.id}`}
-                        className="h-64 w-full bg-cover bg-center"
+                        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
                         style={{
-                            backgroundImage: `url('${
-                                classroom.cover
-                                    ? '/storage/' + classroom.cover
-                                    : '/assets/img/class/39323.jpg'
-                            }')`,
+                            backgroundImage: `url('${classroom.cover ? '/storage/' + classroom.cover : '/assets/img/class/39323.jpg'}')`,
                         }}
                     />
+                    
+                    {/* Multi-layered overlay for depth */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-primary/80 via-destructive/40 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/60 to-transparent" />
 
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-950/90 to-transparent p-6 text-white">
-                        <motion.div layoutId={`class-meta-${classroom.id}`}>
-                            <h3 className="text-lg font-medium">
-                                Batch {classroom.batch} –{' '}
-                                {classroom.shift === 1 ? 'Morning' : 'Evening'}
-                            </h3>
-                            <h3 className="text-lg opacity-90">
-                                Year {classroom.year}
-                            </h3>
-                        </motion.div>
-
-                        <motion.div
-                            layoutId={`class-title-${classroom.id}`}
-                            className="mt-3 max-w-lg"
-                        >
-                            <h1 className="text-4xl leading-tight font-bold">
+                    <div className="absolute bottom-0 left-0 p-8 text-white">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+                            <div className="mb-4 flex items-center gap-3">
+                                <span className="rounded-full bg-white/20 px-4 py-1 text-xs font-bold tracking-widest uppercase backdrop-blur-md">
+                                    Batch {classroom.batch}
+                                </span>
+                                <span className="rounded-full bg-blue-500/20 px-4 py-1 text-xs font-bold tracking-widest uppercase backdrop-blur-md">
+                                    {classroom.shift === 1 ? 'Morning' : 'Evening'}
+                                </span>
+                            </div>
+                            <h1 className="text-4xl text-white font-black tracking-tight lg:text-5xl">
                                 {classroom.name}
                             </h1>
-                            <p className="mt-2 text-sm opacity-80">
-                                {classroom.description}
+                            <p className="mt-4 max-w-xl text-lg text-gray-200 opacity-90">
+                                {classroom.description || "No description provided for this classroom."}
                             </p>
                         </motion.div>
                     </div>
                 </motion.div>
 
-                {/* ---------------- SUBJECT LIST ---------------- */}
-                <div>
-                    <div className="flex items-center justify-between">
-                        <h1 className="mb-4 text-xl font-semibold">Subjects</h1>
+                {/* Subject Section Header */}
+                <div className="mt-4">
+                    <div className="flex items-center justify-between border-b border-border/60 pb-5">
+                        <div className="flex items-center gap-3">
+                            <div className="rounded-xl bg-primary/10 p-2 text-primary">
+                                <LayoutGrid className="h-6 w-6" />
+                            </div>
+                            <h2 className="text-2xl font-bold tracking-tight">Curriculum</h2>
+                        </div>
+                        
                         {page.props.auth.can.access_instructor_page && (
-                            // <Link href={route('instructor.classes.index')}>
-                            //     Instructor Dashboard
-                            // </Link>
-                        <Button onClick={() => setOpenSubjectModal(true)}>
-                            + Add Subject
-                        </Button>
+                            <Button 
+                                onClick={() => setOpenSubjectModal(true)}
+                                className="rounded-full shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40"
+                            >
+                                <Plus className="mr-2 h-4 w-4" /> Add Subject
+                            </Button>
                         )}
-
                     </div>
 
+                    {/* Subject Grid with custom animations */}
                     <motion.div
                         variants={containerVariants}
                         initial="hidden"
                         animate="show"
-                        className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+                        className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                     >
-                        {subjects.length === 0 && (
-                            <p className="col-span-full py-8 text-center text-muted-foreground">
-                                No subjects added yet.
-                            </p>
-                        )}
-
-                        {subjects.map((subj: any) => {
-                            const cover = subj.cover
-                                ? `/storage/${subj.cover}`
-                                : '/assets/img/fallback/subject.png';
-
-                            return (
-                                <motion.div
-                                    key={subj.id}
-                                    variants={cardVariants}
-                                    whileHover={{ scale: 1.03, translateY: -2 }}
-                                    transition={{
-                                        type: 'spring',
-                                        stiffness: 200,
-                                        damping: 15,
-                                    }}
-                                >
-                                    <Link
-                                        href={route(
-                                            'student.classes.subjects.show',
-                                            [classroom.id, subj.id],
-                                        )}
-                                    >
-                                        <motion.div
-                                            layoutId={`subject-card-${subj.id}`}
-                                            className="cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-sm backdrop-blur-sm transition-all duration-300 hover:shadow-xl"
-                                        >
-                                            {/* Cover Section */}
-                                            <motion.div
-                                                layoutId={`subject-bg-${subj.id}`}
-                                                className="relative h-44 bg-cover bg-center"
-                                                style={{
-                                                    backgroundImage: `url('${cover}')`,
-                                                }}
-                                            >
-                                                {/* Darken overlay for better text visibility */}
-                                                <div className="absolute inset-0 bg-gradient-to-tr from-black/40 via-black/20 to-transparent"></div>
-
-                                                {/* Glass Meta Badge */}
-                                                <motion.div
-                                                    layoutId={`subject-meta-${subj.id}`}
-                                                    className="absolute top-3 left-3 rounded-xl bg-white/20 px-3 py-1 text-xs font-medium text-white shadow backdrop-blur-md"
-                                                >
-                                                    {subj.visibility ===
-                                                    'public'
-                                                        ? 'Public'
-                                                        : 'Private'}
-                                                </motion.div>
-                                            </motion.div>
-
-                                            {/* Content */}
-                                            <div className="px-4 py-3">
-                                                <motion.h3
-                                                    layoutId={`subject-title-${subj.id}`}
-                                                    className="text-lg leading-tight font-semibold text-gray-900 dark:text-white"
-                                                >
-                                                    {subj.name}
-                                                </motion.h3>
-
-                                                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                                    Click to view subject
-                                                    details →
-                                                </p>
-                                            </div>
-                                        </motion.div>
-                                    </Link>
-                                </motion.div>
-
-                                // <motion.div key={subj.id} variants={cardVariants}>
-                                //     <Link
-                                //         href={route(
-                                //             'instructor.classes.subjects.index',
-                                //             [classroom.id, subj.id]
-                                //         )}
-                                //     >
-                                //         <motion.div
-                                //             layoutId={`subject-card-${subj.id}`}
-                                //             className="cursor-pointer overflow-hidden rounded-2xl  shadow-md transition hover:shadow-xl"
-                                //         >
-                                //             {/* Subject Cover */}
-                                //             <motion.div
-                                //                 layoutId={`subject-bg-${subj.id}`}
-                                //                 className="h-40 bg-cover bg-center"
-                                //                 style={{
-                                //                     backgroundImage: `url('${cover}')`,
-                                //                 }}
-                                //             />
-
-                                //             {/* Subject Content */}
-                                //             <div className="border-t px-4 py-3">
-                                //                 <motion.div
-                                //                     layoutId={`subject-meta-${subj.id}`}
-                                //                 >
-                                //                     <p className="text-sm text-muted-foreground">
-                                //                         {subj.visibility === 'public'
-                                //                             ? 'Public'
-                                //                             : 'Private'}
-                                //                     </p>
-                                //                 </motion.div>
-
-                                //                 <motion.h3
-                                //                     layoutId={`subject-title-${subj.id}`}
-                                //                     className="mt-1 text-lg font-semibold"
-                                //                 >
-                                //                     {subj.name}
-                                //                 </motion.h3>
-                                //             </div>
-                                //         </motion.div>
-                                //     </Link>
-                                // </motion.div>
-                            );
-                        })}
+                        {subjects.map((subj: any) => (
+                            <SubjectCardItem key={subj.id} subj={subj} classroomId={classroom.id} />
+                        ))}
                     </motion.div>
                 </div>
             </div>
@@ -254,5 +142,42 @@ export default function SubjectShow({ classroom }: { classroom: any }) {
                 classId={classroom?.id}
             />
         </AppLayout>
+    );
+}
+
+// Sub-component for a cleaner Subject Card
+function SubjectCardItem({ subj, classroomId }: { subj: any, classroomId: number }) {
+    const cover = subj.cover ? `/storage/${subj.cover}` : 'https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=2070&auto=format&fit=crop';
+    
+    return (
+        <motion.div
+            whileHover={{ y: -8 }}
+            // transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            layoutId={`subject-card-${subj.id}`}
+        >
+            <Link href={route('student.classes.subjects.show', [classroomId, subj.id])}>
+                <div className="group relative overflow-hidden rounded-3xl border bg-card shadow-sm transition-all hover:border-primary/50 hover:shadow-xl">
+                    <div 
+                        className="h-48 w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+                        style={{ backgroundImage: `url('${cover}')` }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                    
+                    <div className="p-5">
+                        <div className="mb-2 flex items-center justify-between">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                                {subj.visibility}
+                            </span>
+                        </div>
+                        <h3 className="text-lg font-bold leading-tight group-hover:text-primary transition-colors">
+                            {subj.name}
+                        </h3>
+                        <p className="mt-2 flex items-center text-xs font-medium text-primary opacity-0 transition-all group-hover:opacity-100">
+                            Explore Curriculum <Plus className="ml-1 h-3 w-3" />
+                        </p>
+                    </div>
+                </div>
+            </Link>
+        </motion.div>
     );
 }

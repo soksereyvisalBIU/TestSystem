@@ -1,6 +1,9 @@
-// ui/app-sidebar.tsx
-import { NavFooter } from '@/components/nav-footer';
 import { NavUser } from '@/components/nav-user';
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import {
     Sidebar,
     SidebarContent,
@@ -14,223 +17,317 @@ import {
     SidebarMenuSub,
     SidebarMenuSubButton,
     SidebarMenuSubItem,
+    SidebarRail,
+    useSidebar,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
-import { type NavItem } from '@/types';
-import { Link, usePage } from '@inertiajs/react'; // 👈 FIX: Added usePage import
+import { Link, usePage } from '@inertiajs/react';
 import {
-    BookOpen,
-    ChevronDown,
-    Folder,
+    Activity,
+    ChevronRight,
+    ClipboardCheck,
+    Cpu,
     LayoutGrid,
+    Search,
+    Sparkles,
     SquareLibrary,
+    Users,
 } from 'lucide-react';
-import { useState } from 'react';
-import { route } from 'ziggy-js'; // 👈 FIX: Added route function import
-import AppLogo from './app-logo';
-
-const mainNavItems: (NavItem & {
-    subItems?: NavItem[];
-    section?: string;
-    group?: string;
-    can?: string;
-})[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-        section: 'Main',
-        group: 'Admin', // 👈 group name
-        can: 'access-instructor-page',
-    },
-    {
-        title: 'Class',
-        href: '#', // Using '#' as a placeholder if the item is just a toggle
-        icon: SquareLibrary,
-        section: 'Main',
-        group: 'Admin', // 👈 group name
-        can: 'access-instructor-page',
-        subItems: [
-            { title: 'All Classes', href: route('instructor.classes.index') },
-            { title: 'Create Course', href: '' },
-        ],
-    },
-    {
-        title: 'Course',
-        href: '',
-        icon: SquareLibrary,
-        section: 'Main',
-        can: 'access-instructor-page',
-        subItems: [
-            { title: 'All Courses', href: '' },
-            { title: 'Create Course', href: '' },
-        ],
-    },
-
-    {
-        title: 'Classrooms',
-        href: route('student.classes.index'),
-        icon: SquareLibrary,
-        section: 'Student',
-        subItems: [
-            { title: 'All Classrooms', href: route('student.classes.index') },
-            { title: 'Year 1', href: route('instructor.classes.index', 1) },
-            { title: 'Year 2', href: route('instructor.classes.index', 2) },
-            { title: 'Year 3', href: route('instructor.classes.index', 3) },
-            { title: 'Year 4', href: route('instructor.classes.index', 4) },
-        ],
-    },
-];
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
+import { route } from 'ziggy-js';
+import AppLogoIcon from './app-logo-icon';
 
 export function AppSidebar() {
-    // FIX: Imported usePage above, now use it here.
     const { auth } = usePage().props as {
         auth?: { user: any; can?: Record<string, boolean> };
     };
-
-    // fallback if no can object
+    const { state } = useSidebar();
     const can = auth?.can ?? {};
 
-    // Filter items based on permissions
-    const filteredItems = mainNavItems.filter(
-        (item) => !item.can || can[item.can],
-    );
-
-    const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
-
-    const toggleMenu = (title: string) => {
-        setOpenMenus((prev) => ({ ...prev, [title]: !prev[title] }));
-    };
-
-    // Group filtered items by section (FIX: using filteredItems instead of mainNavItems)
-    const sections = filteredItems.reduce<Record<string, typeof mainNavItems>>(
-        (acc, item) => {
-            const section = item.section || 'Other';
-            if (!acc[section]) acc[section] = [];
-            acc[section].push(item);
-            return acc;
+    // --- NAVIGATION CONFIGURATION ---
+    const navGroups = [
+        {
+            label: 'Platform',
+            items: [
+                {
+                    title: 'Dashboard',
+                    href: dashboard(),
+                    icon: LayoutGrid,
+                    activeMatch: '/dashboard',
+                },
+                {
+                    title: 'Intelligence',
+                    href: '#',
+                    icon: Sparkles,
+                    badge: 'AI', // New Feature Badge
+                },
+            ],
         },
-        {},
-    );
+        {
+            label: 'Academic Management',
+            items: [
+                {
+                    title: 'Classrooms',
+                    icon: SquareLibrary,
+                    isActive: true, // Default open for demo
+                    items: [
+                        {
+                            title: 'All Classes',
+                            href: route('student.classes.index'),
+                        },
+                        {
+                            title: 'Freshman (Y1)',
+                            href: route('instructor.classes.index', 1),
+                        },
+                        {
+                            title: 'Sophomore (Y2)',
+                            href: route('instructor.classes.index', 2),
+                        },
+                        {
+                            title: 'Junior (Y3)',
+                            href: route('instructor.classes.index', 3),
+                        },
+                        {
+                            title: 'Senior (Y4)',
+                            href: route('instructor.classes.index', 4),
+                        },
+                    ],
+                },
+                {
+                    title: 'Assessments',
+                    icon: ClipboardCheck,
+                    items: [
+                        { title: 'Active Exams', href: '#' },
+                        { title: 'Gradebook', href: '#' },
+                    ],
+                },
+            ],
+        },
+        {
+            label: 'System Admin',
+            can: 'access-instructor-page', // Permission Check
+            items: [
+                { title: 'User Management', icon: Users, href: '#' },
+                { title: 'Faculty Settings', icon: Cpu, href: '#' },
+            ],
+        },
+    ];
 
-    // Helper function to check if a navigation item is active
-    // This is a basic implementation; a more robust solution would check the current URL/route.
-    const isActive = (href: string) => {
-        // Simple check for demonstration. In a real app, you'd use a more accurate comparison.
-        if (href === '#') return false;
-        return window.location.href.includes(href);
+    // Helper to check active state
+    const isRouteActive = (href: string) => {
+        if (!href || href === '#') return false;
+        try {
+            return (
+                window.location.pathname ===
+                new URL(href, window.location.origin).pathname
+            );
+        } catch {
+            return false;
+        }
     };
 
     return (
-        <Sidebar collapsible="icon" variant="inset">
-            <SidebarHeader>
+        <Sidebar
+            collapsible="icon"
+            className="border-r border-slate-200 bg-slate-50/50 dark:border-slate-800 dark:bg-[#09090b]"
+        >
+            {/* --- 1. HEADER: BRAND & SEARCH --- */}
+            <SidebarHeader className="bg-white pb-4 dark:bg-[#09090b]">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
-                                <AppLogo />
+                        <SidebarMenuButton
+                            size="lg"
+                            asChild
+                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                        >
+                            <Link href={dashboard()}>
+                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
+                                    {/* <AppLogo className="size-5 fill-white" /> */}
+                                    {/* <AppLogoIcon className="size-5 fill-current text-white dark:text-black" /> */}
+                                    <AppLogoIcon  />
+                                </div>
+                                <div className="grid flex-1 text-left text-sm leading-tight">
+                                    <span className="truncate font-black tracking-tight text-slate-900 dark:text-white">
+                                        BIU CLOUD
+                                    </span>
+                                    <span className="truncate text-[10px] font-bold tracking-widest text-blue-500 uppercase">
+                                        Faculty of IT
+                                    </span>
+                                </div>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
+
+                {/* Command Search Bar - Only visible when expanded */}
+                {state === 'expanded' && (
+                    <div className="mt-2 px-2">
+                        <button className="flex w-full items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-500 shadow-sm transition-colors hover:border-blue-400 hover:text-blue-600 dark:border-slate-800 dark:bg-slate-900/50 dark:hover:border-blue-500">
+                            <div className="flex items-center gap-2">
+                                <Search className="h-3.5 w-3.5" />
+                                <span>Search curriculum...</span>
+                            </div>
+                            <kbd className="pointer-events-none inline-flex h-5 items-center gap-1 rounded border border-slate-200 bg-slate-50 px-1.5 font-mono text-[10px] font-medium text-slate-500 opacity-100 select-none dark:border-slate-700 dark:bg-slate-800">
+                                <span className="text-xs">⌘</span>K
+                            </kbd>
+                        </button>
+                    </div>
+                )}
             </SidebarHeader>
 
-            <SidebarContent>
-                {/* Render navigation groups by section */}
-                {Object.entries(sections).map(([sectionTitle, items]) => (
-                    <SidebarGroup key={sectionTitle}>
-                        <SidebarGroupLabel>{sectionTitle}</SidebarGroupLabel>
-                        <SidebarMenu>
-                            {items.map((item) => (
-                                <SidebarMenuItem key={item.title}>
-                                    {/* Use SidebarMenuButton to contain the Link and Toggle Logic */}
-                                    <SidebarMenuButton
-                                        asChild
-                                        // This onClick handles toggling the submenu for items that have subItems
-                                        onClick={() =>
-                                            item.subItems &&
-                                            toggleMenu(item.title)
-                                        }
-                                        // A slightly better isActive check for the main menu item
-                                        isActive={
-                                            isActive(item.href) ||
-                                            !!(
-                                                item.subItems &&
-                                                openMenus[item.title]
-                                            )
-                                        }
-                                    >
-                                        <div className="flex w-full items-center justify-between">
-                                            {/* The Link component for navigation. 
-                                                If it has sub-items, we still link but also enable the toggle.
-                                                You might want to change the Link's href to '#' if it only opens a submenu.
-                                            */}
-                                            <Link
-                                                href={item.href}
-                                                className="flex items-center gap-2"
-                                            >
-                                                <item.icon className="size-4" />
-                                                {item.title}
-                                            </Link>
+            {/* --- 2. MAIN CONTENT --- */}
+            <SidebarContent className="px-2">
+                {navGroups.map((group) => {
+                    // Check permissions for the whole group
+                    if (group.can && !can[group.can]) return null;
 
-                                            {/* Chevron Icon for dropdown */}
-                                            {item.subItems && (
-                                                <ChevronDown
-                                                    className={`size-4 transition-transform duration-200 ${
-                                                        openMenus[item.title]
-                                                            ? 'rotate-180'
-                                                            : ''
-                                                    }`}
-                                                />
-                                            )}
-                                        </div>
-                                    </SidebarMenuButton>
+                    return (
+                        <SidebarGroup key={group.label} className="py-2">
+                            <SidebarGroupLabel className="px-2 text-[10px] font-black tracking-widest text-slate-400/80 uppercase">
+                                {group.label}
+                            </SidebarGroupLabel>
+                            <SidebarMenu>
+                                {group.items.map((item) => {
+                                    const isActive = item.href
+                                        ? isRouteActive(item.href)
+                                        : false;
 
-                                    {/* Submenu rendering */}
-                                    {item.subItems && openMenus[item.title] && (
-                                        <SidebarMenuSub>
-                                            {item.subItems.map((sub) => (
-                                                <SidebarMenuSubItem
-                                                    key={sub.title}
+                                    // RENDER: Simple Link Item
+                                    if (item.href && !item.items) {
+                                        return (
+                                            <SidebarMenuItem key={item.title}>
+                                                <SidebarMenuButton
+                                                    asChild
+                                                    tooltip={item.title}
+                                                    isActive={isActive}
+                                                    className={`group relative h-9 transition-all duration-200 ${
+                                                        isActive
+                                                            ? 'bg-blue-50 font-bold text-blue-600 dark:bg-blue-500/10 dark:text-blue-400'
+                                                            : 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'
+                                                    } `}
                                                 >
-                                                    <SidebarMenuSubButton
-                                                        asChild
-                                                        isActive={isActive(
-                                                            sub.href,
+                                                    <Link href={item.href}>
+                                                        <item.icon
+                                                            className={
+                                                                isActive
+                                                                    ? 'text-blue-600 dark:text-blue-400'
+                                                                    : 'text-slate-400 group-hover:text-slate-600'
+                                                            }
+                                                        />
+                                                        <span>
+                                                            {item.title}
+                                                        </span>
+                                                        {item.badge && (
+                                                            <span className="ml-auto rounded-full bg-blue-100 px-1.5 py-0.5 text-[9px] font-bold text-blue-600 dark:bg-blue-500/20 dark:text-blue-300">
+                                                                {item.badge}
+                                                            </span>
                                                         )}
+                                                        {/* Active Left Border Indicator */}
+                                                        {isActive && (
+                                                            <div className="absolute top-1.5 bottom-1.5 left-0 w-1 rounded-r-full bg-blue-600" />
+                                                        )}
+                                                    </Link>
+                                                </SidebarMenuButton>
+                                            </SidebarMenuItem>
+                                        );
+                                    }
+
+                                    // RENDER: Collapsible Submenu
+                                    return (
+                                        <Collapsible
+                                            key={item.title}
+                                            asChild
+                                            defaultOpen={
+                                                item.isActive ||
+                                                item.items?.some((sub) =>
+                                                    isRouteActive(sub.href),
+                                                )
+                                            }
+                                            className="group/collapsible"
+                                        >
+                                            <SidebarMenuItem>
+                                                <CollapsibleTrigger asChild>
+                                                    <SidebarMenuButton
+                                                        tooltip={item.title}
+                                                        className="group-data-[state=open]/collapsible:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800"
                                                     >
-                                                        <Link href={sub.href}>
-                                                            {sub.title}
-                                                        </Link>
-                                                    </SidebarMenuSubButton>
-                                                </SidebarMenuSubItem>
-                                            ))}
-                                        </SidebarMenuSub>
-                                    )}
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroup>
-                ))}
+                                                        <item.icon className="text-slate-400 group-data-[state=open]/collapsible:text-blue-600" />
+                                                        <span className="font-medium group-data-[state=open]/collapsible:font-bold">
+                                                            {item.title}
+                                                        </span>
+                                                        <ChevronRight className="ml-auto text-slate-400 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                                    </SidebarMenuButton>
+                                                </CollapsibleTrigger>
+                                                <CollapsibleContent>
+                                                    <SidebarMenuSub>
+                                                        {item.items?.map(
+                                                            (subItem) => (
+                                                                <SidebarMenuSubItem
+                                                                    key={
+                                                                        subItem.title
+                                                                    }
+                                                                >
+                                                                    <SidebarMenuSubButton
+                                                                        asChild
+                                                                        isActive={isRouteActive(
+                                                                            subItem.href,
+                                                                        )}
+                                                                    >
+                                                                        <Link
+                                                                            href={
+                                                                                subItem.href
+                                                                            }
+                                                                        >
+                                                                            <span
+                                                                                className={
+                                                                                    isRouteActive(
+                                                                                        subItem.href,
+                                                                                    )
+                                                                                        ? 'font-bold text-blue-600'
+                                                                                        : ''
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    subItem.title
+                                                                                }
+                                                                            </span>
+                                                                        </Link>
+                                                                    </SidebarMenuSubButton>
+                                                                </SidebarMenuSubItem>
+                                                            ),
+                                                        )}
+                                                    </SidebarMenuSub>
+                                                </CollapsibleContent>
+                                            </SidebarMenuItem>
+                                        </Collapsible>
+                                    );
+                                })}
+                            </SidebarMenu>
+                        </SidebarGroup>
+                    );
+                })}
             </SidebarContent>
 
-            <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
+            {/* --- 3. FOOTER: SYSTEM STATUS & USER --- */}
+            <SidebarFooter className="border-t border-slate-200 bg-white p-2 dark:border-slate-800 dark:bg-[#09090b]">
+                {state === 'expanded' && (
+                    <div className="mb-2 rounded-md border border-blue-100 bg-blue-50/50 p-2 dark:border-blue-500/20 dark:bg-blue-900/10">
+                        <div className="flex items-center gap-2 text-[10px] font-bold text-blue-600 dark:text-blue-400">
+                            <Activity className="size-3 animate-pulse" />
+                            <span className="tracking-wider uppercase">
+                                System Operational
+                            </span>
+                        </div>
+                        <div className="mt-1 text-[9px] text-slate-500 dark:text-slate-400">
+                            Maintained by{' '}
+                            <span className="font-bold text-slate-700 dark:text-slate-300">
+                                Faculty of IT & Science
+                            </span>
+                        </div>
+                    </div>
+                )}
                 <NavUser />
             </SidebarFooter>
+            <SidebarRail />
         </Sidebar>
     );
 }

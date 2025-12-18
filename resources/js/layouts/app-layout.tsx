@@ -13,9 +13,9 @@ interface AppLayoutProps {
 
 export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => (
     <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
-        <div className="ms-4 mt-2">
+        {/* <div className="ms-4 mt-2">
             <AutoBreadcrumb />
-        </div>
+        </div> */}
         <HotToast position="bottom-right" reverseOrder={false} />
         {/* <GlobalAlert /> */}
 

@@ -2,9 +2,9 @@ import SubjectModal from '@/components/instructor/modal/subject-modal';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, usePage, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import { useEffect, useState, useMemo } from 'react'; // Added useMemo for availableClasses simulation
+import { useEffect, useState } from 'react'; // Added useMemo for availableClasses simulation
 import { toast } from 'sonner';
 import { route } from 'ziggy-js';
 
@@ -20,9 +20,11 @@ import { Copy, MoreHorizontalIcon, PencilIcon, TrashIcon } from 'lucide-react';
 // import CopySubjectModal from '@/components/instructor/modal/copy-subject-modal';
 import CopySubjectModal from './component/copy-subject-modal';
 // NOTE: Assuming this file exists and handles the confirmation
-// import DeleteConfirmationModal from '@/components/ui/delete-confirmation-modal'; 
+// import DeleteConfirmationModal from '@/components/ui/delete-confirmation-modal';
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Classes', href: route('instructor.classes.index') }];
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Classes', href: route('instructor.classes.index') },
+];
 
 // Define a type for the Subject structure for clarity
 interface Subject {
@@ -52,16 +54,16 @@ interface AvailableClass {
     name: string;
 }
 
-export default function SubjectShow({ 
+export default function SubjectShow({
     classroom,
     // You should pass all other classes available to the instructor as a prop
-    allAvailableClasses 
-}: { 
+    allAvailableClasses,
+}: {
     classroom: Classroom;
     allAvailableClasses: AvailableClass[]; // Example prop
 }) {
     const subjects = classroom?.subjects ?? [];
-    
+
     // State for the SubjectModal (Create/Edit)
     const [openSubjectModal, setOpenSubjectModal] = useState(false);
     const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
@@ -73,16 +75,18 @@ export default function SubjectShow({
 
     // State for the Delete Confirmation Modal
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
-    const [subjectToDelete, setSubjectToDelete] = useState<Subject | null>(null);
+    const [subjectToDelete, setSubjectToDelete] = useState<Subject | null>(
+        null,
+    );
     const [isDeleting, setIsDeleting] = useState(false); // To handle loading state on delete
 
     const { flash } = usePage().props as {
         flash?: { success?: string; error?: string };
     };
-    
+
     // Use the actual prop, but keep the name consistent with the modal's expected type
-    const availableClasses = allAvailableClasses; 
-    
+    const availableClasses = allAvailableClasses;
+
     // --- Toast Notifications Effect ---
     useEffect(() => {
         if (flash?.success) toast.success(flash.success);
@@ -105,7 +109,7 @@ export default function SubjectShow({
     };
 
     // --- Modal Handlers ---
-    
+
     // Open "Create" modal
     const openCreateModal = () => {
         setModalMode('create');
@@ -125,13 +129,13 @@ export default function SubjectShow({
         setSubjectToCopy(subject);
         setOpenCopyModal(true);
     };
-    
+
     // Open "Delete" modal
     const openDeleteSubjectModal = (subject: Subject) => {
         setSubjectToDelete(subject);
         setOpenDeleteModal(true);
     };
-    
+
     // Handle actual deletion
     const handleDeleteSubject = () => {
         if (subjectToDelete) {
@@ -140,7 +144,7 @@ export default function SubjectShow({
                 route('instructor.classes.subjects.destroy', [
                     classroom.id,
                     subjectToDelete.id,
-                ]), 
+                ]),
                 {
                     preserveScroll: true,
                     onStart: () => setIsDeleting(true),
@@ -151,20 +155,25 @@ export default function SubjectShow({
                     },
                     onError: (errors) => {
                         // Display the first error message if available
-                        const errorMessage = Object.values(errors).flat()[0] || 'Failed to delete subject.';
+                        const errorMessage =
+                            Object.values(errors).flat()[0] ||
+                            'Failed to delete subject.';
                         toast.error(errorMessage);
                     },
                     onFinish: () => setIsDeleting(false),
-                }
+                },
             );
         }
     };
-    
+
     return (
-        <AppLayout 
+        <AppLayout
             breadcrumbs={[
-                ...breadcrumbs, 
-                { title: classroom.name, href: route('instructor.classes.show', classroom.id) }
+                ...breadcrumbs,
+                {
+                    title: classroom.name,
+                    href: route('instructor.classes.show', classroom.id),
+                },
             ]}
         >
             <Head title={`Class: ${classroom.name}`} />
@@ -202,7 +211,7 @@ export default function SubjectShow({
                             layoutId={`class-title-${classroom.id}`}
                             className="mt-3 max-w-lg"
                         >
-                            <h1 className="text-4xl leading-tight font-bold">
+                            <h1 className="text-4xl leading-tight font-bold text-white">
                                 {classroom.name}
                             </h1>
                             <p className="mt-2 text-sm opacity-80">
@@ -216,9 +225,7 @@ export default function SubjectShow({
                 <div>
                     <div className="flex items-center justify-between">
                         <h1 className="mb-4 text-xl font-semibold">Subjects</h1>
-                        <Button onClick={openCreateModal}>
-                            + Add Subject
-                        </Button>
+                        <Button onClick={openCreateModal}>+ Add Subject</Button>
                     </div>
 
                     <motion.div
@@ -236,7 +243,7 @@ export default function SubjectShow({
                         {subjects.map((subj: Subject) => {
                             const cover = subj.cover
                                 ? `/storage/${subj.cover}`
-                                : '/assets/img/fallback/subject.png';
+                                : 'https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=2070&auto=format&fit=crop';
 
                             return (
                                 <motion.div
@@ -245,16 +252,18 @@ export default function SubjectShow({
                                     className="group relative"
                                 >
                                     {/* Action Button */}
-                                    <div className="absolute right-2 top-2 z-10 opacity-0 transition-opacity group-hover:opacity-100">
+                                    <div className="absolute top-2 right-2 z-10 opacity-0 transition-opacity group-hover:opacity-100">
                                         <SubjectActions
                                             subject={subj}
                                             classId={classroom.id}
                                             openEditModal={openEditModal}
                                             openCopyModal={openCopySubjectModal}
-                                            openDeleteModal={openDeleteSubjectModal}
+                                            openDeleteModal={
+                                                openDeleteSubjectModal
+                                            }
                                         />
                                     </div>
-                                    
+
                                     <Link
                                         href={route(
                                             'instructor.classes.subjects.show',
@@ -311,7 +320,7 @@ export default function SubjectShow({
                 classId={classroom.id}
                 editingSubject={editingSubject} // Pass the subject data if mode is 'edit'
             />
-            
+
             {/* Copy Subject Modal */}
             {subjectToCopy && (
                 <CopySubjectModal
@@ -320,9 +329,9 @@ export default function SubjectShow({
                     subjectToCopy={subjectToCopy}
                     availableClasses={availableClasses} // Pass available classes
                     sourceClassId={classroom.id}
-                /> 
+                />
             )}
-            
+
             {/* Delete Confirmation Modal */}
             {/* {subjectToDelete && (
                 <DeleteConfirmationModal
@@ -358,7 +367,7 @@ function SubjectActions({
                 <DropdownMenuTrigger asChild>
                     <Button
                         variant="ghost"
-                        className="h-8 w-8 p-0 text-white hover:text-white/80 bg-black/40 hover:bg-black/60 transition"
+                        className="h-8 w-8 bg-black/40 p-0 text-white transition hover:bg-black/60 hover:text-white/80"
                         aria-label="Subject Actions"
                         onClick={(e) => e.preventDefault()} // Prevent link click when opening dropdown
                     >

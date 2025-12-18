@@ -1,252 +1,185 @@
 import AppearanceTabsHeader from '@/components/appearance-tabs-header';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import {
-    Book,
-    Calculator,
-    FileText,
+    ArrowRight,
+    Sparkles,
+    ShieldCheck,
+    Zap,
+    Fingerprint,
+    Activity,
+    ChevronRight,
+    Globe,
+    Lock,
+    Cpu,
+    CheckCircle2,
     GraduationCap,
-    PenLine,
+    Users,
+    ClipboardCheck
 } from 'lucide-react';
+import { useRef, useState, useEffect } from 'react';
 
 export default function Welcome() {
     const { auth } = usePage<SharedData>().props;
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [currentTime, setCurrentTime] = useState('');
 
-    const dots = Array.from({ length: 20 }).map((_, i) => ({
-        id: i,
-        top: Math.random() * 100,
-        left: Math.random() * 100,
-        delay: Math.random() * 5,
-        size: Math.random() * 4 + 2,
-    }));
+    useEffect(() => {
+        setCurrentTime(new Date().toLocaleTimeString());
+        const timer = setInterval(() => setCurrentTime(new Date().toLocaleTimeString()), 1000);
+        return () => clearInterval(timer);
+    }, []);
 
-    const icons = [
-        { Icon: Book, color: 'text-indigo-400', delay: 0 },
-        { Icon: PenLine, color: 'text-pink-400', delay: 1.5 },
-        { Icon: GraduationCap, color: 'text-teal-400', delay: 3 },
-        { Icon: Calculator, color: 'text-blue-400', delay: 4.5 },
-        { Icon: FileText, color: 'text-amber-400', delay: 6 },
-    ];
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start start", "end end"],
+    });
+
+    const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+    const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
 
     return (
         <>
-            <Head title="Welcome">
-                <link rel="preconnect" href="https://fonts.bunny.net" />
-                <link
-                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
-                    rel="stylesheet"
-                />
-            </Head>
+            <Head title="BIU | Faculty of IT Assessment Portal" />
 
-            {/* 🔥 FIX: Replace <body> with a div */}
-            <div className="font-body min-h-screen bg-white text-gray-800 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
-                {/* Header */}
-                <header className="fixed inset-x-0 z-20 flex items-center justify-between bg-white/30 px-6 py-4 shadow-md backdrop-blur-md md:px-12 lg:px-24 dark:bg-gray-900/30">
-                    <img
-                        className="w-12"
-                        src="https://belteigroup.com.kh/images/beltei_international_university_in_cambodia.png"
-                        alt="BIU Logo"
-                    />
-                    <div className="flex items-center gap-4">
-                        {auth.user ? (
-                            <a
-                                href="/dashboard"
-                                className="rounded-lg bg-indigo-600 px-4 py-2 text-white transition hover:bg-indigo-700"
-                            >
-                                Dashboard
-                            </a>
-                        ) : (
-                            <>
-                                <Link
-                                    href={'/login'}
-                                    className="rounded-lg bg-indigo-600 px-4 py-2 text-white transition hover:bg-indigo-700"
-                                >
-                                    Login
-                                </Link>
-                                <Link
-                                    href={"/register"}
-                                    className="rounded-lg bg-gray-200 px-4 py-2 text-gray-800 transition hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
-                                >
-                                    Register
-                                </Link>
-                            </>
-                        )}
+            <div ref={containerRef} className="relative font-sans min-h-screen bg-[#fdfdfd] text-slate-900 dark:bg-[#030712] dark:text-slate-50 selection:bg-indigo-500 selection:text-white transition-colors duration-500">
+                
+                {/* --- BACKGROUND ENGINE --- */}
+                <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+                    <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+                </div>
 
-                        <AppearanceTabsHeader />
+                {/* --- SYSTEM BAR --- */}
+                <div className="relative z-[60] bg-white/50 border-b border-slate-200/50 px-6 py-1.5 backdrop-blur-md dark:bg-black/20 dark:border-white/5">
+                    <div className="mx-auto flex max-w-7xl items-center justify-between text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                        <div className="flex items-center gap-6">
+                            <span className="flex items-center gap-2 text-indigo-500">
+                                <Cpu size={12} />
+                                Engineered by Faculty of IT & Science
+                            </span>
+                            <span className="hidden sm:inline">Server: {currentTime}</span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <span className="hidden md:inline">Academic OS v5.0</span>
+                            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                        </div>
                     </div>
-                </header>
+                </div>
 
-                {/* Hero Section */}
-                <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 md:px-12 lg:px-24">
-                    {/* Background */}
-                    <div className="absolute inset-0 overflow-hidden">
-                        <div className="absolute inset-0 [background-image:linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] [background-size:40px_40px] opacity-[0.05] dark:opacity-[0.08]"></div>
-
-                        {/* Blobs */}
-                        <motion.div
-                            className="absolute -top-16 -left-16 h-72 w-72 rounded-full bg-indigo-300 opacity-30 mix-blend-multiply dark:bg-indigo-700"
-                            animate={{
-                                scale: [1, 1.2, 1],
-                                opacity: [0.3, 0.5, 0.3],
-                            }}
-                            transition={{ duration: 6, repeat: Infinity }}
-                        />
-                        <motion.div
-                            className="absolute -right-24 -bottom-24 h-96 w-96 rounded-full bg-pink-300 opacity-25 mix-blend-multiply dark:bg-pink-700"
-                            animate={{
-                                scale: [1, 1.3, 1],
-                                opacity: [0.2, 0.4, 0.2],
-                            }}
-                            transition={{ duration: 7, repeat: Infinity }}
-                        />
-
-                        {/* Dots */}
-                        {dots.map((dot) => (
-                            <motion.div
-                                key={dot.id}
-                                className="absolute rounded-full bg-indigo-400/40 shadow-[0_0_8px_rgba(99,102,241,0.6)] dark:bg-indigo-300/30"
-                                style={{
-                                    top: `${dot.top}%`,
-                                    left: `${dot.left}%`,
-                                    width: `${dot.size}px`,
-                                    height: `${dot.size}px`,
-                                }}
-                                animate={{
-                                    opacity: [0, 1, 0],
-                                    scale: [1, 1.5, 1],
-                                    y: [0, -5, 0],
-                                }}
-                                transition={{
-                                    duration: 3 + Math.random() * 3,
-                                    delay: dot.delay,
-                                    repeat: Infinity,
-                                    ease: 'easeInOut',
-                                }}
-                            />
-                        ))}
-
-                        {/* Floating Icons */}
-                        {icons.map(({ Icon, color, delay }, i) => (
-                            <motion.div
-                                key={i}
-                                className={`absolute ${color} opacity-40`}
-                                style={{
-                                    top: `${20 + Math.random() * 60}%`,
-                                    left: `${10 + Math.random() * 80}%`,
-                                }}
-                                animate={{
-                                    y: [0, -20, 0],
-                                    opacity: [0.2, 0.6, 0.2],
-                                    rotate: [0, 10, -10, 0],
-                                }}
-                                transition={{
-                                    duration: 10,
-                                    delay,
-                                    repeat: Infinity,
-                                    ease: 'easeInOut',
-                                }}
-                            >
-                                <Icon size={32} className="drop-shadow-lg" />
-                            </motion.div>
-                        ))}
-
-                        {/* Triangles */}
-                        <motion.div
-                            className="clip-triangle absolute h-24 w-24 bg-pink-400 opacity-20 dark:bg-pink-600"
-                            style={{ top: '15%', left: '75%' }}
-                            animate={{
-                                rotate: [0, 90, 180, 360],
-                                scale: [1, 1.1, 1],
-                            }}
-                            transition={{ duration: 12, repeat: Infinity }}
-                        />
-                        <motion.div
-                            className="clip-triangle absolute h-32 w-32 bg-indigo-400 opacity-15 dark:bg-indigo-600"
-                            style={{ top: '60%', left: '20%' }}
-                            animate={{
-                                rotate: [360, 270, 180, 0],
-                                scale: [1, 1.15, 1],
-                            }}
-                            transition={{ duration: 15, repeat: Infinity }}
-                        />
-
-                        <style>{`
-                            .clip-triangle {
-                                clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-                            }
-                        `}</style>
-                    </div>
-
-                    {/* Main Content */}
-                    <motion.div
-                        className="z-10 flex max-w-6xl flex-col-reverse items-center gap-8 md:flex-row"
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 1 }}
-                    >
-                        {/* Text */}
-                        <motion.div
-                            className="flex-1 text-center md:text-left"
-                            initial={{ opacity: 0, x: -30 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 1, delay: 0.3 }}
-                        >
-                            <h1 className="font-heading mb-4 text-4xl font-bold md:text-5xl">
-                                Learn, Test, and Achieve — BIU Online Testing
-                                System
-                            </h1>
-                            <p className="font-body mb-6 leading-relaxed text-gray-700 dark:text-gray-300">
-                                Welcome to the official online testing system of
-                                Beltei International University. Designed
-                                exclusively for BIU students, this platform
-                                allows you to take quizzes, midterms, and final
-                                exams securely — anytime, anywhere.
-                            </p>
-                            <Link href={'/login'}>
-                                <motion.a
-                                    // href="/login"
-                                    className="inline-block rounded-full bg-[#03b7ce] px-8 py-3 font-semibold text-white shadow transition-all duration-200 hover:bg-indigo-700 dark:bg-[#069dc1] dark:hover:bg-[#038eb1]"
-                                    whileHover={{
-                                        scale: 1.05,
-                                        boxShadow:
-                                            '0 0 20px rgba(3,183,206,0.6)',
-                                    }}
-                                    whileTap={{ scale: 0.97 }}
-                                >
-                                    Start now
-                                </motion.a>
-                            </Link>
-                        </motion.div>
-
-                        {/* Image */}
-                        <motion.div
-                            className="relative flex-1"
-                            initial={{ opacity: 0, x: 30 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 1, delay: 0.5 }}
-                        >
-                            <div className="relative">
-                                <motion.div
-                                    className="absolute -inset-4 rotate-12 rounded-full bg-indigo-600 opacity-10 blur-2xl dark:bg-indigo-500 dark:opacity-30"
-                                    animate={{
-                                        rotate: [12, 18, 12],
-                                        scale: [1, 1.05, 1],
-                                    }}
-                                    transition={{
-                                        duration: 5,
-                                        repeat: Infinity,
-                                    }}
-                                />
-                                <img
-                                    src="/assets/img/t.png"
-                                    alt="BIU Student"
-                                    className="relative rounded-2xl"
-                                />
+                {/* --- NAVIGATION --- */}
+                <nav className="sticky top-4 z-50 mx-auto max-w-6xl px-4">
+                    <div className="flex items-center justify-between rounded-2xl border border-white/40 bg-white/60 p-2 shadow-2xl shadow-indigo-500/5 backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/60">
+                        <Link href="/" className="flex items-center gap-3 pl-3 group">
+                            <img className="h-9 w-auto" src="https://belteigroup.com.kh/images/beltei_international_university_in_cambodia.png" alt="BIU" />
+                            <div className="flex flex-col">
+                                <span className="text-xl font-[1000] tracking-tighter leading-none">BIU <span className="text-indigo-600">SYSTEM</span></span>
+                                {/* <span className="text-xl font-[1000] tracking-tighter leading-none">BIU <span className="text-indigo-600">CLOUD</span></span> */}
+                                <span className="text-[7px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-0.5">Academic Assessment Portal</span>
                             </div>
-                        </motion.div>
+                        </Link>
+
+                        <div className="flex items-center gap-2">
+                            <AppearanceTabsHeader />
+                            <Link href="/login" className="rounded-xl bg-indigo-600 px-6 py-2.5 text-xs font-black text-white shadow-lg shadow-indigo-500/30 transition-all hover:bg-indigo-700 active:scale-95">
+                                {auth.user ? 'MY DASHBOARD' : 'STUDENT LOGIN'}
+                            </Link>
+                        </div>
+                    </div>
+                </nav>
+
+                {/* --- HERO SECTION --- */}
+                <motion.main style={{ opacity: heroOpacity, scale: heroScale }} className="relative z-10 mx-auto max-w-7xl px-6 pt-24 text-center">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 dark:border-indigo-500/20 dark:bg-indigo-500/10 dark:text-indigo-300 mb-8">
+                        <GraduationCap size={14} />
+                        BELTEI International University
                     </motion.div>
+                    
+                    <h1 className="mx-auto max-w-5xl text-6xl font-[1000] leading-[0.95] tracking-tight sm:text-8xl lg:text-9xl">
+                        The Future of <br />
+                        <span className="bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-400 bg-clip-text text-transparent">Assessment.</span>
+                    </h1>
+
+                    <p className="mx-auto mt-10 max-w-3xl text-lg font-medium leading-relaxed text-slate-500 dark:text-slate-400 md:text-xl">
+                        The complete digital ecosystem for Online Testing, Scoring, and Student Life. 
+                        Proudly developed and maintained by the <span className="text-slate-900 dark:text-white font-bold underline decoration-indigo-500 decoration-2 underline-offset-4">Faculty of Information Technology and Science.</span>
+                    </p>
+
+                    <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row pb-24">
+                        <Link href="/login" className="group flex h-16 w-full items-center justify-center gap-4 rounded-2xl bg-indigo-600 px-10 text-lg font-black text-white shadow-2xl shadow-indigo-500/40 transition-all hover:bg-indigo-700 sm:w-auto">
+                            Access Student Portal
+                            <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+                        </Link>
+                    </div>
+                </motion.main>
+
+                {/* --- BENTO PRODUCTION GRID --- */}
+                <section className="relative z-10 mx-auto max-w-7xl px-6 pb-24">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                        {/* 1. Assessment Scope */}
+                        <div className="md:col-span-7 overflow-hidden rounded-[3rem] border border-slate-200 bg-white p-10 shadow-2xl dark:border-white/10 dark:bg-slate-900 flex flex-col justify-between">
+                            <div>
+                                <div className="h-14 w-14 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 mb-6">
+                                    <ClipboardCheck size={28} />
+                                </div>
+                                <h3 className="text-3xl font-black mb-4">Unified Assessment</h3>
+                                <p className="text-slate-500 dark:text-slate-400 leading-relaxed max-w-md">
+                                    A singular platform for all your academic needs: Homework submissions, Midterm & Final Exams, and real-time Automated Scoring.
+                                </p>
+                            </div>
+                            <div className="mt-8 flex flex-wrap gap-2">
+                                {['Attendance', 'Quizzes', 'E-Grading', 'Scheduling'].map(tag => (
+                                    <span key={tag} className="px-3 py-1 bg-slate-100 dark:bg-white/5 rounded-full text-[10px] font-bold text-slate-500 uppercase">{tag}</span>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* 2. Engineering Credit */}
+                        <div className="md:col-span-5 rounded-[3rem] bg-slate-900 p-10 text-white shadow-xl dark:bg-indigo-950 flex flex-col justify-between">
+                            <div className="h-14 w-14 rounded-2xl bg-white/10 flex items-center justify-center mb-6">
+                                <Cpu size={28} className="text-indigo-400" />
+                            </div>
+                            <div>
+                                <h3 className="text-2xl font-black">Faculty of Information Technology and Science</h3>
+                                <p className="mt-4 text-slate-300 text-sm leading-relaxed">
+                                    Purpose-built by our Faculty of IT & Science experts to provide students with a secure, lag-free, and high-performance digital environment.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* 3. Student Data */}
+                        <div className="md:col-span-5 rounded-[3rem] border border-slate-200 bg-white p-10 dark:border-white/10 dark:bg-slate-900 flex flex-col justify-between">
+                            <Users size={32} className="text-indigo-500" />
+                            <div>
+                                <h3 className="text-2xl font-black mt-8">Student Insights</h3>
+                                <p className="mt-2 text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                                    Track your attendance, performance history, and study progress with our integrated user data dashboard.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* 4. Security */}
+                        <div className="md:col-span-7 rounded-[3rem] border border-slate-200 bg-white p-10 dark:border-white/10 dark:bg-slate-900 flex items-center justify-between">
+                            <div className="flex flex-col gap-2">
+                                <div className="text-4xl font-[1000] text-indigo-600">Enterprise Grade</div>
+                                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Security & Integrity protocols</div>
+                            </div>
+                            <div className="h-20 w-20 rounded-full border border-indigo-500/20 flex items-center justify-center">
+                                <ShieldCheck size={40} className="text-indigo-500" />
+                            </div>
+                        </div>
+                    </div>
                 </section>
+
+                {/* --- FOOTER --- */}
+                <footer className="relative z-10 border-t border-slate-200 dark:border-white/5 px-6 py-12">
+                    <div className="mx-auto max-w-7xl flex flex-col md:flex-row items-center justify-between gap-8">
+                        <div className="flex flex-col gap-2">
+                            <span className="text-xs font-black tracking-widest text-slate-400">FACULTY OF INFORMATION TECHNOLOGY & SCIENCE</span>
+                            <p className="text-xs text-slate-500">BELTEI International University © 2025</p>
+                        </div>
+                    </div>
+                </footer>
             </div>
         </>
     );

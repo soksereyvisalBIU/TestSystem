@@ -30,7 +30,7 @@ class AssessmentController extends Controller
         // ---------------------------------------------------
         // Create or get StudentAssessment record
         // ---------------------------------------------------
-        $studentAssessment = StudentAssessment::firstOrCreate([
+        $studentAssessment = StudentAssessment::firstOrCreate(attributes: [
             'user_id'       => Auth::id(),
             'assessment_id' => $assessment_id,
         ]);

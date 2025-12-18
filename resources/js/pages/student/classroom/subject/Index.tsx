@@ -199,7 +199,10 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                 })`,
                             }}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-tr from-primary/100 to-destructive/40 " />
+                        {/* <div className="absolute inset-0 bg-gradient-to-tr from-primary/100 via-destructive/40 to-transparent" /> */}
+
+                        {/* <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" /> */}
                     </div>
 
                     {/* Content */}
@@ -307,7 +310,8 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                                 );
 
                                                 return (
-                                                    <div
+                                                    <motion.div
+                                                        layoutId={`asssessment-card-${assessment.id}`}
                                                         key={assessment.id}
                                                         className={`group flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all duration-300 ${
                                                             statusDetails.isUrgent
@@ -389,7 +393,7 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                                                 </Link>
                                                             </Button>
                                                         </div>
-                                                    </div>
+                                                    </motion.div>
                                                 );
                                             })
                                         ) : (

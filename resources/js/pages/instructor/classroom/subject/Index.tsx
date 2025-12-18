@@ -378,8 +378,12 @@ export default function SubjectDetail({ subject }: { subject: any }) {
                                                 currently active.
                                             </CardDescription>
                                         </div>
-                                        <Button variant="outline" size="sm">
+                                        <Button
+                                            size="sm"
+                                            className="cursor-pointer shadow-lg transition-shadow hover:shadow-xl"
+                                        >
                                             Add Student
+                                            <ChevronRight />
                                         </Button>
                                     </CardHeader>
                                     <CardContent className="grid gap-4">

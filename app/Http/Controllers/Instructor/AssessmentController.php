@@ -28,31 +28,20 @@ class AssessmentController extends Controller
                     'subjects' => $class->subjects->map->only(['id', 'name'])->toArray(),
                 ];
             });
-        // $availableClasses = Classroom::with('subjects')
-        //     ->whereIn('id', $instructor->class_ids) // Authorization/Scope check
-        //     ->get(['id', 'name'])
-        //     ->map(function ($class) {
-        //         return [
-        //             'id' => $class->id,
-        //             'name' => $class->name,
-        //             'subjects' => $class->subjects->map->only(['id', 'name'])->toArray(),
-        //         ];
-        //     });
-
-        // return Inertia::render('Instructor/Assessments/AssessmentPage', [
-        //     'subject' => $subject->load('assessments.questions'),
-        //     'availableClasses' => $availableClasses, // 👈 New data
-        // ]);
-
 
         $subject = Subject::with([
             'assessments' => function ($query) {
-                $query->withCount('questions');   // count questions per assessment
+                $query->withCount('questions')
+                    ->orderByDesc('created_at'); // latest first
             }
         ])->findOrFail($subjectId);
 
-        return Inertia::render('instructor/classroom/subject/assessment/Index', compact('subject', 'availableClasses'));
+        return Inertia::render(
+            'instructor/classroom/subject/assessment/Index',
+            compact('subject', 'availableClasses')
+        );
     }
+
 
 
     /**

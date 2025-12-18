@@ -24,10 +24,10 @@ export default function ShortAnswerQuestion({ question, answer, onChange }) {
         <div className="w-full p-6 border rounded-2xl bg-white shadow-lg transition-shadow duration-300 hover:shadow-xl space-y-4">
             
             {/* Question Text with improved hierarchy */}
-            <h3 className="flex items-start gap-3 text-xl font-bold text-gray-900 leading-snug border-b pb-4 mb-2">
+            {/* <h3 className="flex items-start gap-3 text-xl font-bold text-gray-900 leading-snug border-b pb-4 mb-2">
                 <MessageSquareText className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
-                {question.text}
-            </h3>
+                {question}
+            </h3> */}
 
             {/* Instruction Label */}
             <Label htmlFor={`${question.id}-answer`} className="text-base font-semibold text-gray-700 block pt-2">

@@ -49,7 +49,7 @@ export default function ClassCard({ classroom }: ClassCardProps) {
                     // ENHANCEMENT 2: Aesthetic Clarity (Faux Gradient)
                     style={{ 
                         // Subtle black gradient from top-middle to bottom, making the bottom darker for better text contrast
-                        background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.6) 100%)' 
+                        background: 'linear-gradient(to bottom left, rgba(230,57,70,0.2) 20%, rgba(43,76,155) 100%)' 
                     }}
                 >
                     {/* Top Content: Batch/Shift/Year */}
