@@ -87,69 +87,10 @@ class StudentController extends Controller
 
         Log::info("Total Score: " . $total_score);
 
-        return redirect()->back()->with('success', 'Assessment scored successfully.'); 
+        return redirect()->back()->with('success', 'Assessment scored successfully.');
     }
 
 
-    // public function store(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'scores' => 'required|array',
-    //         'scores.*' => 'nullable|numeric',
-    //     ]);
-
-    //     $attempt_id = $request->attempt_id;
-    //     $scores = $request->scores;
-
-    //     $total_scores = 0;
-
-    //     foreach ($validated['scores'] as $answerId => $points) {
-    //         AssessmentAnswer::where('id', $answerId)
-    //             ->update(['points_earned' => $points]);
-    //         $total_scores += $points;
-    //     }
-
-    //     $assessmentAttempt = AssessmentAttempt::with(['assessment', 'answers.question', 'answers.option'])->findOrFail($attempt_id);
-
-
-    //     // dd($assessmentAttempt);
-    //     // $assessmentAttempt = AssessmentAttempt::with(['assessment', 'answers.question', 'answers.option'])->first();
-
-    //     // Update the score in the database
-    //     $assessmentAttempt->update(['score' => $total_scores]);
-
-    //     // Reload the model to get the latest data
-    //     $assessmentAttempt->refresh();
-
-    //     // Try broadcasting score update
-    //     try {
-    //         broadcast(new ScoreUpdated($assessmentAttempt))->toOthers();
-    //     } catch (\Exception $e) {
-    //         Log::error("Broadcast ScoreUpdated failed: " . $e->getMessage());
-    //     }
-
-    //     // Try broadcasting course update
-    //     // try {
-    //     //     $course = $assessmentAttempt->assessment->course;
-    //     //     broadcast(new CourseUpdated($course, "Your course has updates!"))->toOthers();
-    //     // } catch (\Exception $e) {
-    //     //     Log::error("Broadcast CourseUpdated failed: " . $e->getMessage());
-    //     // }
-
-    //     // $course = $assessmentAttempt->assessment->course;
-    //     try {
-    //         Notification::send($assessmentAttempt->student, new SystemNotification("Your score has been updated to {$assessmentAttempt->score} on {$assessmentAttempt->assessment->title} assessment"));
-    //     } catch (\Exception $e) {
-    //         Log::error("" . $e->getMessage());
-    //     }
-
-    //     return redirect()->back()->with('success', 'Scores updated');
-    // }
-
-
-    /**
-     * Display the specified resource.
-     */
     public function show($class, $subject, $assessment, $id)
     {
         $assessmentId = $assessment;
@@ -164,7 +105,6 @@ class StudentController extends Controller
         // Get the latest attempt
         $attempt = $studentAssessment->attempts()->with('answers')->latest()->first();
 
-        // return response()->json($attempt);
 
         return Inertia::render('instructor/classroom/subject/assessment/student/Show', compact('attempt', 'assessment'));
     }
