@@ -62,13 +62,34 @@ export function AppSidebar() {
                 },
             ],
         },
+
+        {
+            label: 'System Admin',
+            can: 'access-instructor-page', // Permission Check
+            items: [
+                { title: 'User Management', icon: Users, href: '#' },
+                { title: 'Faculty Settings', icon: Cpu, href: '#' },
+                {
+                    title: 'Classrooms',
+                    icon: SquareLibrary,
+                    // isActive: true, // Default open for demo
+                    items: [
+                        {
+                            title: 'Classes',
+                            href: route('instructor.classes.index'),
+                        },
+                    ],
+                },
+            ],
+        },
+
         {
             label: 'Academic Management',
             items: [
                 {
                     title: 'Classrooms',
                     icon: SquareLibrary,
-                    isActive: true, // Default open for demo
+                    // isActive: true, // Default open for demo
                     items: [
                         {
                             title: 'All Classes',
@@ -100,14 +121,6 @@ export function AppSidebar() {
                         { title: 'Gradebook', href: '#' },
                     ],
                 },
-            ],
-        },
-        {
-            label: 'System Admin',
-            can: 'access-instructor-page', // Permission Check
-            items: [
-                { title: 'User Management', icon: Users, href: '#' },
-                { title: 'Faculty Settings', icon: Cpu, href: '#' },
             ],
         },
     ];
@@ -143,7 +156,7 @@ export function AppSidebar() {
                                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
                                     {/* <AppLogo className="size-5 fill-white" /> */}
                                     {/* <AppLogoIcon className="size-5 fill-current text-white dark:text-black" /> */}
-                                    <AppLogoIcon  />
+                                    <AppLogoIcon />
                                 </div>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
                                     <span className="truncate font-black tracking-tight text-slate-900 dark:text-white">
@@ -166,9 +179,9 @@ export function AppSidebar() {
                                 <Search className="h-3.5 w-3.5" />
                                 <span>Search curriculum...</span>
                             </div>
-                            <kbd className="pointer-events-none inline-flex h-5 items-center gap-1 rounded border border-slate-200 bg-slate-50 px-1.5 font-mono text-[10px] font-medium text-slate-500 opacity-100 select-none dark:border-slate-700 dark:bg-slate-800">
+                            {/* <kbd className="pointer-events-none inline-flex h-5 items-center gap-1 rounded border border-slate-200 bg-slate-50 px-1.5 font-mono text-[10px] font-medium text-slate-500 opacity-100 select-none dark:border-slate-700 dark:bg-slate-800">
                                 <span className="text-xs">⌘</span>K
-                            </kbd>
+                            </kbd> */}
                         </button>
                     </div>
                 )}
