@@ -15,7 +15,7 @@ class StudentAssessmentAttemptResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'student_assesment_id' => $this->student_assesment_id,
+            'student_assessment_id' => $this->student_assessment_id,
             'status' => $this->status,
             'started_at' => $this->started_at,
             'completed_at' => $this->completed_at,

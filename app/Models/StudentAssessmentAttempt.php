@@ -8,7 +8,7 @@ class StudentAssessmentAttempt extends Model
 {
     protected $table = 'student_assessment_attempts';
     protected $fillable = [
-        'student_assesment_id',
+        'student_assessment_id',
         'status',
         'started_at',
         'completed_at',
@@ -22,7 +22,7 @@ class StudentAssessmentAttempt extends Model
 
     public function studentAssessment()
     {
-        return $this->belongsTo(StudentAssessment::class, 'student_assesment_id', 'id');
+        return $this->belongsTo(StudentAssessment::class, 'student_assessment_id', 'id');
     }
 
     public function assessment()
@@ -32,7 +32,7 @@ class StudentAssessmentAttempt extends Model
             StudentAssessment::class,
             'id', // Foreign key on StudentAssessment table...
             'id', // Foreign key on Assessment table...
-            'student_assesment_id', // Local key on StudentAssessmentAttempt table...
+            'student_assessment_id', // Local key on StudentAssessmentAttempt table...
             'assessment_id' // Local key on StudentAssessment table...
         );
     }
@@ -44,13 +44,13 @@ class StudentAssessmentAttempt extends Model
             StudentAssessment::class,
             'id', // Foreign key on StudentAssessment table...
             'id', // Foreign key on User table...
-            'student_assesment_id', // Local key on StudentAssessmentAttempt table...
+            'student_assessment_id', // Local key on StudentAssessmentAttempt table...
             'user_id' // Local key on StudentAssessment table...
         );
     }
 
-    public function answers(){
-        return $this->hasMany(Answer::class, 'student_assessment_attempt_id' , 'id');
+    public function answers()
+    {
+        return $this->hasMany(Answer::class, 'student_assessment_attempt_id', 'id');
     }
-    
 }

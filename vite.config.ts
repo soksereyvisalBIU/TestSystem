@@ -21,6 +21,19 @@ export default defineConfig({
             formVariants: true,
         }),
     ],
+
+    // server: {
+    //     host: '0.0.0.0',     // IMPORTANT
+    //     port: 5174,          // match your port
+    //     strictPort: true,
+    //     cors: true,
+    //     hmr: {
+    //         protocol: 'wss', // HTTPS websocket
+    //         host: '133e1459ee87.ngrok-free.app',
+    //         port: 443,
+    //     },
+    // },
+    
     esbuild: {
         jsx: 'automatic',
     },

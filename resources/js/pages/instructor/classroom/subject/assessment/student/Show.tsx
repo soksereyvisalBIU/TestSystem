@@ -453,6 +453,8 @@ export default function StudentAssessmentAttemptScoring({
     // console.log(assessment);
     // console.log(attempt);
 
+    console.log({ assessment, attempt });
+
     const [answersState, setAnswersState] = useState(attempt.answers || []);
     const [isSubmitting, setIsSubmitting] = useState(false);
 

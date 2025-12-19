@@ -1,75 +1,204 @@
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { MessageSquareText } from 'lucide-react'; // Icon for visual appeal
+import { useMemo, useState } from 'react';
+import Editor from 'react-simple-code-editor';
 
-const MAX_CHARACTERS = 500; // Define a reasonable max character limit
+import Prism from 'prismjs';
+import 'prismjs/themes/prism-tomorrow.css';
 
-export default function ShortAnswerQuestion({ question, answer, onChange }) {
-    const currentLength = (answer || "").length;
-    const isOverLimit = currentLength > MAX_CHARACTERS;
+// ---------------- PRISM LANGUAGE SETUP (ORDER IS CRITICAL) ----------------
 
-    const handleTextChange = (e) => {
-        const newValue = e.target.value;
-        // Optionally enforce the limit (though typically just warn the user)
-        // if (newValue.length <= MAX_CHARACTERS) {
-        //     onChange(question.id, newValue);
-        // } else {
-        //     onChange(question.id, newValue.substring(0, MAX_CHARACTERS));
-        // }
-        onChange(question.id, newValue);
+// Base
+import 'prismjs/components/prism-clike';
+import 'prismjs/components/prism-markup';
+
+// Common languages
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-python';
+import 'prismjs/components/prism-c';
+import 'prismjs/components/prism-cpp';
+import 'prismjs/components/prism-csharp';
+import 'prismjs/components/prism-css';
+
+// PHP (⚠ MUST include php-extras)
+import 'prismjs/components/prism-php';
+import 'prismjs/components/prism-php-extras';
+
+// ---------------- UI ----------------
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Code, MessageSquareText, Settings2, Type } from 'lucide-react';
+
+const MAX_CHARACTERS = 2000;
+
+const LANGUAGE_OPTIONS = [
+    { label: 'JavaScript', value: 'javascript' },
+    { label: 'Python', value: 'python' },
+    { label: 'C++', value: 'cpp' },
+    { label: 'C#', value: 'csharp' },
+    { label: 'HTML', value: 'markup' },
+    { label: 'CSS', value: 'css' },
+    { label: 'PHP', value: 'php' },
+];
+
+interface Props {
+    question: {
+        id: number | string;
+        text?: string;
+    };
+    answer: string;
+    onChange: (questionId: number | string, value: string) => void;
+}
+
+export default function ShortAnswerQuestion({
+    question,
+    answer = '',
+    onChange,
+}: Props) {
+    const [isCodeMode, setIsCodeMode] = useState(false);
+    const [language, setLanguage] = useState('javascript');
+
+    const currentLength = answer.length;
+
+    // ---------------- EXAM MODE: DISABLE PASTE ----------------
+    const preventPaste = (e: React.ClipboardEvent) => {
+        e.preventDefault();
     };
 
+    // ---------------- VALUE HANDLER ----------------
+    const handleChange = (value: string) => {
+        if (value.length <= MAX_CHARACTERS) {
+            onChange(question.id, value);
+        }
+    };
+
+    // ---------------- SYNTAX HIGHLIGHT ----------------
+    const highlightedCode = useMemo(() => {
+        const grammar = Prism.languages[language];
+        if (!grammar) return answer;
+
+        try {
+            return Prism.highlight(answer, grammar, language);
+        } catch {
+            return answer;
+        }
+    }, [answer, language]);
+
     return (
-        // Wrapper for the entire question with card styling
-        <div className="w-full p-6 border rounded-2xl bg-white shadow-lg transition-shadow duration-300 hover:shadow-xl space-y-4">
-            
-            {/* Question Text with improved hierarchy */}
-            {/* <h3 className="flex items-start gap-3 text-xl font-bold text-gray-900 leading-snug border-b pb-4 mb-2">
-                <MessageSquareText className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
-                {question}
-            </h3> */}
+        <div className="w-full space-y-4 rounded-2xl border bg-white p-6 shadow-lg">
+            {/* ---------------- Toolbar ---------------- */}
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b pb-4">
+                <div className="flex items-center gap-2">
+                    <div className="rounded-lg bg-blue-50 p-2">
+                        <MessageSquareText className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <Label
+                        htmlFor={`question-${question.id}`}
+                        className="text-lg font-bold text-gray-800"
+                    >
+                        {question.text || 'Technical Response'}
+                    </Label>
+                </div>
 
-            {/* Instruction Label */}
-            <Label htmlFor={`${question.id}-answer`} className="text-base font-semibold text-gray-700 block pt-2">
-                Your Response
-            </Label>
+                <div className="flex items-center gap-3">
+                    {isCodeMode && (
+                        <Select
+                            value={language}
+                            onValueChange={setLanguage}
+                        >
+                            <SelectTrigger className="h-9 w-[140px] bg-slate-100 font-mono text-xs">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {LANGUAGE_OPTIONS.map((lang) => (
+                                    <SelectItem
+                                        key={lang.value}
+                                        value={lang.value}
+                                    >
+                                        {lang.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    )}
 
-            {/* Textarea with enhanced styling and properties */}
-            <Textarea
-                id={`${question.id}-answer`}
-                rows={5} // Slightly more rows for typical short answers
-                value={answer || ""}
-                onChange={handleTextChange}
-                placeholder="Type your detailed response here..."
-                // Apply error border/ring if character limit is exceeded
-                className={`
-                    min-h-[150px]
-                    w-full 
-                    p-4 
-                    text-base 
-                    rounded-lg 
-                    border-2 
-                    focus-visible:ring-4 
-                    transition-all 
-                    duration-200
-                    ${
-                        isOverLimit
-                            ? 'border-red-500 focus-visible:ring-red-200 focus-visible:border-red-500 text-red-700'
-                            : 'border-gray-300 focus-visible:ring-blue-200 focus-visible:border-blue-500'
-                    }
-                `}
-            />
-            
-            {/* Character count indicator */}
-            <div className="text-sm text-right">
-                <span className={`font-medium ${isOverLimit ? 'text-red-500' : 'text-gray-500'}`}>
-                    {currentLength} / {MAX_CHARACTERS} characters
-                </span>
-                {isOverLimit && (
-                    <p className="text-red-500 mt-1">
-                        Maximum limit exceeded. Please shorten your response.
-                    </p>
+                    <Button
+                        size="sm"
+                        variant={isCodeMode ? 'default' : 'outline'}
+                        onClick={() => setIsCodeMode((v) => !v)}
+                        className="flex items-center gap-2"
+                    >
+                        {isCodeMode ? (
+                            <>
+                                <Type className="h-4 w-4" /> Text Mode
+                            </>
+                        ) : (
+                            <>
+                                <Code className="h-4 w-4" /> Code Mode
+                            </>
+                        )}
+                    </Button>
+                </div>
+            </div>
+
+            {/* ---------------- Editor ---------------- */}
+            <div
+                className={`relative overflow-hidden rounded-xl border-2 transition-all
+                ${isCodeMode
+                    ? 'border-slate-800 bg-[#2d2d2d] shadow-inner'
+                    : 'border-gray-200 bg-white'}`}
+            >
+                {isCodeMode ? (
+                    <Editor
+                        value={answer}
+                        onValueChange={handleChange}
+                        highlight={() => highlightedCode}
+                        padding={20}
+                        textareaId={`question-${question.id}`}
+                        textareaAriaLabel="Code editor"
+                        onPaste={preventPaste}
+                        style={{
+                            fontFamily:
+                                '"Fira Code", "Fira Mono", monospace',
+                            fontSize: 14,
+                            minHeight: 250,
+                            color: '#ccc',
+                            outline: 'none',
+                        }}
+                    />
+                ) : (
+                    <textarea
+                        id={`question-${question.id}`}
+                        aria-label="Short answer input"
+                        className="min-h-[250px] w-full resize-none bg-transparent p-5 text-base focus:outline-none"
+                        value={answer}
+                        onChange={(e) => handleChange(e.target.value)}
+                        onPaste={preventPaste}
+                        placeholder="Write your explanation here..."
+                    />
                 )}
+            </div>
+
+            {/* ---------------- Footer ---------------- */}
+            <div className="flex items-center justify-between px-1">
+                <div className="flex items-center gap-2 text-xs font-medium text-gray-400">
+                    <Settings2 className="h-3 w-3" />
+                    <span>
+                        {isCodeMode
+                            ? `Highlighter: ${language}`
+                            : 'Standard Mode'}
+                    </span>
+                </div>
+
+                <span className="text-sm font-bold text-gray-500">
+                    {currentLength.toLocaleString()} /{' '}
+                    {MAX_CHARACTERS.toLocaleString()}
+                </span>
             </div>
         </div>
     );

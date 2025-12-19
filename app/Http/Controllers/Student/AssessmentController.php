@@ -39,7 +39,7 @@ class AssessmentController extends Controller
         // Fetch latest attempt
         // ---------------------------------------------------
         $latestAttempt = StudentAssessmentAttempt::where(
-            'student_assesment_id',
+            'student_assessment_id',
             $studentAssessment->id
         )
             ->latest()
@@ -50,7 +50,7 @@ class AssessmentController extends Controller
         // ---------------------------------------------------
         if (!$latestAttempt || $latestAttempt->status === 'submitted') {
             $studentAssessmentAttempt = StudentAssessmentAttempt::create([
-                'student_assesment_id' => $studentAssessment->id,
+                'student_assessment_id' => $studentAssessment->id,
                 'status'               => 'draft',
                 'started_at'           => now(),
             ]);
@@ -72,7 +72,7 @@ class AssessmentController extends Controller
                 'class_id'                      => $class_id,
                 'subject_id'                    => $subject_id,
                 'assessment_id'                 => $assessment_id,
-                'student_assesment_id'          => $studentAssessment->id,
+                'student_assessment_id'          => $studentAssessment->id,
                 'student_assessment_attempt_id' => $studentAssessmentAttempt->id,
             ])
             ->with('success', 'Assessment attempt requested successfully!');
@@ -95,7 +95,7 @@ class AssessmentController extends Controller
 
         // Get or create latest attempt
         $studentAssessmentAttempt = StudentAssessmentAttempt::where(
-            'student_assesment_id',
+            'student_assessment_id',
             $studentAssessment->id
         )
             ->latest()
@@ -103,7 +103,7 @@ class AssessmentController extends Controller
 
         if (!$studentAssessmentAttempt) {
             $studentAssessmentAttempt = StudentAssessmentAttempt::firstOrCreate([
-                'student_assesment_id' => $studentAssessment->id,
+                'student_assessment_id' => $studentAssessment->id,
             ]);
         }
 

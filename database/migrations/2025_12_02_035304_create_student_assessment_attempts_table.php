@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             // $table->integer('assessment_id')->nullable();
             // $table->integer('student_id')->nullable();
-            $table->integer('student_assesment_id');
+            $table->integer('student_assessment_id');
             $table->string('status')->nullable();
             $table->timestamp('started_at')->nullable();
             $table->timestamp('completed_at')->nullable();

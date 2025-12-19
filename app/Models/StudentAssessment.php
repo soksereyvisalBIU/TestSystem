@@ -28,6 +28,6 @@ class StudentAssessment extends Model
 
     public function attempts()
     {
-        return $this->hasMany(StudentAssessmentAttempt::class, 'student_assesment_id', 'id');
+        return $this->hasMany(StudentAssessmentAttempt::class, 'student_assessment_id', 'id');
     }
 }
