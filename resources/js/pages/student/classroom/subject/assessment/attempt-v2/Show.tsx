@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
-import LogoLoader from '@/components/ui/LogoLoader';
-import { useShowAssessment } from '@/hooks/course/assessment/useAssessments';
+// import LogoLoader from '@/components/ui/LogoLoader';
+// import { useShowAssessment } from '@/hooks/course/assessment/useAssessments';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -38,11 +38,11 @@ export default function Dashboard() {
 
     // const startAttempt = useAttemptAssessment( courseId, assessmentId )
 
-    const {
-        data: assessment,
-        isLoading,
-        isError,
-    } = useShowAssessment(courseId, assessmentId);
+    // const {
+    //     data: assessment,
+    //     isLoading,
+    //     isError,
+    // } = useShowAssessment(courseId, assessmentId);
 
     const [timeLeft, setTimeLeft] = useState<string | null>(null);
     const [status, setStatus] = useState<
@@ -89,7 +89,7 @@ export default function Dashboard() {
     };
 
     // Basic guards
-    if (isLoading) return <LogoLoader />;
+    // if (isLoading) return <LogoLoader />;
     if (isError)
         return (
             <div className="p-4 text-center text-red-500">
