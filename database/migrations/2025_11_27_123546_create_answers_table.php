@@ -22,7 +22,7 @@ return new class extends Migration
             $table->integer('selected_option_id')->nullable();
             $table->text('answer_text')->nullable();
             $table->string('code_language')->nullable();
-            $table->decimal('points_earned', 8, 2)->nullable();
+            $table->float('points_earned', 8, 2)->nullable();
 
             $table->timestamps();
         });
