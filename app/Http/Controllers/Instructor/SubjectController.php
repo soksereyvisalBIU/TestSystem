@@ -94,17 +94,53 @@ class SubjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $classId, $id)
     {
-        //
+        $subject = Subject::findOrFail($id);
+
+        $request->validate([
+            'name'        => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'visibility'  => 'required|in:public,private',
+            'cover'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        $data = [
+            'name'        => $request->name,
+            'description' => $request->description,
+            'visibility'  => $request->visibility,
+        ];
+
+        if ($request->hasFile('cover')) {
+            // Delete old cover if it exists
+            if ($subject->cover) {
+                Storage::disk('public')->delete($subject->cover);
+            }
+            $data['cover'] = $request->file('cover')->store('subjects', 'public');
+        }
+
+        $subject->update($data);
+
+        return redirect()->back()->with('success', 'Subject updated successfully!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($classId, $id)
     {
-        //
+        $subject = Subject::findOrFail($id);
+
+        if ($subject->cover) {
+            Storage::disk('public')->delete($subject->cover);
+        }
+
+        $subject->delete();
+
+        return redirect()->back()->with('success', 'Subject deleted successfully!');
     }
 
     public function copy(Request $request, $class, $subject)

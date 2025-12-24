@@ -173,18 +173,19 @@ export default function QuestionFormModal({
                                             True / False
                                         </div>
                                     </SelectItem>
-                                    <SelectItem value="multiple_choice">
-                                        <div className="flex items-center gap-2">
-                                            <Layers className="h-4 w-4 text-violet-500" />{' '}
-                                            Multiple Choice
-                                        </div>
-                                    </SelectItem>
                                     <SelectItem value="fill_blank">
                                         <div className="flex items-center gap-2">
                                             <Type className="h-4 w-4 text-emerald-500" />{' '}
                                             Fill in the Blank
                                         </div>
                                     </SelectItem>
+                                    <SelectItem value="multiple_choice">
+                                        <div className="flex items-center gap-2">
+                                            <Layers className="h-4 w-4 text-violet-500" />{' '}
+                                            Multiple Choice
+                                        </div>
+                                    </SelectItem>
+
                                     <SelectItem value="matching">
                                         <div className="flex items-center gap-2">
                                             <HelpCircle className="h-4 w-4 text-orange-500" />{' '}

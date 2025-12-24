@@ -11,65 +11,92 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useForm } from '@inertiajs/react';
+import { Loader2 } from 'lucide-react';
+import React, { useEffect } from 'react';
 import { route } from 'ziggy-js';
 
 interface AssessmentModalProps {
     isOpen: boolean;
     setIsOpen: (v: boolean) => void;
-    mode: 'create' | 'edit';
+    // mode prop removed
     classId: number;
     subjectId: number;
-    assessment?: any; // only passed on edit
+    assessment?: any; // If this is present, we are in Edit mode. If null/undefined, Create mode.
 }
 
 export default function AssessmentModal({
     isOpen,
     setIsOpen,
-    mode,
     classId,
     subjectId,
     assessment,
 }: AssessmentModalProps) {
-    // Inertia form setup
-    const { data, setData, post, put, processing, reset } = useForm({
-        title: assessment?.title ?? '',
-        description: assessment?.description ?? '',
-        type: assessment?.type ?? '',
-        max_attempts: assessment?.max_attempts ?? '',
-        start_time: assessment?.start_time ?? '',
-        deadline: assessment?.deadline ?? '',
-        duration: assessment?.duration ?? '',
-    });
+    // Helper boolean to check if we are editing
+    const isEditing = !!assessment;
+
+    const { data, setData, post, put, processing, reset, errors, clearErrors } =
+        useForm({
+            title: '',
+            description: '',
+            type: '',
+            max_attempts: '1',
+            start_time: '',
+            end_time: '',
+            duration: '',
+        });
+
+    // Synchronize form with assessment prop when editing or opening
+    useEffect(() => {
+        if (isOpen) {
+            if (isEditing) {
+                setData({
+                    title: assessment.title ?? '',
+                    description: assessment.description ?? '',
+                    type: assessment.type ?? '',
+                    max_attempts: assessment.max_attempts?.toString() ?? '1',
+                    start_time:
+                        assessment.start_time?.replace(' ', 'T').slice(0, 16) ??
+                        '',
+                    end_time:
+                        assessment.end_time?.replace(' ', 'T').slice(0, 16) ??
+                        '',
+                    duration: assessment.duration?.toString() ?? '',
+                });
+            } else {
+                reset();
+                clearErrors();
+            }
+        }
+    }, [isOpen, assessment]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (mode === 'create') {
-            post(
-                route('instructor.classes.subjects.assessments.store', {
-                    class: classId,
-                    subject: subjectId,
-                    // assessment: assessment.id,
-                }),
-                {
-                    onSuccess: () => {
-                        reset();
-                        setIsOpen(false);
-                    },
-                },
-            );
-        } else {
+        const options = {
+            onSuccess: () => {
+                reset();
+                setIsOpen(false);
+            },
+        };
+
+        if (isEditing) {
+            // Update logic
             put(
                 route('instructor.classes.subjects.assessments.update', [
                     classId,
                     subjectId,
                     assessment.id,
                 ]),
-                {
-                    onSuccess: () => {
-                        setIsOpen(false);
-                    },
-                },
+                options,
+            );
+        } else {
+            // Create logic
+            post(
+                route('instructor.classes.subjects.assessments.store', [
+                    classId,
+                    subjectId,
+                ]),
+                options,
             );
         }
     };
@@ -78,38 +105,52 @@ export default function AssessmentModal({
         <Modal
             isOpen={isOpen}
             setIsOpen={setIsOpen}
-            title={
-                mode === 'create' ? 'Create Assessment' : 'Update Assessment'
-            }
+            title={isEditing ? 'Edit Assessment' : 'Create New Assessment'}
         >
-            <form className="space-y-4" onSubmit={handleSubmit}>
-                <div>
-                    <Label htmlFor="title">Title</Label>
+            <form className="space-y-5 py-2" onSubmit={handleSubmit}>
+                {/* Title */}
+                <div className="space-y-1">
+                    <Label htmlFor="title">Assessment Title</Label>
                     <Input
                         id="title"
-                        placeholder="Enter title"
+                        placeholder="e.g. Midterm Physics Exam"
                         value={data.title}
                         onChange={(e) => setData('title', e.target.value)}
+                        className={
+                            errors.title
+                                ? 'border-red-500 focus-visible:ring-red-500'
+                                : ''
+                        }
                     />
+                    {errors.title && (
+                        <p className="text-xs font-medium text-red-500">
+                            {errors.title}
+                        </p>
+                    )}
                 </div>
 
-                <div>
-                    <Label>Description</Label>
+                {/* Description */}
+                <div className="space-y-1">
+                    <Label>Instructions / Description</Label>
                     <Textarea
-                        placeholder="Enter description"
+                        placeholder="Explain the rules or topics covered..."
                         value={data.description}
                         onChange={(e) => setData('description', e.target.value)}
+                        className={`min-h-[100px] ${errors.description ? 'border-red-500' : ''}`}
                     />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
+                {/* Type & Max Attempts */}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="space-y-1">
                         <Label>Type</Label>
                         <Select
                             value={data.type}
                             onValueChange={(v) => setData('type', v)}
                         >
-                            <SelectTrigger>
+                            <SelectTrigger
+                                className={errors.type ? 'border-red-500' : ''}
+                            >
                                 <SelectValue placeholder="Select type" />
                             </SelectTrigger>
                             <SelectContent>
@@ -119,16 +160,23 @@ export default function AssessmentModal({
                                     Homework
                                 </SelectItem>
                                 <SelectItem value="midterm">Midterm</SelectItem>
-                                <SelectItem value="final">Final</SelectItem>
+                                <SelectItem value="final">
+                                    Final Exam
+                                </SelectItem>
                             </SelectContent>
                         </Select>
+                        {errors.type && (
+                            <p className="text-xs font-medium text-red-500">
+                                {errors.type}
+                            </p>
+                        )}
                     </div>
 
-                    <div>
+                    <div className="space-y-1">
                         <Label>Max Attempts</Label>
                         <Input
                             type="number"
-                            placeholder="1"
+                            min="1"
                             value={data.max_attempts}
                             onChange={(e) =>
                                 setData('max_attempts', e.target.value)
@@ -137,50 +185,75 @@ export default function AssessmentModal({
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <Label>Start Time</Label>
+                {/* Dates */}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="space-y-1">
+                        <Label>Start Date & Time</Label>
                         <Input
                             type="datetime-local"
                             value={data.start_time}
                             onChange={(e) =>
                                 setData('start_time', e.target.value)
                             }
-                        />
-                    </div>
-
-                    <div>
-                        <Label>Deadline</Label>
-                        <Input
-                            type="datetime-local"
-                            value={data.deadline}
-                            onChange={(e) =>
-                                setData('deadline', e.target.value)
+                            className={
+                                errors.start_time ? 'border-red-500' : ''
                             }
                         />
                     </div>
+
+                    <div className="space-y-1">
+                        <Label>end_time (End Time)</Label>
+                        <Input
+                            type="datetime-local"
+                            value={data.end_time}
+                            onChange={(e) =>
+                                setData('end_time', e.target.value)
+                            }
+                            className={errors.end_time ? 'border-red-500' : ''}
+                        />
+                    </div>
                 </div>
 
-                <div>
-                    <Label>Duration (minutes)</Label>
+                {/* Duration */}
+                <div className="space-y-1">
+                    <Label>Duration (Minutes)</Label>
                     <Input
                         type="number"
-                        placeholder="30"
+                        placeholder="e.g. 60"
                         value={data.duration}
                         onChange={(e) => setData('duration', e.target.value)}
+                        className={errors.duration ? 'border-red-500' : ''}
                     />
+                    <p className="text-[11px] font-medium text-slate-400">
+                        Set to 0 or leave empty for no time limit.
+                    </p>
                 </div>
 
-                <div className="mt-6 flex justify-end gap-2">
+                {/* Actions */}
+                <div className="mt-8 flex items-center justify-end gap-3 border-t pt-6">
                     <Button
                         type="button"
-                        variant="outline"
+                        variant="ghost"
                         onClick={() => setIsOpen(false)}
+                        className="font-semibold text-slate-500 hover:text-slate-700"
                     >
                         Cancel
                     </Button>
-                    <Button type="submit" disabled={processing}>
-                        {mode === 'create' ? 'Submit' : 'Update'}
+                    <Button
+                        type="submit"
+                        disabled={processing}
+                        className="bg-blue-600 px-8 font-bold text-white hover:bg-blue-700"
+                    >
+                        {processing ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Saving...
+                            </>
+                        ) : isEditing ? (
+                            'Save Changes'
+                        ) : (
+                            'Create Assessment'
+                        )}
                     </Button>
                 </div>
             </form>

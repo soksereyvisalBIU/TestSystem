@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('student_assessment_attempts', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid')->unique();
+            $table->uuid('uuid')->unique()->nullable();
             $table->integer('student_assessment_id');
             $table->string('status')->nullable();
             $table->timestamp('started_at')->nullable();

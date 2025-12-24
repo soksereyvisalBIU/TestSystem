@@ -64,7 +64,7 @@ class AssessmentController extends Controller
             'type' => ['required', Rule::in(['quiz', 'exam', 'homework', 'midterm', 'final'])],
             'max_attempts' => 'nullable|integer|min:1',
             'start_time' => 'nullable|date',
-            'deadline' => 'nullable|date|after_or_equal:start_time',
+            'end_time' => 'nullable|date|after_or_equal:start_time',
             'duration' => 'required'
         ]);
 
@@ -79,7 +79,7 @@ class AssessmentController extends Controller
             'duration' => $validated['duration'],
             'max_attempts' => $validated['max_attempts'] ?? null,
             'start_time' => $validated['start_time'] ?? null,
-            'end_time' => $validated['deadline'] ?? null,
+            'end_time' => $validated['end_time'] ?? null,
         ]);
 
         // Attach to pivot
@@ -113,9 +113,42 @@ class AssessmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $classId, $subjectId, $assessmentId)
     {
-        //
+        // Validate input (same rules as store)
+        $validated = $request->validate([
+            'title'        => 'required|string|max:255',
+            'description'  => 'nullable|string',
+            'type'         => ['required', Rule::in(['quiz', 'exam', 'homework', 'midterm', 'final'])],
+            'max_attempts' => 'nullable|integer|min:1',
+            'start_time'   => 'nullable|date',
+            'end_time'     => 'nullable|date|after_or_equal:start_time',
+            'duration'     => 'required',
+        ]);
+
+        // Find subject (ensure it exists)
+        $subject = Subject::findOrFail($subjectId);
+
+        // Find assessment
+        $assessment = Assessment::findOrFail($assessmentId);
+
+        // Update assessment
+        $assessment->update([
+            'title'        => $validated['title'],
+            'description'  => $validated['description'] ?? null,
+            'type'         => $validated['type'],
+            'duration'     => $validated['duration'],
+            'max_attempts' => $validated['max_attempts'] ?? null,
+            'start_time'   => $validated['start_time'] ?? null,
+            'end_time'     => $validated['end_time'] ?? null,
+        ]);
+
+        // Ensure assessment is attached to the subject (safe-guard)
+        if (! $subject->assessments()->where('assessment_id', $assessment->id)->exists()) {
+            $subject->assessments()->attach($assessment->id);
+        }
+
+        return redirect()->back()->with('success', 'Assessment updated successfully.');
     }
 
     /**

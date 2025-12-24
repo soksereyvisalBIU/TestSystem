@@ -1,23 +1,7 @@
 // --- ASSESSMENT PAGE ---
+import AssessmentCard from '@/components/instructor/card/assessments/assessment-card';
 import AssessmentModal from '@/components/instructor/modal/assessment-modal';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -30,27 +14,18 @@ import { Separator } from '@/components/ui/separator';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
-import { format } from 'date-fns';
+import { Head, usePage } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import {
-    CalendarIcon,
-    ClockIcon,
-    Copy,
     FileTextIcon,
     FilterIcon,
     GridIcon,
     LayoutListIcon,
-    MoreHorizontalIcon,
-    PencilIcon,
     PlusIcon,
     SearchIcon,
-    TrashIcon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { route } from 'ziggy-js';
-import CopyAssessmentModal from './modal/copy-assessment-modal';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Class', href: '/' },
@@ -114,11 +89,11 @@ export default function AssessmentPage({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Assessments" />
 
-            <div className="flex h-full min-h-screen w-full flex-col space-y-6  p-6 md:p-8">
+            <div className="flex h-full min-h-screen w-full flex-col space-y-6 p-6 md:p-8">
                 {/* PAGE HEADER */}
                 <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight ">
+                        <h1 className="text-3xl font-bold tracking-tight">
                             Assessments
                         </h1>
                         <motion.div layoutId={`subject-title-${id}`}>
@@ -272,218 +247,9 @@ export default function AssessmentPage({
                 }}
                 classId={classId}
                 subjectId={subjectId}
-                mode={selectedAssessment ? 'edit' : 'create'}
+                // Mode prop removed. The Modal now detects "Edit" mode if assessment object exists.
                 assessment={selectedAssessment ?? undefined}
             />
         </AppLayout>
-    );
-}
-
-// --- ASSESSMENT CARD ---
-function AssessmentCard({
-    assessment,
-    viewMode,
-    classId,
-    subjectId,
-    getStatus,
-    availableClasses,
-    setSelectedAssessment,
-    setOpenAssessmentModal,
-}: any) {
-    const status = getStatus(assessment.start_time, assessment.end_time);
-
-    const statusStyles: Record<string, string> = {
-        upcoming: 'bg-blue-50 text-blue-700 border-blue-200',
-        ongoing: 'bg-green-50 text-green-700 border-green-200 animate-pulse',
-        closed: 'bg-slate-100 text-slate-700 border-slate-200',
-        draft: 'bg-amber-50 text-amber-700 border-amber-200',
-    };
-
-    const StatusBadge = () => (
-        <Badge
-            variant="outline"
-            className={`gap-1.5 font-medium capitalize ${statusStyles[status]}`}
-        >
-            <span
-                className={`h-1.5 w-1.5 rounded-full ${status === 'ongoing' ? 'bg-green-600' : 'bg-current'}`}
-            />
-            {status}
-        </Badge>
-    );
-
-    if (viewMode === 'list') {
-        return (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <Card className="flex items-center justify-between p-4 transition-all hover:border-blue-300 hover:shadow-md">
-                    <div className="flex items-center gap-4">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-                            <FileTextIcon className="h-5 w-5" />
-                        </div>
-                        <div>
-                            <Link
-                                href={route(
-                                    'instructor.classes.subjects.assessments.show',
-                                    [classId, subjectId, assessment.id],
-                                )}
-                                className="font-semibold text-slate-900 hover:text-blue-600 hover:underline"
-                            >
-                                {assessment.title}
-                            </Link>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <StatusBadge />
-                        <AssessmentActions
-                            assessment={assessment}
-                            availableClasses={availableClasses}
-                            classId={classId}
-                            subjectId={subjectId}
-                            setSelectedAssessment={setSelectedAssessment}
-                            setOpenAssessmentModal={setOpenAssessmentModal}
-                        />
-                    </div>
-                </Card>
-            </motion.div>
-        );
-    }
-
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            whileHover={{ y: -4 }}
-            transition={{ duration: 0.2 }}
-        >
-            <Card className="group relative overflow-hidden border-slate-200 transition-all hover:border-blue-300 hover:shadow-lg">
-                {/* Status line */}
-                <div
-                    className={`absolute top-0 left-0 h-1 w-full ${status === 'ongoing' ? 'bg-green-500' : status === 'upcoming' ? 'bg-blue-500' : 'bg-slate-300'}`}
-                />
-                <CardHeader className="flex flex-row items-start justify-between space-y-0 pt-5 pb-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-600 group-hover:bg-blue-50 group-hover:text-blue-600">
-                        <FileTextIcon className="h-5 w-5" />
-                    </div>
-                    {/* FIXED: Added availableClasses + classId + subjectId */}
-                    <AssessmentActions
-                        assessment={assessment}
-                        availableClasses={availableClasses}
-                        classId={classId}
-                        subjectId={subjectId}
-                    />
-                </CardHeader>
-                <CardContent className="pb-3">
-                    <Link
-                        href={route(
-                            'instructor.classes.subjects.assessments.show',
-                            [classId, subjectId, assessment.id],
-                        )}
-                    >
-                        <CardTitle className="line-clamp-1 text-lg font-bold group-hover:text-blue-700">
-                            <motion.div layoutId={`assessment-title-${assessment.id}`}>{assessment.title}</motion.div>
-                        </CardTitle>
-                        <CardDescription className="mt-1 line-clamp-2 text-xs">
-                            Description goes here if available...
-                        </CardDescription>
-                    </Link>
-                    <div className="mt-4 space-y-2">
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-                            <CalendarIcon className="h-4 w-4 text-slate-400" />
-                            <span className="text-xs font-medium">
-                                {assessment.start_time
-                                    ? format(
-                                          new Date(assessment.start_time),
-                                          'MMM d',
-                                      )
-                                    : 'TBA'}
-                                -
-                                {assessment.end_time
-                                    ? format(
-                                          new Date(assessment.end_time),
-                                          'MMM d, yyyy',
-                                      )
-                                    : ''}
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-                            <ClockIcon className="h-4 w-4 text-slate-400" />
-                            <span className="text-xs font-medium">
-                                {assessment.start_time
-                                    ? format(
-                                          new Date(assessment.start_time),
-                                          'h:mm a',
-                                      )
-                                    : '--:--'}
-                            </span>
-                        </div>
-                    </div>
-                </CardContent>
-                <CardFooter className="flex items-center justify-between border-t bg-slate-50/50 px-4 py-3">
-                    <StatusBadge />
-                    <span className="text-xs font-medium text-slate-500">
-                        {assessment.questions_count || 0} Qs
-                    </span>
-                </CardFooter>
-            </Card>
-        </motion.div>
-    );
-}
-
-// --- ASSESSMENT ACTIONS ---
-function AssessmentActions({
-    assessment,
-    availableClasses,
-    classId,
-    subjectId,
-    setSelectedAssessment,
-    setOpenAssessmentModal,
-}: any) {
-    const [openCopyModal, setOpenCopyModal] = useState(false);
-
-    return (
-        <>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button
-                        variant="ghost"
-                        className="h-8 w-8 p-0 text-slate-400 hover:text-slate-900"
-                    >
-                        <MoreHorizontalIcon className="h-4 w-4" />
-                    </Button>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent align="end" className="w-[160px]">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-
-                    <DropdownMenuItem
-                        onClick={() => {
-                            setSelectedAssessment(assessment); // edit mode
-                            setOpenAssessmentModal(true);
-                        }}
-                    >
-                        <PencilIcon className="mr-2 h-4 w-4" /> Edit
-                    </DropdownMenuItem>
-
-                    <DropdownMenuItem onClick={() => setOpenCopyModal(true)}>
-                        <Copy className="mr-2 h-4 w-4" /> Copy to...
-                    </DropdownMenuItem>
-
-                    <DropdownMenuSeparator />
-
-                    <DropdownMenuItem className="text-red-600 focus:bg-red-50 focus:text-red-600">
-                        <TrashIcon className="mr-2 h-4 w-4" /> Delete
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-
-            <CopyAssessmentModal
-                isOpen={openCopyModal}
-                setIsOpen={setOpenCopyModal}
-                assessmentToCopy={assessment}
-                availableClasses={availableClasses}
-                sourceClassId={classId}
-                sourceSubjectId={subjectId}
-            />
-        </>
     );
 }

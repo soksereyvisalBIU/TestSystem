@@ -1,414 +1,198 @@
-import SubjectModal from '@/components/instructor/modal/subject-modal';
-import { Button } from '@/components/ui/button';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react'; // Added useMemo for availableClasses simulation
+import { useState, useCallback, useMemo, memo } from 'react';
+import { Head, router } from '@inertiajs/react';
+import { AnimatePresence, motion, LayoutGroup } from 'framer-motion';
 import { toast } from 'sonner';
 import { route } from 'ziggy-js';
+import { Loader2, TrashIcon, Plus, BookOpen } from 'lucide-react';
 
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Copy, MoreHorizontalIcon, PencilIcon, TrashIcon } from 'lucide-react';
-// import CopySubjectModal from '@/components/instructor/modal/copy-subject-modal';
+import AppLayout from '@/layouts/app-layout';
+import { Button } from '@/components/ui/button';
+import SubjectModal from '@/components/instructor/modal/subject-modal';
 import CopySubjectModal from './component/copy-subject-modal';
-// NOTE: Assuming this file exists and handles the confirmation
-// import DeleteConfirmationModal from '@/components/ui/delete-confirmation-modal';
+import SubjectCard from '@/components/instructor/card/subject-card'; 
+import {
+    AlertDialog,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Classes', href: route('instructor.classes.index') },
-];
+// Memoize Card to prevent grid-wide re-renders
+const MemoizedSubjectCard = memo(SubjectCard);
 
-// Define a type for the Subject structure for clarity
-interface Subject {
-    id: number;
-    name: string;
-    cover: string | null;
-    visibility: 'public' | 'private';
-    // Add other subject properties as needed
-}
+export default function SubjectShow({ classroom, allAvailableClasses = [] }: any) {
+    // Single source of truth for UI state
+    const [modals, setModals] = useState({ subject: false, copy: false, delete: false });
+    const [activeSubject, setActiveSubject] = useState<any>(null);
+    const [isProcessing, setIsProcessing] = useState(false);
 
-// Define a type for the Classroom structure
-interface Classroom {
-    id: number;
-    name: string;
-    description: string;
-    batch: number;
-    shift: 1 | 2; // 1 for Morning, 2 for Evening
-    year: number;
-    cover: string | null;
-    subjects: Subject[];
-    // Add other classroom properties as needed
-}
+    // Optimized Handlers
+    const openCreateModal = useCallback(() => {
+        setActiveSubject(null);
+        setModals(m => ({ ...m, subject: true }));
+    }, []);
 
-// Define the type for available classes for the CopySubjectModal
-interface AvailableClass {
-    id: number;
-    name: string;
-}
+    const handleEdit = useCallback((subject: any) => {
+        setActiveSubject(subject);
+        setModals(m => ({ ...m, subject: true }));
+    }, []);
 
-export default function SubjectShow({
-    classroom,
-    // You should pass all other classes available to the instructor as a prop
-    allAvailableClasses,
-}: {
-    classroom: Classroom;
-    allAvailableClasses: AvailableClass[]; // Example prop
-}) {
-    const subjects = classroom?.subjects ?? [];
+    const handleCopy = useCallback((subject: any) => {
+        setActiveSubject(subject);
+        setModals(m => ({ ...m, copy: true }));
+    }, []);
 
-    // State for the SubjectModal (Create/Edit)
-    const [openSubjectModal, setOpenSubjectModal] = useState(false);
-    const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
-    const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
+    const handleDeleteClick = useCallback((subject: any) => {
+        setActiveSubject(subject);
+        setModals(m => ({ ...m, delete: true }));
+    }, []);
 
-    // State for the CopySubjectModal
-    const [openCopyModal, setOpenCopyModal] = useState(false);
-    const [subjectToCopy, setSubjectToCopy] = useState<Subject | null>(null);
-
-    // State for the Delete Confirmation Modal
-    const [openDeleteModal, setOpenDeleteModal] = useState(false);
-    const [subjectToDelete, setSubjectToDelete] = useState<Subject | null>(
-        null,
-    );
-    const [isDeleting, setIsDeleting] = useState(false); // To handle loading state on delete
-
-    const { flash } = usePage().props as {
-        flash?: { success?: string; error?: string };
-    };
-
-    // Use the actual prop, but keep the name consistent with the modal's expected type
-    const availableClasses = allAvailableClasses;
-
-    // --- Toast Notifications Effect ---
-    useEffect(() => {
-        if (flash?.success) toast.success(flash.success);
-        if (flash?.error) toast.error(flash.error);
-    }, [flash]);
-
-    // --- Animation Variants ---
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        show: { opacity: 1, transition: { staggerChildren: 0.08 } },
-    };
-
-    const cardVariants = {
-        hidden: { opacity: 0, y: 18 },
-        show: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.32, ease: 'easeOut' },
-        },
-    };
-
-    // --- Modal Handlers ---
-
-    // Open "Create" modal
-    const openCreateModal = () => {
-        setModalMode('create');
-        setEditingSubject(null);
-        setOpenSubjectModal(true);
-    };
-
-    // Open "Edit" modal
-    const openEditModal = (subject: Subject) => {
-        setModalMode('edit');
-        setEditingSubject(subject);
-        setOpenSubjectModal(true);
-    };
-
-    // Open "Copy" modal
-    const openCopySubjectModal = (subject: Subject) => {
-        setSubjectToCopy(subject);
-        setOpenCopyModal(true);
-    };
-
-    // Open "Delete" modal
-    const openDeleteSubjectModal = (subject: Subject) => {
-        setSubjectToDelete(subject);
-        setOpenDeleteModal(true);
-    };
-
-    // Handle actual deletion
-    const handleDeleteSubject = () => {
-        if (subjectToDelete) {
-            setIsDeleting(true);
-            router.delete(
-                route('instructor.classes.subjects.destroy', [
-                    classroom.id,
-                    subjectToDelete.id,
-                ]),
-                {
-                    preserveScroll: true,
-                    onStart: () => setIsDeleting(true),
-                    onSuccess: () => {
-                        toast.success('Subject deleted successfully.');
-                        setOpenDeleteModal(false);
-                        setSubjectToDelete(null);
-                    },
-                    onError: (errors) => {
-                        // Display the first error message if available
-                        const errorMessage =
-                            Object.values(errors).flat()[0] ||
-                            'Failed to delete subject.';
-                        toast.error(errorMessage);
-                    },
-                    onFinish: () => setIsDeleting(false),
-                },
-            );
-        }
+    const confirmDelete = () => {
+        if (!activeSubject) return;
+        router.delete(route('instructor.classes.subjects.destroy', [classroom.id, activeSubject.id]), {
+            preserveScroll: true,
+            onStart: () => setIsProcessing(true),
+            onSuccess: () => {
+                toast.success('Subject removed');
+                setModals(m => ({ ...m, delete: false }));
+            },
+            onFinish: () => setIsProcessing(false),
+        });
     };
 
     return (
         <AppLayout
             breadcrumbs={[
-                ...breadcrumbs,
-                {
-                    title: classroom.name,
-                    href: route('instructor.classes.show', classroom.id),
-                },
+                { title: 'Classes', href: route('instructor.classes.index') },
+                { title: classroom.name, href: route('instructor.classes.show', classroom.id) },
             ]}
         >
-            <Head title={`Class: ${classroom.name}`} />
+            <Head title={`${classroom.name} | Curriculum`} />
 
-            <div className="flex flex-col gap-6 p-4">
-                {/* ---------------- CLASS HEADER ---------------- */}
-                <motion.div
-                    layoutId={`class-card-${classroom.id}`}
-                    className="relative overflow-hidden rounded-3xl shadow-xl"
+            <div className=" p-6 lg:p-8 lg:px-12">
+                {/* HERO SECTION */}
+                <motion.div 
+                    layoutId={`class-card-${classroom.id}`} 
+                    className="relative mb-12 h-72 w-full overflow-hidden rounded-[2rem] shadow-2xl"
                 >
                     <motion.div
                         layoutId={`class-bg-${classroom.id}`}
-                        className="h-64 w-full bg-cover bg-center"
-                        style={{
-                            backgroundImage: `url('${
-                                classroom.cover
-                                    ? '/storage/' + classroom.cover
-                                    : '/assets/img/class/39323.jpg'
-                            }')`,
-                        }}
-                    />
-
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-950/90 to-transparent p-6 text-white">
-                        <motion.div layoutId={`class-meta-${classroom.id}`}>
-                            <h3 className="text-lg font-medium">
-                                Batch {classroom.batch} –{' '}
-                                {classroom.shift === 1 ? 'Morning' : 'Evening'}
-                            </h3>
-                            <h3 className="text-lg opacity-90">
-                                Year {classroom.year}
-                            </h3>
-                        </motion.div>
-
-                        <motion.div
-                            layoutId={`class-title-${classroom.id}`}
-                            className="mt-3 max-w-lg"
+                        className="absolute inset-0 bg-cover bg-center"
+                        style={{ backgroundImage: `url('${classroom.cover ? `/storage/${classroom.cover}` : '/assets/img/class/39323.jpg'}')` }}
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent" />
+                    </motion.div>
+                    <div className="relative flex h-full flex-col justify-end p-8 text-white sm:p-12">
+                        <motion.h1 
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            className="text-4xl text-primary-foreground font-black tracking-tight sm:text-6xl"
                         >
-                            <h1 className="text-4xl leading-tight font-bold text-white">
-                                {classroom.name}
-                            </h1>
-                            <p className="mt-2 text-sm opacity-80">
-                                {classroom.description}
-                            </p>
-                        </motion.div>
+                            {classroom.name}
+                        </motion.h1>
+                        <motion.p 
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.1 }}
+                            className="mt-4 max-w-2xl text-lg text-slate-200 line-clamp-2"
+                        >
+                            {classroom.description}
+                        </motion.p>
                     </div>
                 </motion.div>
 
-                {/* ---------------- SUBJECT LIST ---------------- */}
-                <div>
-                    <div className="flex items-center justify-between">
-                        <h1 className="mb-4 text-xl font-semibold">Subjects</h1>
-                        <Button onClick={openCreateModal}>+ Add Subject</Button>
+                {/* GRID SECTION */}
+                <div className="space-y-8">
+                    <div className="flex flex-wrap items-center justify-between gap-4 border-b pb-6">
+                        <h2 className="text-3xl font-bold tracking-tight">Course Subjects</h2>
+                        <Button onClick={openCreateModal} className="h-11 rounded-full px-6 shadow-lg transition-all hover:scale-105 active:scale-95">
+                            <Plus className="mr-2 h-5 w-5" /> Add Subject
+                        </Button>
                     </div>
 
-                    <motion.div
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate="show"
-                        className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
-                    >
-                        {subjects.length === 0 && (
-                            <p className="col-span-full py-8 text-center text-muted-foreground">
-                                No subjects added yet.
-                            </p>
-                        )}
-
-                        {subjects.map((subj: Subject) => {
-                            const cover = subj.cover
-                                ? `/storage/${subj.cover}`
-                                : 'https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=2070&auto=format&fit=crop';
-
-                            return (
-                                <motion.div
-                                    key={subj.id}
-                                    variants={cardVariants}
-                                    className="group relative"
-                                >
-                                    {/* Action Button */}
-                                    <div className="absolute top-2 right-2 z-10 opacity-0 transition-opacity group-hover:opacity-100">
-                                        <SubjectActions
+                    <LayoutGroup>
+                        <motion.div layout className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                            <AnimatePresence mode="popLayout">
+                                {classroom?.subjects?.map((subj: any, idx: number) => (
+                                    <motion.div
+                                        key={subj.id}
+                                        layout
+                                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
+                                        transition={{ 
+                                            type: "spring", 
+                                            stiffness: 300, 
+                                            damping: 25,
+                                            delay: idx * 0.05 
+                                        }}
+                                    >
+                                        <MemoizedSubjectCard
                                             subject={subj}
                                             classId={classroom.id}
-                                            openEditModal={openEditModal}
-                                            openCopyModal={openCopySubjectModal}
-                                            openDeleteModal={
-                                                openDeleteSubjectModal
-                                            }
+                                            onEdit={handleEdit}
+                                            onCopy={handleCopy}
+                                            onDelete={handleDeleteClick}
                                         />
-                                    </div>
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
+                        </motion.div>
+                    </LayoutGroup>
 
-                                    <Link
-                                        href={route(
-                                            'instructor.classes.subjects.show',
-                                            [classroom.id, subj.id],
-                                        )}
-                                    >
-                                        <motion.div
-                                            layoutId={`subject-card-${subj.id}`}
-                                            className="cursor-pointer overflow-hidden rounded-2xl shadow-md transition hover:shadow-xl"
-                                        >
-                                            {/* Subject Cover */}
-                                            <motion.div
-                                                layoutId={`subject-bg-${subj.id}`}
-                                                className="h-40 bg-cover bg-center"
-                                                style={{
-                                                    backgroundImage: `url('${cover}')`,
-                                                }}
-                                            />
-
-                                            {/* Subject Content */}
-                                            <div className="border-t px-4 py-3">
-                                                <motion.div
-                                                    layoutId={`subject-meta-${subj.id}`}
-                                                >
-                                                    <p className="text-sm text-muted-foreground">
-                                                        {subj.visibility ===
-                                                        'public'
-                                                            ? 'Public'
-                                                            : 'Private'}
-                                                    </p>
-                                                </motion.div>
-
-                                                <motion.h3
-                                                    layoutId={`subject-title-${subj.id}`}
-                                                    className="mt-1 text-lg font-semibold"
-                                                >
-                                                    {subj.name}
-                                                </motion.h3>
-                                            </div>
-                                        </motion.div>
-                                    </Link>
-                                </motion.div>
-                            );
-                        })}
-                    </motion.div>
+                    {/* EMPTY STATE */}
+                    {(!classroom?.subjects || classroom.subjects.length === 0) && (
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="flex h-80 flex-col items-center justify-center rounded-[2rem] border-2 border-dashed border-muted bg-muted/20"
+                        >
+                            <BookOpen className="mb-4 h-12 w-12 text-muted-foreground/50" />
+                            <p className="text-xl font-medium text-muted-foreground">No subjects found</p>
+                            <Button variant="link" onClick={openCreateModal}>Create your first subject</Button>
+                        </motion.div>
+                    )}
                 </div>
             </div>
 
-            {/* MODAL (Create and Edit use the same modal with different props) */}
-            <SubjectModal
-                isOpen={openSubjectModal}
-                setIsOpen={setOpenSubjectModal}
-                mode={modalMode}
-                classId={classroom.id}
-                editingSubject={editingSubject} // Pass the subject data if mode is 'edit'
+            {/* MODALS */}
+            <SubjectModal 
+                isOpen={modals.subject} 
+                setIsOpen={(v) => setModals(m => ({ ...m, subject: v }))} 
+                classId={classroom.id} 
+                editingSubject={activeSubject} 
             />
-
-            {/* Copy Subject Modal */}
-            {subjectToCopy && (
-                <CopySubjectModal
-                    isOpen={openCopyModal}
-                    setIsOpen={setOpenCopyModal}
-                    subjectToCopy={subjectToCopy}
-                    availableClasses={availableClasses} // Pass available classes
-                    sourceClassId={classroom.id}
+            
+            {modals.copy && activeSubject && (
+                <CopySubjectModal 
+                    isOpen={modals.copy} 
+                    setIsOpen={(v) => setModals(m => ({ ...m, copy: v }))} 
+                    subjectToCopy={activeSubject} 
+                    availableClasses={allAvailableClasses} 
+                    sourceClassId={classroom.id} 
                 />
             )}
 
-            {/* Delete Confirmation Modal */}
-            {/* {subjectToDelete && (
-                <DeleteConfirmationModal
-                    isOpen={openDeleteModal}
-                    setIsOpen={setOpenDeleteModal}
-                    title="Delete Subject"
-                    description={`Are you sure you want to delete the subject: "${subjectToDelete.name}"? This action cannot be undone and will remove all associated content.`}
-                    onConfirm={handleDeleteSubject}
-                    isProcessing={isDeleting}
-                />
-            )} */}
+            <AlertDialog open={modals.delete} onOpenChange={(v) => setModals(m => ({ ...m, delete: v }))}>
+                <AlertDialogContent className="rounded-[2rem]">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-2xl font-bold">Delete Subject?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to remove <span className="font-bold text-foreground">{activeSubject?.name}</span>? This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="gap-2">
+                        <AlertDialogCancel disabled={isProcessing} className="rounded-full">Cancel</AlertDialogCancel>
+                        <Button variant="destructive" onClick={confirmDelete} disabled={isProcessing} className="rounded-full px-6">
+                            {isProcessing ? <Loader2 className="animate-spin" /> : <TrashIcon className="mr-2 h-4 w-4" />}
+                            Confirm Delete
+                        </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </AppLayout>
-    );
-}
-
-// --- Subject ACTIONS Component ---
-function SubjectActions({
-    subject,
-    classId, // Not directly used here but useful context
-    openEditModal,
-    openCopyModal,
-    openDeleteModal,
-}: {
-    subject: Subject;
-    classId: number;
-    openEditModal: (subject: Subject) => void;
-    openCopyModal: (subject: Subject) => void;
-    openDeleteModal: (subject: Subject) => void;
-}) {
-    return (
-        <>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button
-                        variant="ghost"
-                        className="h-8 w-8 bg-black/40 p-0 text-white transition hover:bg-black/60 hover:text-white/80"
-                        aria-label="Subject Actions"
-                        onClick={(e) => e.preventDefault()} // Prevent link click when opening dropdown
-                    >
-                        <MoreHorizontalIcon className="h-4 w-4" />
-                    </Button>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent align="end" className="w-[160px]">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-
-                    <DropdownMenuItem
-                        onClick={(e) => {
-                            e.preventDefault(); // Prevent navigating the link
-                            openEditModal(subject);
-                        }}
-                    >
-                        <PencilIcon className="mr-2 h-4 w-4" /> Edit
-                    </DropdownMenuItem>
-
-                    <DropdownMenuItem
-                        onClick={(e) => {
-                            e.preventDefault(); // Prevent navigating the link
-                            openCopyModal(subject);
-                        }}
-                    >
-                        <Copy className="mr-2 h-4 w-4" /> Copy to...
-                    </DropdownMenuItem>
-
-                    <DropdownMenuSeparator />
-
-                    <DropdownMenuItem
-                        onClick={(e) => {
-                            e.preventDefault(); // Prevent navigating the link
-                            openDeleteModal(subject);
-                        }}
-                        className="text-red-600 focus:bg-red-50 focus:text-red-600"
-                    >
-                        <TrashIcon className="mr-2 h-4 w-4" /> Delete
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </>
     );
 }
