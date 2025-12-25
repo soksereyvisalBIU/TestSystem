@@ -89,7 +89,7 @@ export function AppSidebar() {
                 {
                     title: 'Classrooms',
                     icon: SquareLibrary,
-                    // isActive: true, // Default open for demo
+                    isActive: true, // Default open for demo
                     items: [
                         {
                             title: 'All Classes',
@@ -97,19 +97,19 @@ export function AppSidebar() {
                         },
                         {
                             title: 'Freshman (Y1)',
-                            href: route('instructor.classes.index', 1),
+                            href: route('student.classes.index', {year: 1}),
                         },
                         {
                             title: 'Sophomore (Y2)',
-                            href: route('instructor.classes.index', 2),
+                            href: route('student.classes.index', {year: 2}),
                         },
                         {
                             title: 'Junior (Y3)',
-                            href: route('instructor.classes.index', 3),
+                            href: route('student.classes.index', {year: 3}),
                         },
                         {
                             title: 'Senior (Y4)',
-                            href: route('instructor.classes.index', 4),
+                            href: route('student.classes.index', {year: 4}),
                         },
                     ],
                 },

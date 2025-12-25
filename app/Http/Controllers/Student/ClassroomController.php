@@ -12,12 +12,34 @@ class ClassroomController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    // public function index(Request $request)
+    // {
+    //     if ($request->has('year')) {
+    //         $year = $request->input('year');
+    //         $classrooms = Classroom::where('year', $year)->paginate(10);
+    //         return Inertia::render('student/classroom/Index', compact('classrooms'));
+    //     }
+    //     // $classrooms = auth()->user()->studentClassrooms()->with('instructor')->get();
+    //     $classrooms = Classroom::where('visibility', 'public')->paginate(10); // Placeholder for actual data retrieval
+    //     return Inertia::render('student/classroom/Index', compact('classrooms'));
+    // }
+
+    public function index(Request $request)
     {
-        // $classrooms = auth()->user()->studentClassrooms()->with('instructor')->get();
-        $classrooms = Classroom::where('visibility', 'public')->paginate(10); // Placeholder for actual data retrieval
-        return Inertia::render('student/classroom/Index', compact('classrooms'));
+        $query = Classroom::query()
+            ->where('visibility', 'public');
+
+        if ($request->filled('year')) {
+            $query->where('year', $request->year);
+        }
+
+        $classrooms = $query->paginate(10)->withQueryString();
+
+        return Inertia::render('student/classroom/Index', [
+            'classrooms' => $classrooms,
+        ]);
     }
+
 
     /**
      * Show the form for creating a new resource.
