@@ -43,6 +43,7 @@ export function AssessmentsList({
         );
     }, [assessments, searchQuery]);
 
+    console.log(filteredAssessments);
     return (
         <Card className="overflow-hidden rounded-[2rem] border-none bg-white shadow-xl shadow-slate-200/50">
             <CardHeader className="space-y-6 border-b border-slate-50 p-8">

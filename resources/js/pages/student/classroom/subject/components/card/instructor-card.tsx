@@ -16,7 +16,7 @@ export function InstructorCard({ name, title, avatar }: InstructorCardProps) {
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
         >
-            <Card className="overflow-hidden rounded-[2rem] border-none shadow-xl shadow-slate-200/50">
+            <Card className="overflow-hidden rounded-[2rem] border-none shadow-xl shadow-slate-200/50 py-0">
                 {/* Visual Header Decoration */}
                 <div className="h-20 w-full bg-gradient-to-r from-blue-600 to-indigo-700 p-6 relative">
                     <div className="absolute top-0 right-0 p-4 opacity-20">

@@ -26,7 +26,6 @@ import { PerformanceChart } from '@/pages/student/classroom/subject/components/c
 import { AssessmentsList } from '@/pages/student/classroom/subject/components/list/assessments-list';
 import { SubjectHero } from '@/pages/student/classroom/subject/components/subject-hero';
 
-
 export default function SubjectDetail({ subject }: { subject: SubjectData }) {
     // Shared State for Animations
     const [activeTab, setActiveTab] = React.useState('assessments');
@@ -171,7 +170,7 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                             className="space-y-6"
                         >
                             <InstructorCard
-                                name="Dr. Sok Visal"
+                                name="Mr. Sok Sereyvisal"
                                 title="Senior Lecturer"
                                 avatar="https://images.unsplash.com/photo-1535713875002-d1d0cf3795b2?w=200&h=200&fit=crop"
                             />

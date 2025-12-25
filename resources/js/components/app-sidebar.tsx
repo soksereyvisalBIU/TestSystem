@@ -95,20 +95,36 @@ export function AppSidebar() {
                             title: 'All Classes',
                             href: route('student.classes.index'),
                         },
+                        // {
+                        //     title: 'Freshman (Y1)',
+                        //     href: route('student.classes.index', {year: 1}),
+                        // },
+                        // {
+                        //     title: 'Sophomore (Y2)',
+                        //     href: route('student.classes.index', {year: 2}),
+                        // },
+                        // {
+                        //     title: 'Junior (Y3)',
+                        //     href: route('student.classes.index', {year: 3}),
+                        // },
+                        // {
+                        //     title: 'Senior (Y4)',
+                        //     href: route('student.classes.index', {year: 4}),
+                        // },
                         {
-                            title: 'Freshman (Y1)',
+                            title: 'Year I',
                             href: route('student.classes.index', {year: 1}),
                         },
                         {
-                            title: 'Sophomore (Y2)',
+                            title: 'Year II',
                             href: route('student.classes.index', {year: 2}),
                         },
                         {
-                            title: 'Junior (Y3)',
+                            title: 'Year III',
                             href: route('student.classes.index', {year: 3}),
                         },
                         {
-                            title: 'Senior (Y4)',
+                            title: 'Year IV',
                             href: route('student.classes.index', {year: 4}),
                         },
                     ],

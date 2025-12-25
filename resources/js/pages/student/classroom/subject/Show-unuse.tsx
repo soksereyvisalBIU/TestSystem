@@ -45,7 +45,7 @@ export default function SubjectDetail() {
                         className="h-56 w-full bg-cover bg-center"
                         style={{
                             backgroundImage:
-                                "url('/assets/img/subject/default.jpg')", // 
+                                "url('/assets/img/subject/default.jpg')", //
                         }}
                     />
 
@@ -105,7 +105,7 @@ export default function SubjectDetail() {
                                 <span className="font-semibold">
                                     Instructor:
                                 </span>{' '}
-                                Dr. Sok Visal
+                                Mr. Sok Sereyvisal
                             </p>
                             <p>
                                 <span className="font-semibold">Credits:</span>{' '}
@@ -168,7 +168,7 @@ export default function SubjectDetail() {
                     {/* ASSESSMENTS */}
                     <Card className="rounded-2xl lg:col-span-2">
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2 justify-between">
+                            <CardTitle className="flex items-center justify-between gap-2">
                                 <div>
                                     <ClipboardList className="h-5 w-5" />{' '}
                                     Assessments

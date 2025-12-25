@@ -1,9 +1,9 @@
-import AppLayout from '@/layouts/app-layout';
-import { Head, Link } from '@inertiajs/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { motion } from 'framer-motion';
+import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { BarChart3, Users, ClipboardList, FileBarChart } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { motion } from 'framer-motion';
+import { BarChart3, ClipboardList, FileBarChart, Users } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Class', href: '/' },
@@ -23,7 +23,11 @@ export default function SubjectDetail() {
 
     const students = ['Sok Dara', 'Chan Lisa', 'Kim Vuthy', 'Srey Neang'];
 
-    const reports = ['Overall Report', 'Attendance Report', 'Performance by Topic'];
+    const reports = [
+        'Overall Report',
+        'Attendance Report',
+        'Performance by Topic',
+    ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -37,19 +41,31 @@ export default function SubjectDetail() {
                 >
                     <motion.div
                         layoutId={`subject-bg-${id}`}
-                        className="h-56 w-full bg-center bg-cover"
-                        style={{ backgroundImage: "url('/assets/img/subject/default.jpg')" }}
+                        className="h-56 w-full bg-cover bg-center"
+                        style={{
+                            backgroundImage:
+                                "url('/assets/img/subject/default.jpg')",
+                        }}
                     />
 
                     <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 to-transparent p-6 text-white">
                         <motion.div layoutId={`subject-meta-${id}`}>
-                            <h3 className="text-lg opacity-90">Semester 1 — Year 2025</h3>
+                            <h3 className="text-lg opacity-90">
+                                Semester 1 — Year 2025
+                            </h3>
                         </motion.div>
 
-                        <motion.div layoutId={`subject-title-${id}`} className="mt-2 max-w-xl">
-                            <h1 className="text-4xl font-semibold">Advanced Algorithms</h1>
+                        <motion.div
+                            layoutId={`subject-title-${id}`}
+                            className="mt-2 max-w-xl"
+                        >
+                            <h1 className="text-4xl font-semibold">
+                                Advanced Algorithms
+                            </h1>
                             <p className="mt-2 max-w-md text-sm opacity-80">
-                                In-depth study of algorithm design techniques, complexity analysis, and problem-solving strategies.
+                                In-depth study of algorithm design techniques,
+                                complexity analysis, and problem-solving
+                                strategies.
                             </p>
                         </motion.div>
                     </div>
@@ -59,19 +75,19 @@ export default function SubjectDetail() {
                 <div className="flex flex-wrap gap-3">
                     <Link
                         href="#"
-                        className="rounded-xl bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition"
+                        className="rounded-xl bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
                     >
                         Add Assessment
                     </Link>
                     <Link
                         href="#"
-                        className="rounded-xl bg-green-600 px-4 py-2 text-white hover:bg-green-700 transition"
+                        className="rounded-xl bg-green-600 px-4 py-2 text-white transition hover:bg-green-700"
                     >
                         Add Student
                     </Link>
                     <Link
                         href="#"
-                        className="rounded-xl bg-slate-700 px-4 py-2 text-white hover:bg-slate-800 transition"
+                        className="rounded-xl bg-slate-700 px-4 py-2 text-white transition hover:bg-slate-800"
                     >
                         Generate Report
                     </Link>
@@ -84,10 +100,26 @@ export default function SubjectDetail() {
                             <CardTitle>Subject Info</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-2 text-sm">
-                            <p><span className="font-semibold">Instructor:</span> Dr. Sok Visal</p>
-                            <p><span className="font-semibold">Credits:</span> 3</p>
-                            <p><span className="font-semibold">Schedule:</span> Monday & Wednesday — 8:00 AM</p>
-                            <p><span className="font-semibold">Classroom:</span> B102</p>
+                            <p>
+                                <span className="font-semibold">
+                                    Instructor:
+                                </span>{' '}
+                                Mr. Sok Sereyvisal
+                            </p>
+                            <p>
+                                <span className="font-semibold">Credits:</span>{' '}
+                                3
+                            </p>
+                            <p>
+                                <span className="font-semibold">Schedule:</span>{' '}
+                                Monday & Wednesday — 8:00 AM
+                            </p>
+                            <p>
+                                <span className="font-semibold">
+                                    Classroom:
+                                </span>{' '}
+                                B102
+                            </p>
                         </CardContent>
                     </Card>
 
@@ -96,9 +128,24 @@ export default function SubjectDetail() {
                             <CardTitle>Quick Stats</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-2 text-sm">
-                            <p><span className="font-semibold">Total Students:</span> {students.length}</p>
-                            <p><span className="font-semibold">Assessments:</span> {assessments.length}</p>
-                            <p><span className="font-semibold">Avg Score:</span> 83%</p>
+                            <p>
+                                <span className="font-semibold">
+                                    Total Students:
+                                </span>{' '}
+                                {students.length}
+                            </p>
+                            <p>
+                                <span className="font-semibold">
+                                    Assessments:
+                                </span>{' '}
+                                {assessments.length}
+                            </p>
+                            <p>
+                                <span className="font-semibold">
+                                    Avg Score:
+                                </span>{' '}
+                                83%
+                            </p>
                         </CardContent>
                     </Card>
 
@@ -107,7 +154,10 @@ export default function SubjectDetail() {
                             <CardTitle>Actions</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-2 text-sm">
-                            <p>Use the buttons above to add assessments, students, or generate reports.</p>
+                            <p>
+                                Use the buttons above to add assessments,
+                                students, or generate reports.
+                            </p>
                         </CardContent>
                     </Card>
                 </div>
@@ -118,17 +168,30 @@ export default function SubjectDetail() {
                     <Card className="rounded-2xl lg:col-span-2">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <ClipboardList className="h-5 w-5" /> Assessments
+                                <ClipboardList className="h-5 w-5" />{' '}
+                                Assessments
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3">
                             {assessments.map((a) => (
-                                <div key={a.id} className="flex justify-between rounded-xl border p-4 hover:bg-gray-50 transition">
+                                <div
+                                    key={a.id}
+                                    className="flex justify-between rounded-xl border p-4 transition hover:bg-gray-50"
+                                >
                                     <div>
-                                        <h3 className="font-semibold">{a.title}</h3>
-                                        <p className="text-sm text-muted-foreground">Due: {a.due}</p>
+                                        <h3 className="font-semibold">
+                                            {a.title}
+                                        </h3>
+                                        <p className="text-sm text-muted-foreground">
+                                            Due: {a.due}
+                                        </p>
                                     </div>
-                                    <Link href="#" className="text-blue-600 hover:underline">View</Link>
+                                    <Link
+                                        href="#"
+                                        className="text-blue-600 hover:underline"
+                                    >
+                                        View
+                                    </Link>
                                 </div>
                             ))}
                         </CardContent>
@@ -143,9 +206,17 @@ export default function SubjectDetail() {
                         </CardHeader>
                         <CardContent className="space-y-3">
                             {students.map((s, i) => (
-                                <div key={i} className="flex items-center justify-between rounded-xl border p-3 hover:bg-gray-50 transition">
+                                <div
+                                    key={i}
+                                    className="flex items-center justify-between rounded-xl border p-3 transition hover:bg-gray-50"
+                                >
                                     <span>{s}</span>
-                                    <Link href="#" className="text-blue-600 hover:underline">View</Link>
+                                    <Link
+                                        href="#"
+                                        className="text-blue-600 hover:underline"
+                                    >
+                                        View
+                                    </Link>
                                 </div>
                             ))}
                         </CardContent>
@@ -163,9 +234,17 @@ export default function SubjectDetail() {
                         </CardHeader>
                         <CardContent className="space-y-3">
                             {reports.map((r, i) => (
-                                <div key={i} className="flex items-center justify-between rounded-xl border p-4 hover:bg-gray-50 transition">
+                                <div
+                                    key={i}
+                                    className="flex items-center justify-between rounded-xl border p-4 transition hover:bg-gray-50"
+                                >
                                     <span>{r}</span>
-                                    <Link href="#" className="text-blue-600 hover:underline">View</Link>
+                                    <Link
+                                        href="#"
+                                        className="text-blue-600 hover:underline"
+                                    >
+                                        View
+                                    </Link>
                                 </div>
                             ))}
                         </CardContent>
@@ -175,11 +254,12 @@ export default function SubjectDetail() {
                     <Card className="rounded-2xl">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <BarChart3 className="h-5 w-5" /> Performance Chart
+                                <BarChart3 className="h-5 w-5" /> Performance
+                                Chart
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="h-60 w-full rounded-xl bg-gray-100 flex items-center justify-center text-muted-foreground">
+                            <div className="flex h-60 w-full items-center justify-center rounded-xl bg-gray-100 text-muted-foreground">
                                 Chart Placeholder
                             </div>
                         </CardContent>

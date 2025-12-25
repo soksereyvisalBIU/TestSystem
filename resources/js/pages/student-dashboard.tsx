@@ -48,7 +48,7 @@ const nextClass = {
     code: 'CS-402',
     time: '14:00 - 16:00',
     location: 'Lab 402 (Building B)',
-    instructor: 'Dr. Sopheak',
+    instructor: 'Mr. Sok Sereyvisal',
     status: 'Starting in 15m',
 };
 

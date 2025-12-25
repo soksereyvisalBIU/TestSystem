@@ -454,7 +454,7 @@ export default function SubjectDetail({ subject }: { subject: any }) {
                                 </Avatar>
                                 <div>
                                     <p className="font-semibold text-slate-900">
-                                        Dr. Sok Visal
+                                        Mr. Sok Sereyvisal
                                     </p>
                                     <p className="text-sm text-slate-500">
                                         PhD in Mathematics

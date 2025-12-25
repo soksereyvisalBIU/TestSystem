@@ -180,7 +180,7 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`${subject?.name || 'Subject'} - Detail`} />
 
-            <div className="min-h-screen space-y-8  p-4 pb-20 md:p-8">
+            <div className="min-h-screen space-y-8 p-4 pb-20 md:p-8">
                 {/* HERO SECTION - Subject Header (Kept for design consistency) */}
                 <motion.div
                     layoutId={`subject-card-${id}`}
@@ -199,7 +199,7 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                 })`,
                             }}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-tr from-primary/100 to-destructive/40 " />
+                        <div className="absolute inset-0 bg-gradient-to-tr from-primary/100 to-destructive/40" />
                         {/* <div className="absolute inset-0 bg-gradient-to-tr from-primary/100 via-destructive/40 to-transparent" /> */}
 
                         {/* <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" /> */}
@@ -226,11 +226,11 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                 </motion.div>
 
                                 <motion.div layoutId={`subject-title-${id}`}>
-                                    <h1 className="text-4xl font-extrabold  md:text-6xl lg:tracking-tighter text-white">
+                                    <h1 className="text-4xl font-extrabold text-white md:text-6xl lg:tracking-tighter">
                                         {subject?.name ||
                                             'C++ Programming Language I'}
                                     </h1>
-                                    <p className="mt-2 max-w-3xl text-lg text-slate-300 ">
+                                    <p className="mt-2 max-w-3xl text-lg text-slate-300">
                                         {subject?.description ||
                                             'Learn foundational concepts of C++ and object-oriented programming.'}
                                     </p>
@@ -241,7 +241,7 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                 <Button
                                     size="lg"
                                     variant="outline"
-                                    className="rounded-xl border-white/30 bg-white/15  shadow-xl shadow-slate-900/10 backdrop-blur-sm hover:bg-white/25 hover:text-white"
+                                    className="rounded-xl border-white/30 bg-white/15 shadow-xl shadow-slate-900/10 backdrop-blur-sm hover:bg-white/25 hover:text-white"
                                 >
                                     <FileText className="mr-2 h-4 w-4" /> View
                                     Reports
@@ -274,7 +274,7 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                             {/* ASSESSMENTS TAB - UX Refinement */}
                             <TabsContent value="assessments" className="pt-2">
                                 <Card className="gap-2 rounded-2xl border-none pt-2 shadow-md">
-                                    <CardHeader className="flex flex-row items-center justify-between border-b  p-6">
+                                    <CardHeader className="flex flex-row items-center justify-between border-b p-6">
                                         <div>
                                             <CardTitle>
                                                 Subject Assessments
@@ -319,7 +319,7 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                                                 : assessment.student_status ===
                                                                     'scored'
                                                                   ? 'border-emerald-100 bg-emerald-50 shadow-sm hover:border-emerald-200' // Scored
-                                                                  : ' hover:border-blue-100 hover:shadow-sm' // Default
+                                                                  : 'hover:border-blue-100 hover:shadow-sm' // Default
                                                         }`}
                                                     >
                                                         <div className="flex items-start gap-4">
@@ -456,7 +456,7 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent className="pt-4">
-                                        <div className="flex h-64 w-full items-end justify-between gap-4 rounded-xl border  p-6">
+                                        <div className="flex h-64 w-full items-end justify-between gap-4 rounded-xl border p-6">
                                             {[40, 65, 55, 80, 72, 90, 83].map(
                                                 (h, i) => (
                                                     <div
@@ -469,7 +469,7 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                                                 height: `${h}%`,
                                                             }}
                                                         />
-                                                        <div className="absolute -top-7 left-1/2 -translate-x-1/2 rounded-md bg-slate-800 px-2 py-1 text-center text-sm whitespace-nowrap  opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+                                                        <div className="absolute -top-7 left-1/2 -translate-x-1/2 rounded-md bg-slate-800 px-2 py-1 text-center text-sm whitespace-nowrap opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
                                                             <span className="text-sm font-bold">
                                                                 {h}%
                                                             </span>
@@ -518,7 +518,7 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                                         </AvatarFallback>
                                                     </Avatar>
                                                     <div>
-                                                        <p className="font-semibold ">
+                                                        <p className="font-semibold">
                                                             {student.name}
                                                         </p>
                                                         <p className="text-xs text-slate-500">
@@ -567,14 +567,14 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                         {resources.map((resource) => (
                                             <div
                                                 key={resource.id}
-                                                className="flex items-center justify-between rounded-xl border  p-3 transition hover:border-blue-200 hover:bg-blue-50/50"
+                                                className="flex items-center justify-between rounded-xl border p-3 transition hover:border-blue-200 hover:bg-blue-50/50"
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg  text-blue-600">
+                                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg text-blue-600">
                                                         <Paperclip className="h-5 w-5" />
                                                     </div>
                                                     <div>
-                                                        <p className="font-medium ">
+                                                        <p className="font-medium">
                                                             {resource.name}
                                                         </p>
                                                         <div className="flex items-center gap-2 text-xs text-slate-500">
@@ -628,8 +628,8 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                     <AvatarFallback>SV</AvatarFallback>
                                 </Avatar>
                                 <div>
-                                    <p className="text-lg font-bold ">
-                                        Dr. Sok Visal
+                                    <p className="text-lg font-bold">
+                                        Mr. Sok Sereyvisal
                                     </p>
                                     <p className="text-sm font-medium text-blue-600">
                                         PhD in Mathematics
@@ -708,7 +708,7 @@ function TabTrigger({
     return (
         <TabsTrigger
             value={value}
-            className="cursor-pointer rounded-none border-x-0 border-t-0 border-b-3 border-transparent px-4 py-3 font-semibold transition-colors hover:text-blue-700  data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:text-blue-600 data-[state=active]:shadow-none"
+            className="cursor-pointer rounded-none border-x-0 border-t-0 border-b-3 border-transparent px-4 py-3 font-semibold transition-colors hover:text-blue-700 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:text-blue-600 data-[state=active]:shadow-none"
         >
             {children}
         </TabsTrigger>
@@ -724,9 +724,7 @@ function StatCard({ icon: Icon, label, value, color, bg }: any) {
                 >
                     <Icon className="h-7 w-7" />
                 </div>
-                <div className="text-3xl font-extrabold ">
-                    {value}
-                </div>
+                <div className="text-3xl font-extrabold">{value}</div>
                 <div className="mt-1 text-xs font-medium tracking-wide text-slate-500 uppercase">
                     {label}
                 </div>
@@ -741,7 +739,7 @@ function DetailItem({ icon: Icon, label, value }: any) {
             <Icon className="mt-1 h-4 w-4 flex-shrink-0 text-blue-500" />
             <div>
                 <p className="text-xs font-medium text-slate-500">{label}</p>
-                <p className="text-sm font-semibold ">{value}</p>
+                <p className="text-sm font-semibold">{value}</p>
             </div>
         </div>
     );
