@@ -10,7 +10,6 @@ import utc from 'dayjs/plugin/utc';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import { route } from 'ziggy-js';
-import confetti from 'canvas-confetti';
 
 // Enable dayjs plugins
 dayjs.extend(utc);
@@ -48,15 +47,32 @@ type DashboardProps = {
     } | null;
 };
 
+// const useServerTime = () => {
+//     const [now, setNow] = useState<dayjs.Dayjs | null>(null);
+
+//     useEffect(() => {
+//         const fetchTime = async () => {
+//             await new Promise((r) => setTimeout(r, 50));
+//             setNow(dayjs.utc().tz('Asia/Phnom_Penh'));
+//         };
+//         fetchTime();
+//     }, []);
+
+//     useEffect(() => {
+//         if (!now) return;
+//         const timer = setInterval(() => {
+//             setNow((prev) => (prev ? prev.add(1, 'second') : prev));
+//         }, 1000);
+//         return () => clearInterval(timer);
+//     }, [!!now]); // Depend on the existence of now
+
+//     return now;
+// };
 const useServerTime = () => {
     const [now, setNow] = useState<dayjs.Dayjs | null>(null);
 
     useEffect(() => {
-        const fetchTime = async () => {
-            await new Promise((r) => setTimeout(r, 50));
-            setNow(dayjs.utc().tz('Asia/Phnom_Penh'));
-        };
-        fetchTime();
+        setNow(dayjs()); // use local time directly
     }, []);
 
     useEffect(() => {
@@ -65,7 +81,7 @@ const useServerTime = () => {
             setNow((prev) => (prev ? prev.add(1, 'second') : prev));
         }, 1000);
         return () => clearInterval(timer);
-    }, [!!now]); // Depend on the existence of now
+    }, [!!now]);
 
     return now;
 };
@@ -85,11 +101,12 @@ export default function AssessmentConfirmPage({
             return { logic: null, countdown: null };
         }
 
-        const start = dayjs.utc(assessment.start_time).tz('Asia/Phnom_Penh');
-        const end = dayjs.utc(assessment.end_time).tz('Asia/Phnom_Penh');
+        const start = dayjs(assessment.start_time);
+        const end = dayjs(assessment.end_time);
 
         const isBeforeStart = serverNow.isBefore(start);
-        const isWithinTime = serverNow.isAfter(start) && serverNow.isBefore(end);
+        const isWithinTime =
+            serverNow.isAfter(start) && serverNow.isBefore(end);
         const isEnded = serverNow.isAfter(end);
 
         const target = isBeforeStart ? start : end;
@@ -122,21 +139,28 @@ export default function AssessmentConfirmPage({
     const attemptsUsed = studentAssessment?.attempted_amount ?? 0;
     const maxAttempts = assessment.max_attempts ?? 0;
     const isCompleted = studentAssessmentAttempt?.status === 'completed';
-    const hasScore = studentAssessment?.score !== null && studentAssessment?.score !== undefined;
+    const hasScore =
+        studentAssessment?.score !== null &&
+        studentAssessment?.score !== undefined;
 
     const showResult = isCompleted || (hasScore && attemptsUsed > 0);
-    const hasRemainingAttempts = maxAttempts === 0 || attemptsUsed < maxAttempts;
-    const isResuming = studentAssessmentAttempt && studentAssessmentAttempt.status !== 'completed';
-    
-    // logic is guaranteed to exist here due to early return above
-    const canAttemptNow = !showResult && logic.isWithinTime && (hasRemainingAttempts || isResuming);
+    const hasRemainingAttempts =
+        maxAttempts === 0 || attemptsUsed < maxAttempts;
+    const isResuming =
+        studentAssessmentAttempt &&
+        studentAssessmentAttempt.status !== 'completed';
 
-    const rawScore = studentAssessmentAttempt?.score ?? studentAssessment?.score ?? 0;
+    // logic is guaranteed to exist here due to early return above
+    const canAttemptNow =
+        !showResult &&
+        logic.isWithinTime &&
+        (hasRemainingAttempts || isResuming);
+
+    const rawScore =
+        studentAssessmentAttempt?.score ?? studentAssessment?.score ?? 0;
     const maxScore = assessment.max_score ?? 100;
     const scorePercentage = (rawScore / maxScore) * 100;
     const isPassing = scorePercentage >= 50;
-
-
 
     return (
         <AppLayout breadcrumbs={[{ title: 'Assessments', href: '#' }]}>
@@ -155,7 +179,8 @@ export default function AssessmentConfirmPage({
                                 {assessment.title}
                             </h1>
                             <p className="mt-3 text-lg text-gray-500 dark:text-gray-400">
-                                {assessment.description || 'Please review the details below before starting.'}
+                                {assessment.description ||
+                                    'Please review the details below before starting.'}
                             </p>
                         </div>
 
@@ -172,7 +197,9 @@ export default function AssessmentConfirmPage({
                                             score={scorePercentage}
                                             maxScore={100}
                                             isPassing={isPassing}
-                                            completedAt={studentAssessmentAttempt?.completed_at}
+                                            completedAt={
+                                                studentAssessmentAttempt?.completed_at
+                                            }
                                         />
                                     </motion.div>
                                 ) : (
@@ -185,20 +212,36 @@ export default function AssessmentConfirmPage({
                                         {countdown && !logic.isEnded && (
                                             <div className="mb-8 rounded-xl bg-blue-50/50 p-6 ring-1 ring-blue-100 dark:bg-blue-900/10 dark:ring-blue-800">
                                                 <p className="mb-4 text-center text-xs font-bold tracking-widest text-blue-600 uppercase dark:text-blue-400">
-                                                    {logic.isBeforeStart ? 'Starting In' : 'Time Remaining'}
+                                                    {logic.isBeforeStart
+                                                        ? 'Starting In'
+                                                        : 'Time Remaining'}
                                                 </p>
                                                 <div className="flex justify-center gap-3 sm:gap-6">
-                                                    {Object.entries(countdown).map(([unit, val]) => 
-                                                        (unit !== 'days' || (val as number) > 0) && (
-                                                        <div key={unit} className="flex min-w-[70px] flex-col items-center rounded-lg bg-white p-3 shadow-sm ring-1 ring-gray-100 dark:bg-gray-700 dark:ring-gray-600">
-                                                            <span className="text-2xl font-bold text-gray-800 dark:text-white">
-                                                                {String(val).padStart(2, '0')}
-                                                            </span>
-                                                            <span className="text-[10px] font-bold text-gray-400 uppercase">
-                                                                {unit}
-                                                            </span>
-                                                        </div>
-                                                    ))}
+                                                    {Object.entries(
+                                                        countdown,
+                                                    ).map(
+                                                        ([unit, val]) =>
+                                                            (unit !== 'days' ||
+                                                                (val as number) >
+                                                                    0) && (
+                                                                <div
+                                                                    key={unit}
+                                                                    className="flex min-w-[70px] flex-col items-center rounded-lg bg-white p-3 shadow-sm ring-1 ring-gray-100 dark:bg-gray-700 dark:ring-gray-600"
+                                                                >
+                                                                    <span className="text-2xl font-bold text-gray-800 dark:text-white">
+                                                                        {String(
+                                                                            val,
+                                                                        ).padStart(
+                                                                            2,
+                                                                            '0',
+                                                                        )}
+                                                                    </span>
+                                                                    <span className="text-[10px] font-bold text-gray-400 uppercase">
+                                                                        {unit}
+                                                                    </span>
+                                                                </div>
+                                                            ),
+                                                    )}
                                                 </div>
                                             </div>
                                         )}
@@ -207,49 +250,72 @@ export default function AssessmentConfirmPage({
                             </AnimatePresence>
 
                             <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-                                <InfoItem label="Type" value={assessment.type} />
-                                <InfoItem label="Duration" value={`${assessment.duration} min`} />
-                                <InfoItem 
-                                    label="Attempts" 
+                                <InfoItem
+                                    label="Type"
+                                    value={assessment.type}
+                                />
+                                <InfoItem
+                                    label="Duration"
+                                    value={`${assessment.duration} min`}
+                                />
+                                <InfoItem
+                                    label="Attempts"
                                     value={`${attemptsUsed} / ${maxAttempts === 0 ? '∞' : maxAttempts}`}
                                     highlight={hasRemainingAttempts}
                                 />
-                                <InfoItem 
-                                    label="Status" 
-                                    value={showResult ? 'Completed' : 'Pending'} 
-                                    className={showResult ? 'bg-green-50 text-green-600 dark:bg-green-900/20' : ''}
+                                <InfoItem
+                                    label="Status"
+                                    value={showResult ? 'Completed' : 'Pending'}
+                                    className={
+                                        showResult
+                                            ? 'bg-green-50 text-green-600 dark:bg-green-900/20'
+                                            : ''
+                                    }
                                 />
                             </div>
 
                             <div className="mt-8 space-y-3">
                                 {canAttemptNow ? (
                                     <Link
-                                        href={route('student.classes.subjects.assessments.request', {
-                                            class_id,
-                                            subject_id,
-                                            assessment_id: assessment.id,
-                                            student_assessment_attempt_id: studentAssessmentAttempt?.id ?? null,
-                                        })}
+                                        href={route(
+                                            'student.classes.subjects.assessments.request',
+                                            {
+                                                class_id,
+                                                subject_id,
+                                                assessment_id: assessment.id,
+                                                student_assessment_attempt_id:
+                                                    studentAssessmentAttempt?.id ??
+                                                    null,
+                                            },
+                                        )}
                                         method="post"
                                         as="button"
                                         className="relative w-full overflow-hidden rounded-xl bg-blue-600 py-4 text-lg font-bold text-white shadow-lg shadow-blue-200 transition-all hover:translate-y-[-2px] hover:bg-blue-700 hover:shadow-xl dark:shadow-none"
                                     >
-                                        {isResuming ? 'Resume Assessment' : 'Start Assessment'}
+                                        {isResuming
+                                            ? 'Resume Assessment'
+                                            : 'Start Assessment'}
                                     </Link>
                                 ) : !showResult ? (
                                     <div className="w-full rounded-xl bg-gray-100 py-4 text-center font-medium text-gray-500 dark:bg-gray-700 dark:text-gray-400">
-                                        {logic.isBeforeStart ? 'Please wait for start time' : 'Assessment Unavailable'}
+                                        {logic.isBeforeStart
+                                            ? 'Please wait for start time'
+                                            : 'Assessment Unavailable'}
                                     </div>
                                 ) : null}
 
                                 {studentAssessmentAttempt?.id && showResult && (
                                     <Link
-                                        href={route('student.classes.subjects.assessments.attempt.review', {
-                                            class_id,
-                                            subject_id,
-                                            assessment_id: assessment.id,
-                                            student_assessment_attempt_id: studentAssessmentAttempt.id,
-                                        })}
+                                        href={route(
+                                            'student.classes.subjects.assessments.attempt.review',
+                                            {
+                                                class_id,
+                                                subject_id,
+                                                assessment_id: assessment.id,
+                                                student_assessment_attempt_id:
+                                                    studentAssessmentAttempt.id,
+                                            },
+                                        )}
                                         className="flex w-full items-center justify-center rounded-xl border border-gray-200 bg-white py-3.5 font-semibold text-gray-700 transition-colors hover:bg-gray-50 hover:text-blue-600 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                                     >
                                         Review Answers
@@ -264,9 +330,27 @@ export default function AssessmentConfirmPage({
     );
 }
 
-const InfoItem = ({ label, value, highlight, className }: { label: string; value: string; highlight?: boolean; className?: string }) => (
-    <div className={`flex flex-col items-center justify-center rounded-xl bg-gray-50 p-4 transition-colors dark:bg-gray-700/50 ${className}`}>
-        <span className="mb-1 text-[10px] font-bold tracking-wider text-gray-400 uppercase">{label}</span>
-        <span className={`font-bold ${highlight ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-white'}`}>{value}</span>
+const InfoItem = ({
+    label,
+    value,
+    highlight,
+    className,
+}: {
+    label: string;
+    value: string;
+    highlight?: boolean;
+    className?: string;
+}) => (
+    <div
+        className={`flex flex-col items-center justify-center rounded-xl bg-gray-50 p-4 transition-colors dark:bg-gray-700/50 ${className}`}
+    >
+        <span className="mb-1 text-[10px] font-bold tracking-wider text-gray-400 uppercase">
+            {label}
+        </span>
+        <span
+            className={`font-bold ${highlight ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-white'}`}
+        >
+            {value}
+        </span>
     </div>
 );
