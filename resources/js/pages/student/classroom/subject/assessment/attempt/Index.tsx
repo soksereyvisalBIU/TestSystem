@@ -179,6 +179,84 @@ export default function AssessmentAttempt({
         if (isSubmitting) return;
         setIsSubmitting(true);
         form.transform((data) => ({ ...data, answers }));
+
+        console.log('Submitting answers:', answers);
+        // {
+        //     "1": "True",
+        //     "2": "Officia porro ad quo",
+        //     "3": "Consectetur rerum ad",
+        //     "4": {
+        //         "8": "Atque quam quae aut",
+        //         "9": "Quos quam voluptas a",
+        //         "10": "Veniam voluptatem n",
+        //         "11": "Corrupti in consect",
+        //         "12": "Itaque enim incidunt"
+        //     },
+        //     "5": "Provident laudantiu",
+        //     "6": {}
+        // }
+
+        // {1: 'True', 2: 'Officia porro ad quo', 3: 'Consectetur rerum ad', 4: {…}, 5: 'Provident laudantiu', 6: File}
+        // 1
+        // : 
+        // "True"
+        // 2
+        // : 
+        // "Officia porro ad quo"
+        // 3
+        // : 
+        // "Consectetur rerum ad"
+        // 4
+        // : 
+        // 8
+        // : 
+        // "Atque quam quae aut"
+        // 9
+        // : 
+        // "Quos quam voluptas a"
+        // 10
+        // : 
+        // "Veniam voluptatem n"
+        // 11
+        // : 
+        // "Corrupti in consect"
+        // 12
+        // : 
+        // "Itaque enim incidunt"
+        // [[Prototype]]
+        // : 
+        // Object
+        // 5
+        // : 
+        // "Provident laudantiu"
+        // 6
+        // : 
+        // File
+        // lastModified
+        // : 
+        // 1764040586689
+        // lastModifiedDate
+        // : 
+        // Tue Nov 25 2025 10:16:26 GMT+0700 (Indochina Time) {}
+        // name
+        // : 
+        // "19988.jpg"
+        // size
+        // : 
+        // 185265
+        // type
+        // : 
+        // "image/jpeg"
+        // webkitRelativePath
+        // : 
+        // ""
+        // [[Prototype]]
+        // : 
+        // File
+        // [[Prototype]]
+        // : 
+        // Object
+
         form.post(
             route('student.classes.subjects.assessments.attempt.store', {
                 class_id: subject.class_id,

@@ -29,7 +29,7 @@ class AttemptController extends Controller
             ->findOrFail($assessment_id);
 
         $questions = QuestionResource::collection(
-            Question::with('options')
+            Question::with(['options', 'submissionSetting', 'media'])
                 ->where('assessment_id', $assessment_id)
                 ->orderBy('order')
                 ->get()
@@ -41,7 +41,7 @@ class AttemptController extends Controller
 
         return Inertia::render(
             'student/classroom/subject/assessment/attempt/Index',
-            compact('assessment', 'questions', 'student_assessment_attempt_id' , 'studentAssessmentAttempt')
+            compact('assessment', 'questions', 'student_assessment_attempt_id', 'studentAssessmentAttempt')
         );
     }
 
@@ -63,7 +63,7 @@ class AttemptController extends Controller
         // Mark as submitted
         // ---------------------------------------------------
         $assessmentAttempt->update([
-            'submitted_at' => now(),
+            'completed_at' => now(),
             'status'       => 'submitted',
         ]);
 
@@ -153,7 +153,9 @@ class AttemptController extends Controller
 
         // $assessmentAttemptResource = new \App\Http\Resources\Student\AssessmentResource(Assessment::with('questions' , 'answer')->findOrFail($request->student_assessment_attempt_id));
 
-        $assessmentAttemptResource = new StudentAssessmentAttemptResource(StudentAssessmentAttempt::with('studentAssessment', 'assessment.questions', 'answers')->findOrFail($request->student_assessment_attempt_id));
+        $assessmentAttemptResource = new StudentAssessmentAttemptResource(StudentAssessmentAttempt::with('studentAssessment', 'assessment.questions.options', 'assessment.questions.submissionSetting', 'assessment.questions.media', 'answers')->findOrFail($request->student_assessment_attempt_id));
+
+        // dd($assessmentAttemptResource);
 
         // return response()->json($assessmentAttemptResource); 
         // return Inertia::render('student/classroom/subject/assessment/attempt/Review' , compact('assessmentAttempt' , 'assessmentAttemptResource'));

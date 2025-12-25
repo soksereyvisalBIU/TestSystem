@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Instructor\QuestionResource;
 use App\Models\Option;
 use App\Models\Question;
+use App\Models\QuestionMedia;
+use App\Models\QuestionSubmissionSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 
@@ -20,10 +23,21 @@ class QuestionController extends Controller
 
         // return response()->json('vi');
 
-        $questions = QuestionResource::collection(Question::with(relations: 'options')->where('assessment_id', $assessmentId)->orderBy('order')->get());
+        // $questions = QuestionResource::collection(Question::with('options', 'media', 'submissionSetting')->where('assessment_id', $assessmentId)->orderBy('order')->get());
+        $questions = QuestionResource::collection(Question::with(['options', 'media' , 'submissionSetting'])->where('assessment_id', $assessmentId)->orderBy('order')->get());
 
         return response()->json(['data' => $questions]);
     }
+    // public function index($assessmentId)
+    // {
+    //     $questions = Question::query()
+    //         ->with(['options', 'media', 'submissionSetting'])
+    //         ->where('assessment_id', $assessmentId)
+    //         ->orderBy('order')
+    //         ->get();
+
+    //     return QuestionResource::collection($questions);
+    // }
 
     public function store(Request $request, $assessmentId)
     {
@@ -83,9 +97,56 @@ class QuestionController extends Controller
                     ]);
                 }
                 break;
-        }
+            case 'fileupload':
 
-        // Load options to include them in the response
+                /**
+                 * 1️⃣ Save reference images (base64 → file → DB)
+                 */
+                if ($request->filled('referenceImages') && is_array($request->referenceImages)) {
+
+                    foreach ($request->referenceImages as $base64Image) {
+
+                        if (! str_starts_with($base64Image, 'data:image')) {
+                            continue;
+                        }
+
+                        // Extract image data
+                        [$meta, $content] = explode(',', $base64Image);
+                        $extension = explode('/', mime_content_type($base64Image))[1] ?? 'png';
+
+                        $fileName = uniqid('question_', true) . '.' . $extension;
+                        $path = "questions/{$question->id}/{$fileName}";
+
+                        // Store image
+                        Storage::disk('public')->put($path, base64_decode($content));
+
+                        // Save media record
+                        QuestionMedia::create([
+                            'question_id' => $question->id,
+                            'type'        => 'image',
+                            'path'        => $path,
+                        ]);
+                    }
+                }
+
+                /**
+                 * 2️⃣ Save submission settings
+                 */
+                QuestionSubmissionSetting::updateOrCreate(
+                    ['question_id' => $question->id],
+                    [
+                        'allow_file_upload'    => true,
+                        'allow_code_submission' => false,
+                        'accepted_file_types'  => $request->input('accepted_file_types', 'image'),
+                        'max_file_size'        => $request->input('maxSize', 10), // MB
+                    ]
+                );
+
+                /**
+                 * 3️⃣ No "answer" saved (file upload questions have no predefined answer)
+                 */
+                break;
+        }
         $question->load('options');
 
         return response()->json([
@@ -168,6 +229,55 @@ class QuestionController extends Controller
                     ]);
                 }
                 break;
+            case 'fileupload':
+
+                /**
+                 * 1️⃣ Save reference images (base64 → file → DB)
+                 */
+                if ($request->filled('referenceImages') && is_array($request->referenceImages)) {
+
+                    foreach ($request->referenceImages as $base64Image) {
+
+                        if (! str_starts_with($base64Image, 'data:image')) {
+                            continue;
+                        }
+
+                        // Extract image data
+                        [$meta, $content] = explode(',', $base64Image);
+                        $extension = explode('/', mime_content_type($base64Image))[1] ?? 'png';
+
+                        $fileName = uniqid('question_', true) . '.' . $extension;
+                        $path = "questions/{$question->id}/{$fileName}";
+
+                        // Store image
+                        Storage::disk('public')->put($path, base64_decode($content));
+
+                        // Save media record
+                        QuestionMedia::create([
+                            'question_id' => $question->id,
+                            'type'        => 'image',
+                            'path'        => $path,
+                        ]);
+                    }
+                }
+
+                /**
+                 * 2️⃣ Save submission settings
+                 */
+                QuestionSubmissionSetting::updateOrCreate(
+                    ['question_id' => $question->id],
+                    [
+                        'allow_file_upload'    => true,
+                        'allow_code_submission' => false,
+                        'accepted_file_types'  => $request->input('accepted_file_types', 'image'),
+                        'max_file_size'        => $request->input('maxSize', 10), // MB
+                    ]
+                );
+
+                /**
+                 * 3️⃣ No "answer" saved (file upload questions have no predefined answer)
+                 */
+                break;
         }
 
         // 🔹 Reload updated question with options
@@ -191,7 +301,7 @@ class QuestionController extends Controller
     private function validateData(Request $request, $id = null)
     {
         $rules = [
-            'type' => ['required', Rule::in(['true_false', 'fill_blank', 'multiple_choice', 'matching', 'short_answer'])],
+            'type' => ['required', Rule::in(['true_false', 'fill_blank', 'multiple_choice', 'matching', 'short_answer', 'fileupload'])],
             'question' => ['required', 'string'],
             'point' => ['required'],
             'order' => ['integer']
@@ -224,6 +334,11 @@ class QuestionController extends Controller
 
             case 'short_answer':
                 $rules['answer'] = ['required', 'string'];
+                break;
+            case 'fileupload':
+                $rules['accepted_file_types'] = ['required', 'string'];
+                $rules['maxSize']  = ['nullable', 'integer', 'min:1'];
+                $rules['referenceImages'] = ['nullable', 'array'];
                 break;
         }
 

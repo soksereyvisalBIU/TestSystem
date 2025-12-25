@@ -11,6 +11,7 @@ export interface Question {
         | 'fill_blank'
         | 'multiple_choice'
         | 'matching'
+        | 'fileupload'
         | 'short_answer';
     question: string;
     options?: string[];
@@ -27,6 +28,9 @@ export const useQuestions = (assessment_id: number) =>
             const { data } = await api.get(
                 `api/v1/assessments/${assessment_id}/questions`,
             );
+
+            console.log(data);
+            
             return data.data;
         },
         enabled: !!assessment_id,
@@ -49,6 +53,22 @@ export const useCreateQuestion = (assessment_id: number) => {
 
     return useMutation({
         mutationFn: async (payload: Question) => {
+
+            console.log(payload);
+            // {
+            //     "point": 36,
+            //     "maxSize": "5",
+            //     "question": "Ex sed corporis sunt",
+            //     "referenceImages": [
+            //         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAE...
+            //     ],
+            //     "fileType": "image",
+            //     "type": "fileupload",
+            //     "assessment_id": "1",
+            //     "isNew": true,
+            //     "tempId": 1766652337797,
+            //     "order": 6
+            // }
             const { data } = await api.post(
                 `api/v1/assessments/${assessment_id}/questions`,
                 payload,

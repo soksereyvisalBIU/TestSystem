@@ -252,7 +252,7 @@ export default function AttemptReview({ assessmentAttemptResource }: { assessmen
                                             <div className={`rounded-md border p-4 ${status.bgClass} ${status.textClass} border-${status.colorClass}-200`}>
                                                 
                                                 {/* Text / MC Answer */}
-                                                {['true_false', 'multiple_choice', 'short_answer', 'essay'].includes(question.type) && (
+                                                {['true_false', 'fill_blank' , 'multiple_choice', 'short_answer', ].includes(question.type) && (
                                                     <p className="text-sm font-medium leading-relaxed">
                                                         {qAnswers[0]?.answer_text || <span className="italic opacity-70">No answer provided</span>}
                                                     </p>

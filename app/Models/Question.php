@@ -12,7 +12,7 @@ class Question extends Model
         'question_text',
         'type',
         'point',
-        'order'
+        'order',
     ];
 
     // ========== Relation ===========
@@ -67,5 +67,16 @@ class Question extends Model
         );
     }
 
-    
+
+
+    /* ================= Relations ================= */
+    public function media()
+    {
+        return $this->hasMany(QuestionMedia::class, 'question_id', 'id');
+    }
+
+    public function submissionSetting()
+    {
+        return $this->hasOne(QuestionSubmissionSetting::class, 'question_id', 'id');
+    }
 }

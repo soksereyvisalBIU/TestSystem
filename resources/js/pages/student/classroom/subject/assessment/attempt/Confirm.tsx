@@ -8,6 +8,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Clock, FileCheck } from 'lucide-react'; // Added icons
 import { useEffect, useMemo, useState } from 'react';
 import { route } from 'ziggy-js';
 
@@ -41,38 +42,17 @@ type DashboardProps = {
     studentAssessmentAttempt: {
         id: number;
         status: string | null;
-        score?: number;
+        score?: number; // Score might be undefined even if status is completed
         completed_at?: string;
         [key: string]: any;
     } | null;
 };
 
-// const useServerTime = () => {
-//     const [now, setNow] = useState<dayjs.Dayjs | null>(null);
-
-//     useEffect(() => {
-//         const fetchTime = async () => {
-//             await new Promise((r) => setTimeout(r, 50));
-//             setNow(dayjs.utc().tz('Asia/Phnom_Penh'));
-//         };
-//         fetchTime();
-//     }, []);
-
-//     useEffect(() => {
-//         if (!now) return;
-//         const timer = setInterval(() => {
-//             setNow((prev) => (prev ? prev.add(1, 'second') : prev));
-//         }, 1000);
-//         return () => clearInterval(timer);
-//     }, [!!now]); // Depend on the existence of now
-
-//     return now;
-// };
 const useServerTime = () => {
     const [now, setNow] = useState<dayjs.Dayjs | null>(null);
 
     useEffect(() => {
-        setNow(dayjs()); // use local time directly
+        setNow(dayjs());
     }, []);
 
     useEffect(() => {
@@ -95,7 +75,6 @@ export default function AssessmentConfirmPage({
 }: DashboardProps) {
     const serverNow = useServerTime();
 
-    // 1. Move logic calculation into useMemo and handle null serverNow
     const { logic, countdown } = useMemo(() => {
         if (!assessment || !serverNow) {
             return { logic: null, countdown: null };
@@ -124,7 +103,6 @@ export default function AssessmentConfirmPage({
         };
     }, [assessment, serverNow]);
 
-    // 2. Early return for loading state (Must be after all Hooks)
     if (!serverNow || !logic) {
         return (
             <AppLayout breadcrumbs={[{ title: 'Assessments', href: '#' }]}>
@@ -135,32 +113,43 @@ export default function AssessmentConfirmPage({
         );
     }
 
-    // 3. Derived State
+    // --- LOGIC UPDATE STARTS HERE ---
+
     const attemptsUsed = studentAssessment?.attempted_amount ?? 0;
     const maxAttempts = assessment.max_attempts ?? 0;
-    const isCompleted = studentAssessmentAttempt?.status === 'completed';
-    const hasScore =
-        studentAssessment?.score !== null &&
-        studentAssessment?.score !== undefined;
+    
+    // Status Checks
+    const status = studentAssessmentAttempt?.status;
+    const rawScore = studentAssessmentAttempt?.score ?? studentAssessment?.score;
+    
+    // Check if a score actually exists (not null/undefined)
+    const hasScore = rawScore !== null && rawScore !== undefined;
 
-    const showResult = isCompleted || (hasScore && attemptsUsed > 0);
-    const hasRemainingAttempts =
-        maxAttempts === 0 || attemptsUsed < maxAttempts;
-    const isResuming =
-        studentAssessmentAttempt &&
-        studentAssessmentAttempt.status !== 'completed';
+    // 1. Pending: Submitted but NO score yet
+    const isPendingGrading = status === 'submitted';
+    // const isPendingGrading = status === 'submitted' && !hasScore;
 
-    // logic is guaranteed to exist here due to early return above
+    // 2. Graded: Submitted AND has a score
+    const isGraded = hasScore;
+
+    // Logic for showing the main view vs the "Start" button
+    const showResultView = isPendingGrading || isGraded || (attemptsUsed > 0 && hasScore);
+
+    const hasRemainingAttempts = maxAttempts === 0 || attemptsUsed < maxAttempts;
+    const isResuming = studentAssessmentAttempt && status !== 'submitted';
+
     const canAttemptNow =
-        !showResult &&
+        !showResultView &&
         logic.isWithinTime &&
         (hasRemainingAttempts || isResuming);
 
-    const rawScore =
-        studentAssessmentAttempt?.score ?? studentAssessment?.score ?? 0;
+    // Scoring Logic
     const maxScore = assessment.max_score ?? 100;
-    const scorePercentage = (rawScore / maxScore) * 100;
+    const currentScore = rawScore ?? 0;
+    const scorePercentage = (currentScore / maxScore) * 100;
     const isPassing = scorePercentage >= 50;
+
+    // --- LOGIC UPDATE ENDS HERE ---
 
     return (
         <AppLayout breadcrumbs={[{ title: 'Assessments', href: '#' }]}>
@@ -186,21 +175,54 @@ export default function AssessmentConfirmPage({
 
                         <div className="p-8">
                             <AnimatePresence mode="wait">
-                                {showResult ? (
+                                {showResultView ? (
                                     <motion.div
-                                        key="result"
+                                        key="result-view"
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0 }}
                                     >
-                                        <AssessmentResultCard
-                                            score={scorePercentage}
-                                            maxScore={100}
-                                            isPassing={isPassing}
-                                            completedAt={
-                                                studentAssessmentAttempt?.completed_at
-                                            }
-                                        />
+                                        {/* Conditional Rendering based on Grading Status */}
+                                        {isPendingGrading ? (
+                                            <div className="flex flex-col items-center justify-center rounded-2xl bg-amber-50 py-10 px-6 text-center ring-1 ring-amber-100 dark:bg-amber-900/10 dark:ring-amber-800">
+                                                <div className="mb-4 rounded-full bg-amber-100 p-4 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
+                                                    <Clock className="h-10 w-10" />
+                                                </div>
+                                                <h3 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
+                                                    Submitted & Awaiting Review
+                                                </h3>
+                                                <p className="max-w-md text-gray-500 dark:text-gray-400">
+                                                    You have completed this assessment. Your teacher needs to grade your submission before your score is released.
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            /* Status is SCORED */
+                                            <div>
+                                                {/* Optional: Add custom header message based on pass/fail logic here if not inside ResultCard */}
+                                                <div className="mb-6 text-center">
+                                                    <span className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-bold tracking-wide uppercase ${
+                                                        isPassing 
+                                                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                                                        : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                                                    }`}>
+                                                       {isPassing ? (
+                                                           <>🎉 Congratulations</>
+                                                       ) : (
+                                                           <>⚠️ Needs Improvement</>
+                                                       )} 
+                                                    </span>
+                                                </div>
+                                                
+                                                <AssessmentResultCard
+                                                    score={scorePercentage}
+                                                    maxScore={100}
+                                                    isPassing={isPassing}
+                                                    completedAt={
+                                                        studentAssessmentAttempt?.completed_at
+                                                    }
+                                                />
+                                            </div>
+                                        )}
                                     </motion.div>
                                 ) : (
                                     <motion.div
@@ -217,24 +239,15 @@ export default function AssessmentConfirmPage({
                                                         : 'Time Remaining'}
                                                 </p>
                                                 <div className="flex justify-center gap-3 sm:gap-6">
-                                                    {Object.entries(
-                                                        countdown,
-                                                    ).map(
+                                                    {Object.entries(countdown).map(
                                                         ([unit, val]) =>
-                                                            (unit !== 'days' ||
-                                                                (val as number) >
-                                                                    0) && (
+                                                            (unit !== 'days' || (val as number) > 0) && (
                                                                 <div
                                                                     key={unit}
                                                                     className="flex min-w-[70px] flex-col items-center rounded-lg bg-white p-3 shadow-sm ring-1 ring-gray-100 dark:bg-gray-700 dark:ring-gray-600"
                                                                 >
                                                                     <span className="text-2xl font-bold text-gray-800 dark:text-white">
-                                                                        {String(
-                                                                            val,
-                                                                        ).padStart(
-                                                                            2,
-                                                                            '0',
-                                                                        )}
+                                                                        {String(val).padStart(2, '0')}
                                                                     </span>
                                                                     <span className="text-[10px] font-bold text-gray-400 uppercase">
                                                                         {unit}
@@ -265,10 +278,16 @@ export default function AssessmentConfirmPage({
                                 />
                                 <InfoItem
                                     label="Status"
-                                    value={showResult ? 'Completed' : 'Pending'}
+                                    value={
+                                        isGraded ? 'Graded' : 
+                                        isPendingGrading ? 'Pending' : 
+                                        'Not Started'
+                                    }
                                     className={
-                                        showResult
+                                        isGraded
                                             ? 'bg-green-50 text-green-600 dark:bg-green-900/20'
+                                            : isPendingGrading
+                                            ? 'bg-amber-50 text-amber-600 dark:bg-amber-900/20'
                                             : ''
                                     }
                                 />
@@ -284,8 +303,7 @@ export default function AssessmentConfirmPage({
                                                 subject_id,
                                                 assessment_id: assessment.id,
                                                 student_assessment_attempt_id:
-                                                    studentAssessmentAttempt?.id ??
-                                                    null,
+                                                    studentAssessmentAttempt?.id ?? null,
                                             },
                                         )}
                                         method="post"
@@ -296,7 +314,7 @@ export default function AssessmentConfirmPage({
                                             ? 'Resume Assessment'
                                             : 'Start Assessment'}
                                     </Link>
-                                ) : !showResult ? (
+                                ) : !showResultView ? (
                                     <div className="w-full rounded-xl bg-gray-100 py-4 text-center font-medium text-gray-500 dark:bg-gray-700 dark:text-gray-400">
                                         {logic.isBeforeStart
                                             ? 'Please wait for start time'
@@ -304,7 +322,9 @@ export default function AssessmentConfirmPage({
                                     </div>
                                 ) : null}
 
-                                {studentAssessmentAttempt?.id && showResult && (
+                                {/* Only show review button if it is GRADED. 
+                                    Usually you shouldn't review answers while pending grading. */}
+                                {studentAssessmentAttempt?.id && isGraded && (
                                     <Link
                                         href={route(
                                             'student.classes.subjects.assessments.attempt.review',
