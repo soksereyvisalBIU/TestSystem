@@ -199,19 +199,6 @@ export default function AssessmentConfirmPage({
                                             /* Status is SCORED */
                                             <div>
                                                 {/* Optional: Add custom header message based on pass/fail logic here if not inside ResultCard */}
-                                                <div className="mb-6 text-center">
-                                                    <span className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-bold tracking-wide uppercase ${
-                                                        isPassing 
-                                                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
-                                                        : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
-                                                    }`}>
-                                                       {isPassing ? (
-                                                           <>🎉 Congratulations</>
-                                                       ) : (
-                                                           <>⚠️ Needs Improvement</>
-                                                       )} 
-                                                    </span>
-                                                </div>
                                                 
                                                 <AssessmentResultCard
                                                     score={scorePercentage}

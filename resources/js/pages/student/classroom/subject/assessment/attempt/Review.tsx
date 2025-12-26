@@ -141,9 +141,10 @@ export default function AttemptReview({ assessmentAttemptResource }: { assessmen
     }, [answers]);
 
     // Stats Calculation
-    const timeTaken = completed_at
-        ? dayjs.duration(dayjs(completed_at).diff(dayjs(started_at))).humanize()
-        : 'Incomplete';
+    const timeTaken = completed_at;
+    // const timeTaken = completed_at
+    //     ? dayjs.duration(dayjs(completed_at).diff(dayjs(started_at))).humanize()
+    //     : 'Incomplete';
 
     const maxScore = assessment.questions.reduce((sum: number, q: DetailedQuestion) => sum + (Number(q.point) || 0), 0);
     const rawPercentage = maxScore > 0 ? (Number(sub_score) / maxScore) * 100 : 0;

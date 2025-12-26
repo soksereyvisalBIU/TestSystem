@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('status')->nullable();
             $table->timestamp('started_at')->nullable();
             $table->timestamp('completed_at')->nullable();
-            $table->float('sub_score')->default(0);
+            $table->decimal('sub_score', 10, 2)->default(0);
 
             // student_assessment_id integer
             // attempt int                        // attempt number (1,2,3...)
