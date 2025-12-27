@@ -31,20 +31,20 @@ export default function AssessmentPage({ subject }: { subject: any }) {
 
     const [openAssessmentModal, setOpenAssessmentModal] = useState(false);
 
-    const { flash } = usePage().props as {
-        flash?: { success?: string; error?: string };
-    };
+    // const { flash } = usePage().props as {
+    //     flash?: { success?: string; error?: string };
+    // };
 
     const classId = subject.class_id;
     const subjectId = subject.id;
 
-    console.log('Subject Data:', subject);
+    // console.log('Subject Data:', subject);
 
-    // Show flash messages
-    useEffect(() => {
-        if (flash?.success) toast.success(flash.success);
-        if (flash?.error) toast.error(flash.error);
-    }, [flash]);
+    // // Show flash messages
+    // useEffect(() => {
+    //     if (flash?.success) toast.success(flash.success);
+    //     if (flash?.error) toast.error(flash.error);
+    // }, [flash]);
 
     // ---- REAL BACKEND DATA ----
     const assessments = subject.assessments || [];

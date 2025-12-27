@@ -47,7 +47,7 @@ export function SubjectHero({
             {/* Content Container */}
             <div className="relative z-10 p-8 md:p-12 lg:p-16">
                 <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                         {/* Meta Tags */}
                         <div className="flex flex-wrap items-center gap-3">
                             <Badge className="bg-blue-500/20 text-blue-300 border-blue-400/30 backdrop-blur-md px-3 py-1 text-xs font-bold uppercase tracking-wider">
@@ -59,7 +59,7 @@ export function SubjectHero({
                         </div>
 
                         {/* Title & Description */}
-                        <div className="space-y-4">
+                        <div className="space-y-2">
                             <h1 className="text-5xl font-black text-white md:text-7xl lg:tracking-tight leading-[1.1]">
                                 {name}
                             </h1>
@@ -86,7 +86,7 @@ export function SubjectHero({
                 </div>
 
                 {/* Sub-stat strip (The "Best of the Best" detail) */}
-                <div className="mt-12 flex flex-wrap gap-8 border-t border-white/10 pt-8">
+                <div className="mt-6 flex flex-wrap gap-8 border-t border-white/10 pt-4">
                     <div className="flex flex-col">
                         <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Status</span>
                         <span className="text-white font-semibold flex items-center gap-2">

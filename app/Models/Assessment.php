@@ -19,6 +19,12 @@ class Assessment extends Model
         'created_by',
     ];
 
+    public function studentAssessment()
+    {
+        return $this->hasOne(StudentAssessment::class, 'assessment_id')
+            ->where('user_id', auth()->id());
+    }
+
 
     // ========== Relation ===========
     public function course()
@@ -26,7 +32,7 @@ class Assessment extends Model
         return $this->belongsTo(Course::class, 'course_id');
     }
     // Assessment.php
-    // Assessment.php
+
     public function subjects()
     {
 

@@ -101,7 +101,7 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -5 }}
                                     transition={{ duration: 0.2 }}
-                                    className="mt-6"
+                                    className="mt-4"
                                 >
                                     <TabsContent
                                         value="assessments"

@@ -27,8 +27,10 @@ export function getAssessmentStatusDetails(assessment: Assessment): AssessmentSt
     const isOngoing = now >= start && now <= end;
 
     // 3. Extract Student Specifics (Handle potential nulls from backend)
-    const studentStatus = assessment.student_status; // 'scored' | 'attempted' | 'missed' | null
-    const studentScore = assessment.student_score;
+    const studentStatus = assessment?.student_assessment?.status; // 'scored' | 'attempted' | 'missed' | null
+    const studentScore = assessment?.student_assessment?.score;
+
+    console.log(assessment?.student_assessment);
 
     // Default "Unknown" state
     const defaults: AssessmentStatusDetails = {
@@ -43,7 +45,7 @@ export function getAssessmentStatusDetails(assessment: Assessment): AssessmentSt
     // ==========================================================
     // PRIORITY 1: PERSONAL PROGRESS (What the student did)
     // ==========================================================
-    
+
     if (studentStatus === 'scored') {
         return {
             ...defaults,
@@ -54,7 +56,7 @@ export function getAssessmentStatusDetails(assessment: Assessment): AssessmentSt
         };
     }
 
-    if (studentStatus === 'attempted') {
+    if (studentStatus === 'attempted' || assessment?.student_assessment?.attempted_amount > 0) {
         return {
             ...defaults,
             label: 'SUBMITTED',

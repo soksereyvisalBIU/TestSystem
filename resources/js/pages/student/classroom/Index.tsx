@@ -1,5 +1,6 @@
 import ClassModal from '@/components/instructor/modal/class-modal';
-import ClassCard from '@/components/student/card/class-card';
+// import ClassCard from '@/components/student/card/class-card';
+import ClassCard from '@/components/cards/classrooms/classroom-card';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
@@ -37,28 +38,28 @@ export default function SubjectIndex({
 }: {
     classrooms: ClassroomPagination;
 }) {
-    const { flash } = usePage().props as {
-        flash?: { success?: string; error?: string };
-    };
+    // const { flash } = usePage().props as {
+    //     flash?: { success?: string; error?: string };
+    // };
 
-    // Modal State
-    const [modalData, setModalData] = useState({
-        open: false,
-        mode: 'create' as 'create' | 'edit',
-        classData: null as any,
-    });
+    // // Modal State
+    // const [modalData, setModalData] = useState({
+    //     open: false,
+    //     mode: 'create' as 'create' | 'edit',
+    //     classData: null as any,
+    // });
 
-    const openCreate = () =>
-        setModalData({ open: true, mode: 'create', classData: null });
+    // const openCreate = () =>
+    //     setModalData({ open: true, mode: 'create', classData: null });
 
-    const openEdit = (item: any) =>
-        setModalData({ open: true, mode: 'edit', classData: item });
+    // const openEdit = (item: any) =>
+    //     setModalData({ open: true, mode: 'edit', classData: item });
 
     // Flash Toast
-    useEffect(() => {
-        if (flash?.success) toast.success(flash.success);
-        if (flash?.error) toast.error(flash.error);
-    }, [flash]);
+    // useEffect(() => {
+    //     if (flash?.success) toast.success(flash.success);
+    //     if (flash?.error) toast.error(flash.error);
+    // }, [flash]);
 
     /** ⛔ No Full Page Refresh Pagination */
     const handlePageChange = (url: string | null) => {
@@ -177,14 +178,14 @@ export default function SubjectIndex({
             </div>
 
             {/* Modal */}
-            <ClassModal
+            {/* <ClassModal
                 isOpen={modalData.open}
                 mode={modalData.mode}
                 classData={modalData.classData}
                 setIsOpen={(open) =>
                     setModalData((prev) => ({ ...prev, open }))
                 }
-            />
+            /> */}
         </AppLayout>
     );
 }

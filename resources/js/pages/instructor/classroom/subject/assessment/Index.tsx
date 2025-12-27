@@ -51,17 +51,17 @@ export default function AssessmentPage({
         null,
     );
 
-    const { flash } = usePage().props as {
-        flash?: { success?: string; error?: string };
-    };
+    // const { flash } = usePage().props as {
+    //     flash?: { success?: string; error?: string };
+    // };
 
     const classId = subject.class_id;
     const subjectId = subject.id;
 
-    useEffect(() => {
-        if (flash?.success) toast.success(flash.success);
-        if (flash?.error) toast.error(flash.error);
-    }, [flash]);
+    // useEffect(() => {
+    //     if (flash?.success) toast.success(flash.success);
+    //     if (flash?.error) toast.error(flash.error);
+    // }, [flash]);
 
     const assessments = subject.assessments || [];
 

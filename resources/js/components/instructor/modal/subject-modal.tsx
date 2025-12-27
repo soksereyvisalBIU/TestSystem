@@ -1,6 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { router, useForm } from '@inertiajs/react';
-import axios from 'axios';
 import { Loader2, Upload, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -32,128 +30,87 @@ export default function SubjectModal({
     classId,
     editingSubject,
 }: SubjectModalProps) {
-    const queryClient = useQueryClient();
     const isEdit = useMemo(() => !!editingSubject?.id, [editingSubject]);
     const [preview, setPreview] = useState<string | null>(null);
 
-    /* ------------------------------------------------------------------
-     * CREATE (STORE) → Inertia useForm
-     * ------------------------------------------------------------------ */
-    const createForm = useForm({
-        name: '',
-        description: '',
-        visibility: 'public',
-        cover: null as File | null,
-    });
+    // Initialize useForm with empty values
+    const { data, setData, post, put, processing, errors, reset, clearErrors } =
+        useForm({
+            name: '',
+            description: '',
+            visibility: 'public',
+            cover: null as File | null,
+        });
 
-    /* ------------------------------------------------------------------
-     * EDIT (UPDATE) → TanStack Query
-     * ------------------------------------------------------------------ */
-    const {
-        mutate: updateSubject,
-        isPending: isUpdating,
-        error: updateError,
-        reset: resetUpdate,
-    } = useMutation({
-        mutationFn: async (payload: FormData) => {
-            return axios.post(
-                route('instructor.classes.subjects.update', [
-                    classId,
-                    editingSubject.id,
-                ]),
-                payload,
-                { headers: { 'Content-Type': 'multipart/form-data' } }
-            );
-        },
-        onSuccess: () => {
-            router.reload({
-                only: ['classroom'],
-                preserveScroll: true,
-                onSuccess: () => {
-                    queryClient.invalidateQueries({
-                        queryKey: ['subjects', classId],
-                    });
-                    toast.success('Subject updated successfully');
-                    setIsOpen(false);
-                },
-            });
-        },
-        onError: (err: any) => {
-            toast.error(err.response?.data?.message || 'Update failed');
-        },
-    });
-
-    /* ------------------------------------------------------------------
-     * Sync form when modal opens
-     * ------------------------------------------------------------------ */
+    // Sync form data when modal opens or editingSubject changes
     useEffect(() => {
-        if (!isOpen) return;
-
-        resetUpdate();
-
-        if (isEdit) {
-            setPreview(editingSubject?.cover_url ?? null);
-        } else {
-            createForm.reset();
-            setPreview(null);
+        if (isOpen) {
+            if (isEdit && editingSubject) {
+                setData({
+                    name: editingSubject.name || '',
+                    description: editingSubject.description || '',
+                    visibility: editingSubject.visibility || 'public',
+                    cover: null, // Reset file input on edit
+                });
+                setPreview(
+                    editingSubject.cover
+                        ? `/storage/${editingSubject.cover}`
+                        : null,
+                );
+            } else {
+                reset();
+                clearErrors();
+                setPreview(null);
+            }
         }
-    }, [isOpen, isEdit]);
+    }, [isOpen, editingSubject, isEdit]);
 
-    /* ------------------------------------------------------------------
-     * Image handler (shared)
-     * ------------------------------------------------------------------ */
     const handleImage = (file: File | undefined) => {
         if (!file) return;
         if (file.size > 2 * 1024 * 1024) {
             toast.error('Max image size is 2MB');
             return;
         }
-
         setPreview(URL.createObjectURL(file));
-
-        if (isEdit) {
-            editingSubject.cover = file;
-        } else {
-            createForm.setData('cover', file);
-        }
+        setData('cover', file);
     };
 
-    /* ------------------------------------------------------------------
-     * Submit handler
-     * ------------------------------------------------------------------ */
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!isEdit) {
-            /* CREATE */
-            createForm.post(
-                route('instructor.classes.subjects.store', classId),
+        if (isEdit) {
+            // We use router.post instead of form.post to have total control over the data
+            router.post(
+                route('instructor.classes.subjects.update', [
+                    classId,
+                    editingSubject.id,
+                ]),
+                {
+                    _method: 'put', // Explicitly add this at the top level
+                    name: data.name,
+                    description: data.description,
+                    visibility: data.visibility,
+                    cover: data.cover, // The File object
+                },
                 {
                     forceFormData: true,
                     onSuccess: () => {
-                        toast.success('Subject created successfully');
+                        // toast.success('Subject updated successfully');
                         setIsOpen(false);
                     },
-                }
+                },
             );
-            return;
+        } else {
+            // Normal Create
+            post(route('instructor.classes.subjects.store', classId), {
+                forceFormData: true,
+                onSuccess: () => {
+                    // toast.success('Subject created successfully');
+                    setIsOpen(false);
+                },
+            });
         }
-
-        /* UPDATE */
-        const data = new FormData();
-        data.append('name', editingSubject.name);
-        data.append('description', editingSubject.description ?? '');
-        data.append('visibility', editingSubject.visibility);
-        if (editingSubject.cover) data.append('cover', editingSubject.cover);
-        data.append('_method', 'PUT');
-
-        updateSubject(data);
     };
-
-    const serverErrors =
-        !isEdit
-            ? createForm.errors
-            : (updateError as any)?.response?.data?.errors || {};
 
     return (
         <Modal
@@ -163,61 +120,37 @@ export default function SubjectModal({
             title={isEdit ? 'Update Subject' : 'Create Subject'}
         >
             <form className="space-y-6 pt-4" onSubmit={handleSubmit}>
-                {/* Name */}
                 <div className="space-y-2">
                     <Label>Subject Name</Label>
                     <Input
-                        value={
-                            isEdit ? editingSubject.name : createForm.data.name
-                        }
-                        onChange={(e) =>
-                            isEdit
-                                ? (editingSubject.name = e.target.value)
-                                : createForm.setData('name', e.target.value)
-                        }
+                        value={data.name}
+                        onChange={(e) => setData('name', e.target.value)}
                     />
-                    {serverErrors.name && (
+                    {errors.name && (
                         <p className="text-xs text-destructive">
-                            {serverErrors.name[0]}
+                            {errors.name}
                         </p>
                     )}
                 </div>
 
-                {/* Description */}
                 <div className="space-y-2">
                     <Label>Description</Label>
                     <Textarea
-                        value={
-                            isEdit
-                                ? editingSubject.description
-                                : createForm.data.description
-                        }
-                        onChange={(e) =>
-                            isEdit
-                                ? (editingSubject.description =
-                                      e.target.value)
-                                : createForm.setData(
-                                      'description',
-                                      e.target.value
-                                  )
-                        }
+                        value={data.description}
+                        onChange={(e) => setData('description', e.target.value)}
                     />
+                    {errors.description && (
+                        <p className="text-xs text-destructive">
+                            {errors.description}
+                        </p>
+                    )}
                 </div>
 
-                {/* Visibility */}
                 <div className="space-y-2">
                     <Label>Visibility</Label>
                     <Select
-                        value={
-                            isEdit
-                                ? editingSubject.visibility
-                                : createForm.data.visibility
-                        }
-                        onValueChange={(v) =>
-                            isEdit
-                                ? (editingSubject.visibility = v)
-                                : createForm.setData('visibility', v)
-                        }
+                        value={data.visibility}
+                        onValueChange={(v: any) => setData('visibility', v)}
                     >
                         <SelectTrigger>
                             <SelectValue />
@@ -229,7 +162,6 @@ export default function SubjectModal({
                     </Select>
                 </div>
 
-                {/* Cover */}
                 <div className="space-y-2">
                     <Label>Cover Image</Label>
                     <div className="rounded-xl border-2 border-dashed p-4">
@@ -243,11 +175,10 @@ export default function SubjectModal({
                                     type="button"
                                     variant="destructive"
                                     size="icon"
-                                    className="absolute right-2 top-2"
+                                    className="absolute top-2 right-2"
                                     onClick={() => {
                                         setPreview(null);
-                                        if (!isEdit)
-                                            createForm.setData('cover', null);
+                                        setData('cover', null);
                                     }}
                                 >
                                     <X className="h-4 w-4" />
@@ -270,7 +201,6 @@ export default function SubjectModal({
                     </div>
                 </div>
 
-                {/* Actions */}
                 <div className="flex justify-end gap-3 border-t pt-5">
                     <Button
                         type="button"
@@ -279,11 +209,8 @@ export default function SubjectModal({
                     >
                         Cancel
                     </Button>
-                    <Button
-                        type="submit"
-                        disabled={createForm.processing || isUpdating}
-                    >
-                        {(createForm.processing || isUpdating) && (
+                    <Button type="submit" disabled={processing}>
+                        {processing && (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         )}
                         {isEdit ? 'Save Changes' : 'Create'}

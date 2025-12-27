@@ -12,6 +12,8 @@ export interface Assessment {
     student_score: number | null;
     class_id: number;
     score?: number;
+    max_attempts?:number;
+    student_assessment?: any;
 }
 
 export interface Student {
