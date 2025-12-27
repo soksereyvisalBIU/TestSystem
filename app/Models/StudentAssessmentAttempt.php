@@ -53,4 +53,18 @@ class StudentAssessmentAttempt extends Model
     {
         return $this->hasMany(Answer::class, 'student_assessment_attempt_id', 'id');
     }
+
+    public function isDraft(): bool
+    {
+        return $this->status === 'draft';
+    }
+
+    public function isSubmitted(): bool
+    {
+        return $this->status === 'submitted';
+    }
+    public function isGraded(): bool
+    {
+        return $this->status === 'graded';
+    }
 }

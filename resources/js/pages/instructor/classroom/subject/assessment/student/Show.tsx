@@ -36,7 +36,7 @@ import { calculateAutoScore } from './component/questions/calculateAutoScore';
 
 export default function StudentAssessmentAttemptScoring({ assessment, attempt }) {
     // --- STATE ---
-    const [answersState, setAnswersState] = useState(attempt.answers || []);
+    const [answersState, setAnswersState] = useState(attempt?.answers || []);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [activeQuestionId, setActiveQuestionId] = useState(null);
     

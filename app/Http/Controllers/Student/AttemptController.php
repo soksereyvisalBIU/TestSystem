@@ -3,30 +3,31 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\AssessmentResource;
 use App\Http\Resources\Student\QuestionResource;
 use App\Http\Resources\Student\StudentAssessmentAttemptResource;
 use App\Models\Answer;
 use App\Models\Assessment;
-use App\Models\AssessmentAttempt;
 use App\Models\Question;
-use App\Models\StudentAssessment;
 use App\Models\StudentAssessmentAttempt;
-
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests; // ✅ ADD THIS
 
 class AttemptController extends Controller
 {
+     use AuthorizesRequests; // ✅ ADD THIS 
+    /**
+     * Show attempt page
+     */
     public function attempt(Request $request, $class_id, $subject_id, $assessment_id)
     {
-        $student_assessment_id = $request->input('student_assessment_id');
-        $student_assessment_attempt_id = $request->input('student_assessment_attempt_id');
+        $studentAssessmentAttempt = StudentAssessmentAttempt::with('studentAssessment')
+            ->findOrFail($request->student_assessment_attempt_id);
 
-        $assessment = Assessment::with('subjects')
-            ->findOrFail($assessment_id);
+        // 🔐 POLICY CHECK
+        $this->authorize('attempt', $studentAssessmentAttempt);
+
+        $assessment = Assessment::with('subjects')->findOrFail($assessment_id);
 
         $questions = QuestionResource::collection(
             Question::with(['options', 'submissionSetting', 'media'])
@@ -35,106 +36,77 @@ class AttemptController extends Controller
                 ->get()
         );
 
-        $studentAssessmentAttempt = StudentAssessmentAttempt::findOrFail(
-            $request->input('student_assessment_attempt_id')
-        );
+        
 
         return Inertia::render(
             'student/classroom/subject/assessment/attempt/Index',
-            compact('assessment', 'questions', 'student_assessment_attempt_id', 'studentAssessmentAttempt')
+            [
+                'assessment' => $assessment,
+                'questions' => $questions,
+                'student_assessment_attempt_id' => $studentAssessmentAttempt->id,
+                'studentAssessmentAttempt' => $studentAssessmentAttempt,
+            ]
         );
     }
 
+    /**
+     * Submit attempt
+     */
     public function store(Request $request, $class_id, $subject_id, $assessment_id)
     {
-        // ---------------------------------------------------
-        // Load active attempt
-        // ---------------------------------------------------
-        $assessmentAttempt = StudentAssessmentAttempt::findOrFail(
-            $request->student_assessment_attempt_id
-        );
+        $assessmentAttempt = StudentAssessmentAttempt::with('studentAssessment')
+            ->findOrFail($request->student_assessment_attempt_id);
 
-        // Prevent resubmitting already submitted attempts
+        // 🔐 POLICY CHECK
+        $this->authorize('attempt', $assessmentAttempt);
+
         if ($assessmentAttempt->status === 'submitted') {
             return back()->with('error', 'This attempt has already been submitted.');
         }
 
-        // ---------------------------------------------------
         // Mark as submitted
-        // ---------------------------------------------------
         $assessmentAttempt->update([
             'completed_at' => now(),
             'status'       => 'submitted',
         ]);
 
-        // ---------------------------------------------------
-        // Increment attempt count (FIXED syntax)
-        // ---------------------------------------------------
+        // Increment attempt count
         $assessmentAttempt->studentAssessment->increment('attempted_amount');
 
-        // ---------------------------------------------------
-        // Save Answers
-        // ---------------------------------------------------
+        // Save answers
         foreach ($request->answers as $questionId => $answer) {
 
-            /*
-        |--------------------------------------------------------------------------
-        | A. MATCHING QUESTION
-        | Structure: [ optionId => answerText ]
-        |--------------------------------------------------------------------------
-        */
+            // MATCHING
             if (is_array($answer) && !array_is_list($answer) && !isset($answer['text'])) {
-
                 foreach ($answer as $optionId => $text) {
                     Answer::create([
                         'student_assessment_attempt_id' => $assessmentAttempt->id,
-                        'question_id'                   => $questionId,
-                        'option_id'                     => $optionId,
-                        'answer_text'                   => $text,
+                        'question_id' => $questionId,
+                        'option_id' => $optionId,
+                        'answer_text' => $text,
                     ]);
                 }
-
                 continue;
             }
 
-            /*
-        |--------------------------------------------------------------------------
-        | B. SHORT ANSWER
-        | Structure: { text: "..." }
-        |--------------------------------------------------------------------------
-        */
+            // SHORT ANSWER
             if (is_array($answer) && isset($answer['text'])) {
-
                 Answer::create([
                     'student_assessment_attempt_id' => $assessmentAttempt->id,
-                    'question_id'                   => $questionId,
-                    'option_id'                     => null,
-                    'answer_text'                   => $answer['text'],
+                    'question_id' => $questionId,
+                    'answer_text' => $answer['text'],
                 ]);
-
                 continue;
             }
 
-            /*
-        |--------------------------------------------------------------------------
-        | C. TRUE/FALSE or MULTIPLE CHOICE
-        | Numeric → option_id
-        | String  → answer_text
-        |--------------------------------------------------------------------------
-        */
+            // MCQ / TRUE-FALSE
             Answer::create([
                 'student_assessment_attempt_id' => $assessmentAttempt->id,
-                'question_id'                   => $questionId,
-                'option_id'                     => is_numeric($answer) ? $answer : null,
-                'answer_text'                   => is_numeric($answer) ? null : $answer,
+                'question_id' => $questionId,
+                'option_id' => is_numeric($answer) ? $answer : null,
+                'answer_text' => is_numeric($answer) ? null : $answer,
             ]);
         }
-
-        // ---------------------------------------------------
-        // Redirect after storing attempt
-        // ---------------------------------------------------
-
-        // show($class_id, $subject_id, $id)
 
         return redirect()
             ->route('student.classes.subjects.assessments.show', [
@@ -145,20 +117,27 @@ class AttemptController extends Controller
             ->with('success', 'Assessment submitted successfully!');
     }
 
-
+    /**
+     * Review submitted attempt
+     */
     public function review(Request $request)
     {
+        $attempt = StudentAssessmentAttempt::with([
+            'studentAssessment',
+            'assessment.questions.options',
+            'assessment.questions.submissionSetting',
+            'assessment.questions.media',
+            'answers',
+        ])->findOrFail($request->student_assessment_attempt_id);
 
-        // $assessmentAttempt = StudentAssessmentAttempt::with('studentAssessment' , 'assessment.questions' , 'answers')->where('id', $request->student_assessment_attempt_id)->first();
+        // 🔐 POLICY CHECK
+        $this->authorize('review', $attempt);
 
-        // $assessmentAttemptResource = new \App\Http\Resources\Student\AssessmentResource(Assessment::with('questions' , 'answer')->findOrFail($request->student_assessment_attempt_id));
+        $assessmentAttemptResource = new StudentAssessmentAttemptResource($attempt);
 
-        $assessmentAttemptResource = new StudentAssessmentAttemptResource(StudentAssessmentAttempt::with('studentAssessment', 'assessment.questions.options', 'assessment.questions.submissionSetting', 'assessment.questions.media', 'answers')->findOrFail($request->student_assessment_attempt_id));
-
-        // dd($assessmentAttemptResource);
-
-        // return response()->json($assessmentAttemptResource); 
-        // return Inertia::render('student/classroom/subject/assessment/attempt/Review' , compact('assessmentAttempt' , 'assessmentAttemptResource'));
-        return Inertia::render('student/classroom/subject/assessment/attempt/Review', compact('assessmentAttemptResource'));
+        return Inertia::render(
+            'student/classroom/subject/assessment/attempt/Review',
+            compact('assessmentAttemptResource')
+        );
     }
 }

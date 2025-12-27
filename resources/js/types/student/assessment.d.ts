@@ -66,3 +66,5 @@ export interface AttemptStats {
     progress: number;
     remaining: number;
 }
+
+

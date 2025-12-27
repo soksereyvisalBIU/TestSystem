@@ -102,8 +102,13 @@ class StudentController extends Controller
             ->where('user_id', $id)
             ->firstOrFail();
 
+
         // Get the latest attempt
-        $attempt = $studentAssessment->attempts()->with('answers')->latest()->first();
+        $attempt = $studentAssessment->attempts()
+            ->with('answers')
+            ->whereIn('status', ['submitted', 'scored'])
+            ->latest()
+            ->first();
 
 
         return Inertia::render('instructor/classroom/subject/assessment/student/Show', compact('attempt', 'assessment'));
