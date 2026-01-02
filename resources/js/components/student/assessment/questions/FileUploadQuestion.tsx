@@ -82,112 +82,114 @@ export default function FileUploadQuestion({ question, answer, onChange }) {
         }
     };
 
-    return (
-        <div className="group w-full rounded-3xl border-2 border-transparent bg-white p-6 shadow-sm ring-1 ring-gray-200 transition-all duration-300 hover:shadow-xl hover:ring-blue-100">
-            <div className="mb-4 flex items-start justify-between">
-                <span className="flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-bold tracking-wider text-blue-600 uppercase">
-                    <HardDrive className="h-3.5 w-3.5" />
-                    {question.point} Points
-                </span>
-                <span className="text-xs font-medium text-gray-400 italic">
-                    {ACCEPTED_TYPE.toUpperCase()} (Max {MAX_SIZE_MB}MB)
-                </span>
-            </div>
+return (
+    <div className="group w-full rounded-3xl border-2 border-transparent bg-card p-6 shadow-sm ring-1 ring-border transition-all duration-300 hover:shadow-xl hover:ring-primary/30">
+        <div className="mb-4 flex items-start justify-between">
+            <span className="flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold tracking-wider text-primary uppercase">
+                <HardDrive className="h-3.5 w-3.5" />
+                {question.point} Points
+            </span>
+            <span className="text-xs font-medium text-description italic">
+                {ACCEPTED_TYPE.toUpperCase()} (Max {MAX_SIZE_MB}MB)
+            </span>
+        </div>
 
-            <h3 className="mb-6 text-xl leading-tight font-bold text-gray-900 transition-colors group-hover:text-blue-900">
-                {question.question}
-            </h3>
+        <h3 className="mb-6 text-xl leading-tight font-bold text-title transition-colors group-hover:text-primary">
+            {question.question}
+        </h3>
 
-            {/* Media Illustration */}
-            {question.media?.map(
-                (m) =>
-                    m.type === 'image' && (
-                        <div
-                            key={m.id}
-                            className="mb-6 overflow-hidden rounded-2xl border bg-gray-100 shadow-inner"
-                        >
+        {/* Media Illustration */}
+        {question.media?.map(
+            (m) =>
+                m.type === 'image' && (
+                    <div
+                        key={m.id}
+                        className="mb-6 overflow-hidden rounded-2xl border border-border bg-muted shadow-inner"
+                    >
+                        <img
+                            src={`/storage/${m.path}`}
+                            alt="Context"
+                            className="max-h-64 w-full object-contain"
+                        />
+                    </div>
+                ),
+        )}
+
+        <div
+            onDragEnter={handleDrag}
+            onDragOver={handleDrag}
+            onDragLeave={handleDrag}
+            onDrop={handleDrop}
+            onClick={() => !answer && fileInputRef.current?.click()}
+            className={`relative flex min-h-[180px] flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-300 
+                ${isDragging ? 'scale-[1.01] border-primary bg-primary/5' : 'border-border bg-muted/30'} 
+                ${answer ? 'border-success bg-success/5' : 'cursor-pointer hover:border-primary/50 hover:bg-card'} `}
+        >
+            <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept={getAcceptAttribute(ACCEPTED_TYPE)}
+                className="hidden"
+            />
+
+            {!answer ? (
+                <div className="animate-in duration-400 fade-in slide-in-from-bottom-2">
+                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary shadow-lg shadow-primary/20">
+                        <Upload className="h-8 w-8 text-primary-foreground" />
+                    </div>
+                    <h4 className="text-lg font-bold text-title">
+                        Click or drag file to upload
+                    </h4>
+                    <p className="mt-1 text-sm text-description">
+                        Safe and secure submission
+                    </p>
+                </div>
+            ) : (
+                <div className="flex w-full animate-in flex-col items-center gap-6 duration-200 zoom-in-95 md:flex-row">
+                    <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl border-2 border-card bg-card shadow-md">
+                        {previewUrl ? (
                             <img
-                                src={`/storage/${m.path}`}
-                                alt="Context"
-                                className="max-h-64 w-full object-contain"
+                                src={previewUrl}
+                                alt="Preview"
+                                className="h-full w-full object-cover"
                             />
-                        </div>
-                    ),
-            )}
+                        ) : (
+                            <div className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground">
+                                <FileIcon className="h-8 w-8" />
+                            </div>
+                        )}
+                    </div>
 
-            <div
-                onDragEnter={handleDrag}
-                onDragOver={handleDrag}
-                onDragLeave={handleDrag}
-                onDrop={handleDrop}
-                onClick={() => !answer && fileInputRef.current?.click()}
-                className={`relative flex min-h-[180px] flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-300 ${isDragging ? 'scale-[1.01] border-blue-500 bg-blue-50' : 'border-gray-200 bg-gray-50/50'} ${answer ? 'border-green-500 bg-green-50/30' : 'cursor-pointer hover:border-blue-400 hover:bg-white'} `}
-            >
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    accept={getAcceptAttribute(ACCEPTED_TYPE)}
-                    className="hidden"
-                />
-
-                {!answer ? (
-                    <div className="animate-in duration-400 fade-in slide-in-from-bottom-2">
-                        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-600 shadow-lg shadow-blue-200">
-                            <Upload className="h-8 w-8 text-white" />
+                    <div className="flex-grow text-left">
+                        <div className="mb-1 flex items-center gap-2">
+                            <CheckCircle2 className="h-5 w-5 text-success" />
+                            <span className="max-w-[200px] truncate font-bold text-title">
+                                {answer.name || 'File Selected'}
+                            </span>
                         </div>
-                        <h4 className="text-lg font-bold text-gray-800">
-                            Click or drag file to upload
-                        </h4>
-                        <p className="mt-1 text-sm text-gray-500">
-                            Safe and secure submission
+                        <p className="text-sm text-description">
+                            {answer.size
+                                ? `${(answer.size / 1024 / 1024).toFixed(2)} MB`
+                                : 'Ready to submit'}
                         </p>
                     </div>
-                ) : (
-                    <div className="flex w-full animate-in flex-col items-center gap-6 duration-200 zoom-in-95 md:flex-row">
-                        <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl border-2 border-white bg-white shadow-md">
-                            {previewUrl ? (
-                                <img
-                                    src={previewUrl}
-                                    alt="Preview"
-                                    className="h-full w-full object-cover"
-                                />
-                            ) : (
-                                <div className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400">
-                                    <FileIcon className="h-8 w-8" />
-                                </div>
-                            )}
-                        </div>
 
-                        <div className="flex-grow text-left">
-                            <div className="mb-1 flex items-center gap-2">
-                                <CheckCircle2 className="h-5 w-5 text-green-600" />
-                                <span className="max-w-[200px] truncate font-bold text-gray-900">
-                                    {answer.name || 'File Selected'}
-                                </span>
-                            </div>
-                            <p className="text-sm text-gray-500">
-                                {answer.size
-                                    ? `${(answer.size / 1024 / 1024).toFixed(2)} MB`
-                                    : 'Ready to submit'}
-                            </p>
-                        </div>
-
-                        <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onChange(question.id, null);
-                            }}
-                            className="rounded-full"
-                        >
-                            <X className="mr-2 h-4 w-4" />
-                            Remove
-                        </Button>
-                    </div>
-                )}
-            </div>
+                    <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onChange(question.id, null);
+                        }}
+                        className="rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                        <X className="mr-2 h-4 w-4" />
+                        Remove
+                    </Button>
+                </div>
+            )}
         </div>
-    );
+    </div>
+);
 }
