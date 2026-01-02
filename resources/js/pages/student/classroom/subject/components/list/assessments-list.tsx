@@ -7,6 +7,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useCan } from '@/hooks/permission/useCan';
 import { Assessment } from '@/types/student/assessment';
 import { Link, usePage } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -14,7 +15,6 @@ import { BookOpen, LayoutGrid, Plus, Search, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { route } from 'ziggy-js';
 import { AssessmentCard } from '../card/assessment-card';
-import { useCan } from '@/hooks/permission/useCan';
 
 interface AssessmentsListProps {
     assessments: Assessment[];
@@ -34,7 +34,8 @@ export function AssessmentsList({
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
-    const accessInstructorPage = useCan('access-instructor-page') && url.includes('/instructor');
+    const accessInstructorPage =
+        useCan('access-instructor-page') && url.includes('/instructor');
 
     /**
      * Priority Logic & Filtering
@@ -48,7 +49,9 @@ export function AssessmentsList({
 
         return assessments
             .filter((assessment) =>
-                assessment.title.toLowerCase().includes(searchQuery.toLowerCase())
+                assessment.title
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase()),
             )
             .sort((a, b) => {
                 const getPriority = (item: Assessment) => {
@@ -71,7 +74,10 @@ export function AssessmentsList({
                 }
 
                 // Secondary sort: Newest first
-                return new Date(b.start_time).getTime() - new Date(a.start_time).getTime();
+                return (
+                    new Date(b.start_time).getTime() -
+                    new Date(a.start_time).getTime()
+                );
             });
     }, [assessments, searchQuery]);
 
@@ -84,20 +90,21 @@ export function AssessmentsList({
 
         const isActive = now >= startTime && now <= endTime && !status;
         const isResume = status === 'in_progress';
-        
+
         return isActive || isResume;
     };
 
     return (
-        <Card className="overflow-hidden rounded-[2rem] border-none bg-white shadow-xl shadow-slate-200/50 gap-0">
-            <CardHeader className="space-y-2 border-b border-slate-50 p-8 py-4">
+        <Card className="gap-0 overflow-hidden rounded-[2rem] border border-border bg-card text-card-foreground shadow-xl shadow-black/5 dark:shadow-black/40">
+            <CardHeader className="space-y-2 border-b border-border p-8 py-4">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div className="space-y-1">
-                        <CardTitle className="text-2xl font-black tracking-tight text-slate-900">
+                        <CardTitle className="text-2xl font-black tracking-tight text-title">
                             Subject Assessments
                         </CardTitle>
-                        <CardDescription className="text-sm font-medium text-slate-500">
-                            Manage your upcoming tasks and review your performance.
+                        <CardDescription className="text-sm font-medium text-description">
+                            Manage your upcoming tasks and review your
+                            performance.
                         </CardDescription>
                     </div>
 
@@ -109,20 +116,31 @@ export function AssessmentsList({
                                 setIsSearchOpen(!isSearchOpen);
                                 if (isSearchOpen) setSearchQuery('');
                             }}
-                            className={`h-10 w-10 rounded-xl border-slate-200 transition-all ${
-                                isSearchOpen ? 'bg-slate-100 text-slate-900' : 'text-slate-500'
+                            className={`h-10 w-10 rounded-xl border-border transition-all ${
+                                isSearchOpen
+                                    ? 'bg-muted text-foreground'
+                                    : 'text-muted-foreground'
                             }`}
                         >
-                            {isSearchOpen ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
+                            {isSearchOpen ? (
+                                <X className="h-4 w-4" />
+                            ) : (
+                                <Search className="h-4 w-4" />
+                            )}
                         </Button>
 
                         {accessInstructorPage && (
-                            <Link href={route('instructor.classes.subjects.assessments.index', { class: classId, subject: subjectId })}>
+                            <Link
+                                href={route(
+                                    'instructor.classes.subjects.assessments.index',
+                                    { class: classId, subject: subjectId },
+                                )}
+                            >
                                 <Button
                                     variant="secondary"
-                                    className="h-10 rounded-xl border border-slate-200 bg-white font-bold text-slate-700 shadow-sm hover:bg-slate-50"
+                                    className="h-10 rounded-xl border border-border bg-card font-bold text-secondary-foreground hover:bg-muted"
                                 >
-                                    <LayoutGrid className="mr-2 h-4 w-4 text-slate-400" />
+                                    <LayoutGrid className="mr-2 h-4 w-4 text-muted-foreground" />
                                     Manage
                                 </Button>
                             </Link>
@@ -131,7 +149,7 @@ export function AssessmentsList({
                         {onAddNew && (
                             <Button
                                 onClick={onAddNew}
-                                className="h-10 rounded-xl bg-blue-600 px-5 font-bold shadow-lg shadow-blue-200 transition-all hover:bg-blue-700 hover:shadow-blue-300 active:scale-95"
+                                className="h-10 rounded-xl bg-primary px-5 font-bold text-primary-foreground shadow-lg shadow-primary/30 transition-all hover:opacity-90 active:scale-95"
                             >
                                 <Plus className="mr-2 h-4 w-4 stroke-[3px]" />
                                 Schedule
@@ -144,17 +162,23 @@ export function AssessmentsList({
                     {isSearchOpen && (
                         <motion.div
                             initial={{ height: 0, opacity: 0, marginTop: 0 }}
-                            animate={{ height: 'auto', opacity: 1, marginTop: 16 }}
+                            animate={{
+                                height: 'auto',
+                                opacity: 1,
+                                marginTop: 16,
+                            }}
                             exit={{ height: 0, opacity: 0, marginTop: 0 }}
                             className="overflow-hidden"
                         >
                             <div className="relative">
-                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     placeholder="Search assessments by title..."
                                     value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="h-11 rounded-xl border-slate-100 bg-slate-50/50 pl-10 focus-visible:ring-blue-500"
+                                    onChange={(e) =>
+                                        setSearchQuery(e.target.value)
+                                    }
+                                    className="h-11 rounded-xl border-input bg-muted pl-10 focus-visible:ring-ring"
                                     autoFocus
                                 />
                             </div>
@@ -166,29 +190,34 @@ export function AssessmentsList({
             <CardContent className="p-6">
                 <AnimatePresence mode="popLayout">
                     {filteredAssessments.length > 0 ? (
-                        <div className="grid gap-6"> {/* Increased gap for glow room */}
+                        <div className="grid gap-6">
                             {filteredAssessments.map((assessment, index) => {
                                 const isUrgent = isPriorityActive(assessment);
-                                
+
                                 return (
                                     <motion.div
                                         key={assessment.id}
                                         initial={{ opacity: 0, y: 15 }}
-                                        animate={{ 
-                                            opacity: 1, 
+                                        animate={{
+                                            opacity: 1,
                                             y: 0,
-                                            scale: isUrgent ? [1, 1.01, 1] : 1 
+                                            scale: isUrgent ? [1, 1.01, 1] : 1,
                                         }}
                                         exit={{ opacity: 0, scale: 0.98 }}
                                         transition={{
-                                            scale: isUrgent ? { repeat: Infinity, duration: 3, ease: "easeInOut" } : { duration: 0.2 },
+                                            scale: isUrgent
+                                                ? {
+                                                      repeat: Infinity,
+                                                      duration: 3,
+                                                      ease: 'easeInOut',
+                                                  }
+                                                : { duration: 0.2 },
                                             delay: Math.min(index * 0.05, 0.3),
                                         }}
                                         className="relative"
                                     >
-                                        {/* Background Pulse Glow for Priority items */}
                                         {isUrgent && (
-                                            <div className="absolute -inset-1.5 rounded-[2.2rem] bg-gradient-to-r from-blue-500/20 to-indigo-500/20 blur-xl animate-pulse" />
+                                            <div className="absolute -inset-1.5 animate-pulse rounded-[2.2rem] bg-gradient-to-r from-primary/30 to-primary/10 blur-xl" />
                                         )}
 
                                         <AssessmentCard
@@ -196,12 +225,13 @@ export function AssessmentsList({
                                             classId={classId}
                                         />
 
-                                        {/* High-priority Floating Badge */}
                                         {isUrgent && (
-                                            <div className="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center">
-                                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-40"></span>
-                                                <div className="relative flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 shadow-lg border-2 border-white">
-                                                    <span className="text-[10px] font-black text-white">!</span>
+                                            <div className="absolute -top-2 -right-2 flex h-8 w-8 items-center justify-center">
+                                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-40" />
+                                                <div className="relative flex h-6 w-6 items-center justify-center rounded-full border-2 border-card bg-primary text-primary-foreground shadow-lg">
+                                                    <span className="text-[10px] font-black">
+                                                        !
+                                                    </span>
                                                 </div>
                                             </div>
                                         )}
@@ -213,15 +243,17 @@ export function AssessmentsList({
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="flex flex-col items-center justify-center rounded-[1.5rem] border-2 border-dashed border-slate-100 bg-slate-50/50 py-16 text-center"
+                            className="flex flex-col items-center justify-center rounded-[1.5rem] border-2 border-dashed border-border bg-muted py-16 text-center"
                         >
-                            <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-white shadow-sm ring-1 ring-slate-200/50">
-                                <BookOpen className="h-10 w-10 text-slate-300" />
+                            <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-card shadow-sm ring-1 ring-border">
+                                <BookOpen className="h-10 w-10 text-muted-foreground" />
                             </div>
-                            <h3 className="text-lg font-bold text-slate-900">
-                                {searchQuery ? 'No matches found' : 'Clear Horizon'}
+                            <h3 className="text-lg font-bold text-title">
+                                {searchQuery
+                                    ? 'No matches found'
+                                    : 'Clear Horizon'}
                             </h3>
-                            <p className="mx-auto mt-1 max-w-[240px] text-sm font-medium text-slate-400">
+                            <p className="mx-auto mt-1 max-w-[240px] text-sm font-medium text-description">
                                 {searchQuery
                                     ? `We couldn't find anything matching "${searchQuery}"`
                                     : 'No assessments found for this subject. Enjoy the break!'}
@@ -232,9 +264,10 @@ export function AssessmentsList({
             </CardContent>
 
             {filteredAssessments.length > 0 && (
-                <div className="bg-slate-50/50 px-8 py-4">
-                    <p className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
-                        Showing {filteredAssessments.length} of {assessments.length} activities
+                <div className="bg-muted px-8 py-4">
+                    <p className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
+                        Showing {filteredAssessments.length} of{' '}
+                        {assessments.length} activities
                     </p>
                 </div>
             )}
