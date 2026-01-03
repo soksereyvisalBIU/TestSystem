@@ -13,7 +13,6 @@ export default function AssessmentMetrics({
     totalMarks,
     totalQuestions,
 }: Props) {
-    // Optimized: Calculate everything in a single memoized pass
     const stats = useMemo(() => {
         const total = students.length;
         if (total === 0) return { submitted: 0, average: 0, pending: 0, rate: 0 };
@@ -38,13 +37,13 @@ export default function AssessmentMetrics({
     }, [students]);
 
     return (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 ">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 transition-colors">
             <MetricCard
                 label="Submission Rate"
                 value={`${Math.round(stats.rate)}%`}
                 subtext={`${stats.submitted}/${students.length} students`}
                 icon={CheckCircle2}
-                // High-performance hint: UI changes based on data thresholds
+                // Uses semantic success variant
                 variant={stats.rate === 100 ? "success" : "default"}
             />
 
@@ -53,6 +52,7 @@ export default function AssessmentMetrics({
                 value={stats.average.toFixed(1)}
                 subtext={`Out of ${totalMarks} pts`}
                 icon={BarChart3}
+                // Logical trending based on 70% pass mark
                 trend={stats.average > totalMarks * 0.7 ? 'up' : 'down'}
             />
 
@@ -68,9 +68,10 @@ export default function AssessmentMetrics({
                 value={stats.pending}
                 subtext={stats.pending > 0 ? "Requires action" : "All caught up"}
                 icon={AlertCircle}
-                // UX: Use amber only when there's actual work to do
-                color={stats.pending > 0 ? "text-amber-600" : "text-slate-400"}
-                className={stats.pending > 0 ? "ring-2 ring-amber-500/20" : ""}
+                // UX: Replaced amber-600 with chart-4 (often used for warnings/pending) 
+                // and slate-400 with description (muted theme text)
+                color={stats.pending > 0 ? "text-chart-4" : "text-description"}
+                className={stats.pending > 0 ? "ring-2 ring-chart-4/20 bg-chart-4/5" : "opacity-80"}
             />
         </div>
     );

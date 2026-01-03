@@ -1,136 +1,103 @@
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button'; // Assuming you have this
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator'; // Optional, for visual break
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
-import type { Answer, Attempt, Question } from '@/types/assessment';
+import type { Answer, Question } from '@/types/assessment';
 import { Head, Link } from '@inertiajs/react';
-
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-dayjs.extend(duration);
-
-import {
-    ArrowLeft,
-    ArrowRight,
-    CheckCircle,
-    Clock,
-    HelpCircle,
-    XCircle,
-} from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, Clock, HelpCircle, XCircle, Trophy } from 'lucide-react';
 import { useMemo } from 'react';
 
+dayjs.extend(duration);
+
 // ====================
-//   Types
+//   Types & Status Helper
 // ====================
 
 interface DetailedQuestion extends Question {
     options?: any;
-    // Add this if your API returns the correct answer for review
     correct_answer_text?: string; 
     explanation?: string;
 }
 
-// ... (Other types remain the same)
-
-// ====================
-//   Breadcrumbs
-// ====================
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: dashboard().url },
-    { title: 'Review Attempt', href: '#' },
-];
-
-// ====================
-//   Status Helper & Styles
-// ====================
-
 const getQuestionStatus = (question: DetailedQuestion, answers: Answer[]) => {
-    // 1. Not Answered
+    const max = Number(question.point);
+
     if (!answers.length) {
         return {
             status: 'Skipped',
             badgeVariant: 'secondary' as const,
-            icon: <HelpCircle className="h-5 w-5 text-gray-400" />,
-            pointsDisplay: `0 / ${question.point}`,
-            colorClass: 'gray',
-            borderColor: 'border-l-gray-300',
-            bgClass: 'bg-gray-50',
-            textClass: 'text-gray-600',
+            icon: <HelpCircle className="h-5 w-5 text-slate-400" />,
+            pointsDisplay: `0 / ${max}`,
+            bgClass: 'bg-slate-50 dark:bg-slate-900/50',
+            borderClass: 'border-slate-200 dark:border-slate-800',
+            textClass: 'text-slate-600 dark:text-slate-400',
+            accentBorder: 'border-l-slate-400'
         };
     }
 
-    // 2. Pending Grading (Essay/Short Answer)
     if (['short_answer', 'essay'].includes(question.type)) {
         const graded = answers.some((a) => a.points_earned !== null);
         if (!graded) {
             return {
                 status: 'Pending Grading',
-                badgeVariant: 'secondary' as const, // Changed to secondary for neutrality
+                badgeVariant: 'outline' as const,
                 icon: <Clock className="h-5 w-5 text-amber-500" />,
-                pointsDisplay: `- / ${question.point}`,
-                colorClass: 'amber',
-                borderColor: 'border-l-amber-400',
-                bgClass: 'bg-amber-50',
-                textClass: 'text-amber-800',
+                pointsDisplay: `- / ${max}`,
+                bgClass: 'bg-amber-50/50 dark:bg-amber-900/10',
+                borderClass: 'border-amber-200 dark:border-amber-900/30',
+                textClass: 'text-amber-700 dark:text-amber-400',
+                accentBorder: 'border-l-amber-400'
             };
         }
     }
 
     const earned = Number(answers[0]?.points_earned ?? 0);
-    const max = Number(question.point);
 
-    // 3. Correct
     if (earned === max) {
         return {
             status: 'Correct',
-            badgeVariant: 'default' as const, // usually black/dark in shadcn
-            icon: <CheckCircle className="h-5 w-5 text-green-600" />,
+            badgeVariant: 'default' as const,
+            icon: <CheckCircle className="h-5 w-5 text-emerald-500" />,
             pointsDisplay: `${earned} / ${max}`,
-            colorClass: 'green',
-            borderColor: 'border-l-green-500',
-            bgClass: 'bg-green-50',
-            textClass: 'text-green-900',
+            bgClass: 'bg-emerald-50/50 dark:bg-emerald-900/10',
+            borderClass: 'border-emerald-200 dark:border-emerald-900/30',
+            textClass: 'text-emerald-700 dark:text-emerald-400',
+            accentBorder: 'border-l-emerald-500'
         };
     }
 
-    // 4. Partial
     if (earned > 0) {
         return {
             status: 'Partial',
             badgeVariant: 'secondary' as const,
-            icon: <CheckCircle className="h-5 w-5 text-yellow-500" />,
+            icon: <CheckCircle className="h-5 w-5 text-orange-500" />,
             pointsDisplay: `${earned} / ${max}`,
-            colorClass: 'yellow',
-            borderColor: 'border-l-yellow-500',
-            bgClass: 'bg-yellow-50',
-            textClass: 'text-yellow-900',
+            bgClass: 'bg-orange-50/50 dark:bg-orange-900/10',
+            borderClass: 'border-orange-200 dark:border-orange-900/30',
+            textClass: 'text-orange-700 dark:text-orange-400',
+            accentBorder: 'border-l-orange-400'
         };
     }
 
-    // 5. Incorrect
     return {
         status: 'Incorrect',
         badgeVariant: 'destructive' as const,
         icon: <XCircle className="h-5 w-5 text-red-500" />,
         pointsDisplay: `${earned} / ${max}`,
-        colorClass: 'red',
-        borderColor: 'border-l-red-500',
-        bgClass: 'bg-red-50',
-        textClass: 'text-red-900',
+        bgClass: 'bg-red-50/50 dark:bg-red-900/10',
+        borderClass: 'border-red-200 dark:border-red-900/30',
+        textClass: 'text-red-700 dark:text-red-400',
+        accentBorder: 'border-l-red-500'
     };
 };
-
-// ====================
-//   Main Component
-// ====================
 
 export default function AttemptReview({ assessmentAttemptResource }: { assessmentAttemptResource: any }) {
     const { assessment, answers, started_at, completed_at, sub_score } = assessmentAttemptResource.data;
 
-    // Group answers
     const groupedAnswers = useMemo(() => {
         const map: Record<number, Answer[]> = {};
         answers.forEach((a: Answer) => {
@@ -140,168 +107,134 @@ export default function AttemptReview({ assessmentAttemptResource }: { assessmen
         return map;
     }, [answers]);
 
-    // Stats Calculation
-    const timeTaken = completed_at;
-    // const timeTaken = completed_at
-    //     ? dayjs.duration(dayjs(completed_at).diff(dayjs(started_at))).humanize()
-    //     : 'Incomplete';
+    const formattedTime = useMemo(() => {
+        if (!completed_at || !started_at) return 'N/A';
+        const diff = dayjs(completed_at).diff(dayjs(started_at));
+        const dur = dayjs.duration(diff);
+        const mins = Math.floor(dur.asMinutes());
+        const secs = dur.seconds();
+        return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+    }, [started_at, completed_at]);
 
     const maxScore = assessment.questions.reduce((sum: number, q: DetailedQuestion) => sum + (Number(q.point) || 0), 0);
     const rawPercentage = maxScore > 0 ? (Number(sub_score) / maxScore) * 100 : 0;
-    
-    // Color code the score
-    const scoreColor = rawPercentage >= 80 ? 'text-green-600' : rawPercentage >= 50 ? 'text-amber-600' : 'text-red-600';
+    const scoreColor = rawPercentage >= 80 ? 'text-emerald-600' : rawPercentage >= 50 ? 'text-amber-600' : 'text-red-600';
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <AppLayout breadcrumbs={[{ title: 'Dashboard', href: dashboard().url }, { title: 'Review', href: '#' }]}>
             <Head title={`Review: ${assessment.title}`} />
 
-            <div className="mx-auto max-w-5xl space-y-8 p-6 md:p-10">
+            <div className="mx-auto max-w-4xl space-y-8 p-6 md:p-10">
                 
                 {/* 1. Summary Card */}
-                <Card className="overflow-hidden border-t-4 border-t-indigo-600 shadow-lg">
-                    <CardHeader className="bg-gray-50/50 pb-8 text-center dark:bg-gray-800/50">
-                        <Badge variant="outline" className="mx-auto mb-3 w-fit uppercase tracking-widest opacity-60">
-                            Assessment Result
-                        </Badge>
-                        <CardTitle className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                <Card className="overflow-hidden border-none shadow-xl ring-1 ring-slate-200 dark:ring-slate-800">
+                    <div className="bg-indigo-600 px-6 py-2 text-center text-[10px] font-black uppercase tracking-[0.2em] text-white">
+                        Official Result
+                    </div>
+                    <CardHeader className="bg-slate-50/50 pb-8 text-center dark:bg-slate-900/20">
+                        <CardTitle className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
                             {assessment.title}
                         </CardTitle>
-                        {assessment.description && (
-                            <p className="mx-auto mt-2 max-w-2xl text-gray-500 dark:text-gray-400">
-                                {assessment.description}
-                            </p>
-                        )}
+                        <p className="mx-auto mt-2 max-w-xl text-sm font-medium text-slate-500">
+                            {assessment.description || 'Review your performance and correct answers below.'}
+                        </p>
                     </CardHeader>
 
-                    <CardContent className="grid grid-cols-2 divide-x divide-gray-100 border-t border-gray-100 p-0 dark:divide-gray-700 dark:border-gray-700 md:grid-cols-4">
-                        <div className="p-6 text-center">
-                            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Total Score</p>
-                            <div className={`mt-2 text-3xl font-black ${scoreColor}`}>
-                                {sub_score ?? 0} <span className="text-lg font-medium text-gray-400">/ {maxScore}</span>
-                            </div>
-                        </div>
-                        <div className="p-6 text-center">
-                            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Percentage</p>
-                            <div className={`mt-2 text-3xl font-black ${scoreColor}`}>
-                                {rawPercentage.toFixed(1)}%
-                            </div>
-                        </div>
-                        <div className="p-6 text-center">
-                            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Time Taken</p>
-                            <div className="mt-2 text-xl font-medium text-gray-700 dark:text-gray-300">
-                                {timeTaken}
-                            </div>
-                        </div>
-                        <div className="p-6 text-center">
-                            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Completed On</p>
-                            <div className="mt-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {completed_at ? dayjs(completed_at).format('MMM D, YYYY') : '-'}
-                                <br />
-                                <span className="text-xs text-gray-400">
-                                    {completed_at ? dayjs(completed_at).format('h:mm A') : ''}
-                                </span>
-                            </div>
-                        </div>
+                    <CardContent className="grid grid-cols-2 divide-x divide-slate-100 border-t border-slate-100 p-0 dark:divide-slate-800 dark:border-slate-800 md:grid-cols-4">
+                        <SummaryStat label="Score" value={`${sub_score ?? 0}`} subValue={`/ ${maxScore}`} color={scoreColor} />
+                        <SummaryStat label="Percentage" value={`${rawPercentage.toFixed(1)}%`} color={scoreColor} />
+                        <SummaryStat label="Time Taken" value={formattedTime} />
+                        <SummaryStat label="Date" value={dayjs(completed_at).format('MMM D')} subValue={dayjs(completed_at).format('h:mm A')} />
                     </CardContent>
                 </Card>
 
-                {/* 2. Questions List */}
-                <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Detailed Breakdown</h2>
-                        <span className="text-sm text-gray-500">{assessment.questions.length} Questions</span>
-                    </div>
+                {/* 2. Question Navigation Helper */}
+                <div className="flex flex-wrap gap-2 rounded-xl bg-slate-100 p-3 dark:bg-slate-900">
+                    {assessment.questions.map((q: any, i: number) => {
+                        const status = getQuestionStatus(q, groupedAnswers[q.id] || []);
+                        return (
+                            <a 
+                                key={q.id} 
+                                href={`#q-${q.id}`}
+                                className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold transition-all hover:scale-110 ${status.bgClass} ${status.textClass} border ${status.borderClass}`}
+                            >
+                                {i + 1}
+                            </a>
+                        );
+                    })}
+                </div>
 
+                {/* 3. Questions List */}
+                <div className="space-y-6">
                     {assessment.questions.map((question: DetailedQuestion, index: number) => {
                         const qAnswers = groupedAnswers[question.id] || [];
                         const status = getQuestionStatus(question, qAnswers);
                         
                         return (
                             <Card
+                                id={`q-${question.id}`}
                                 key={question.id}
-                                className={`group overflow-hidden transition-all hover:shadow-md ${status.borderColor} border-l-4`}
+                                className={`group overflow-hidden border-none transition-all shadow-sm ring-1 ring-slate-200 dark:ring-slate-800 ${status.accentBorder} border-l-4`}
                             >
-                                <CardHeader className="flex flex-row items-start gap-4 space-y-0 pb-3">
-                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-sm font-bold text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                                <CardHeader className="flex flex-row items-start gap-4 space-y-0 pb-4">
+                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-sm font-black text-slate-600 dark:bg-slate-800 dark:text-slate-400">
                                         {index + 1}
                                     </div>
-                                    <div className="flex-1 space-y-1">
-                                        <CardTitle className="text-lg font-medium leading-normal text-gray-900 dark:text-gray-100">
+                                    <div className="flex-1 space-y-2">
+                                        <CardTitle className="text-lg font-bold leading-snug text-slate-900 dark:text-slate-100">
                                             {question.question_text ?? question.question}
                                         </CardTitle>
-                                        <div className="flex items-center gap-2">
-                                            <Badge variant={status.badgeVariant} className="rounded-sm px-2 py-0.5 text-xs font-semibold">
+                                        <div className="flex items-center gap-3">
+                                            <Badge variant={status.badgeVariant} className="px-2 py-0 uppercase text-[10px] font-black tracking-wider">
                                                 {status.status}
                                             </Badge>
-                                            <span className="text-xs text-gray-400">
-                                                ({status.pointsDisplay} Points)
+                                            <span className="text-xs font-bold text-slate-400">
+                                                {status.pointsDisplay} PTS
                                             </span>
                                         </div>
                                     </div>
                                     <div className="shrink-0">{status.icon}</div>
                                 </CardHeader>
 
-                                <CardContent className="pl-16 pr-6 pb-6 pt-0">
-                                    <div className="mt-3 space-y-4">
-                                        
-                                        {/* YOUR ANSWER SECTION */}
-                                        <div className="space-y-1.5">
-                                            <p className="text-xs font-semibold uppercase text-gray-400">Your Answer</p>
-                                            
-                                            {/* WRAPPER: Color-coded box based on correctness */}
-                                            <div className={`rounded-md border p-4 ${status.bgClass} ${status.textClass} border-${status.colorClass}-200`}>
-                                                
-                                                {/* Text / MC Answer */}
-                                                {['true_false', 'fill_blank' , 'multiple_choice', 'short_answer', ].includes(question.type) && (
-                                                    <p className="text-sm font-medium leading-relaxed">
-                                                        {qAnswers[0]?.answer_text || <span className="italic opacity-70">No answer provided</span>}
-                                                    </p>
-                                                )}
-
-                                                {/* Matching Answer */}
-                                                {question.type === 'matching' && (
-                                                    <div className="flex flex-wrap gap-2">
-
-                                                        
-                                                        
-                                                        {qAnswers.length > 0 ? (
-                                                            qAnswers.map((a, idx) => (
-                                                                <div key={idx} className="flex items-center rounded bg-white/60 px-3 py-1.5 text-sm font-medium shadow-sm ring-1 ring-inset ring-black/5 dark:bg-black/20">
-                                                                    <span className="opacity-70">{a.option_id}</span>
-                                                                    <ArrowRight className="mx-2 h-3 w-3 opacity-40" />
-                                                                    <span>{a.answer_text}</span>
-                                                                </div>
-                                                            ))
-                                                        ) : (
-                                                            <span className="italic opacity-70">No pairs matched</span>
-                                                        )}
+                                <CardContent className="pl-14 pr-6 pb-6 pt-0">
+                                    <div className="space-y-4">
+                                        {/* Your Answer */}
+                                        <div className="space-y-2">
+                                            <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Your Submission</h4>
+                                            <div className={`rounded-xl border p-4 text-sm font-medium ${status.bgClass} ${status.borderClass} ${status.textClass}`}>
+                                                {question.type === 'matching' ? (
+                                                    <div className="grid gap-2">
+                                                        {qAnswers.map((a, idx) => (
+                                                            <div key={idx} className="flex items-center gap-2">
+                                                                <span className="opacity-60">{a.option_id}</span>
+                                                                <ArrowRight className="h-3 w-3 opacity-30" />
+                                                                <span>{a.answer_text}</span>
+                                                            </div>
+                                                        ))}
                                                     </div>
+                                                ) : (
+                                                    qAnswers[0]?.answer_text || <span className="italic opacity-50">No answer provided</span>
                                                 )}
                                             </div>
                                         </div>
 
-                                        {/* OPTIONAL: CORRECT ANSWER SECTION 
-                                            Only show this if (1) it's wrong/partial AND (2) you have the data 
-                                        */}
-                                        {status.status === 'Incorrect' && question.correct_answer_text && (
-                                            <div className="space-y-1.5 pt-2">
-                                                <p className="flex items-center gap-2 text-xs font-semibold uppercase text-green-600">
-                                                    <CheckCircle className="h-3 w-3" /> Correct Answer
-                                                </p>
-                                                <div className="rounded-md border border-green-100 bg-green-50/50 p-3 text-sm text-green-900 dark:border-green-900/30 dark:bg-green-900/10 dark:text-green-100">
-                                                    {question.correct_answer_text}
+                                        {/* Feedback Section */}
+                                        {(status.status !== 'Correct' && question.correct_answer_text) && (
+                                            <div className="rounded-xl border border-emerald-100 bg-emerald-50/30 p-4 dark:border-emerald-900/30 dark:bg-emerald-900/10">
+                                                <h4 className="mb-1 text-[10px] font-black uppercase tracking-widest text-emerald-600">Correct Answer</h4>
+                                                <p className="text-sm font-bold text-emerald-900 dark:text-emerald-100">{question.correct_answer_text}</p>
+                                            </div>
+                                        )}
+
+                                        {question.explanation && (
+                                            <div className="flex gap-3 rounded-xl bg-indigo-50/50 p-4 text-sm text-indigo-900 dark:bg-indigo-900/10 dark:text-indigo-200">
+                                                <HelpCircle className="h-5 w-5 shrink-0 text-indigo-400" />
+                                                <div>
+                                                    <span className="font-black uppercase text-[10px] tracking-wider block mb-1">Explanation</span>
+                                                    {question.explanation}
                                                 </div>
                                             </div>
                                         )}
-
-                                        {/* OPTIONAL: EXPLANATION */}
-                                        {question.explanation && (
-                                            <div className="mt-4 rounded-lg bg-indigo-50 p-3 text-sm text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-200">
-                                                <span className="font-bold">Explanation:</span> {question.explanation}
-                                            </div>
-                                        )}
-
                                     </div>
                                 </CardContent>
                             </Card>
@@ -311,13 +244,24 @@ export default function AttemptReview({ assessmentAttemptResource }: { assessmen
 
                 <div className="flex justify-center pt-8">
                     <Link href={dashboard().url}>
-                        <Button variant="outline" className="gap-2 pl-2">
-                            <ArrowLeft className="h-4 w-4" />
+                        <Button variant="outline" className="h-12 px-8 font-bold rounded-xl shadow-sm hover:bg-slate-50 transition-all active:scale-95">
+                            <ArrowLeft className="mr-2 h-4 w-4" />
                             Back to Dashboard
                         </Button>
                     </Link>
                 </div>
             </div>
         </AppLayout>
+    );
+}
+
+function SummaryStat({ label, value, subValue, color }: { label: string; value: string; subValue?: string; color?: string }) {
+    return (
+        <div className="p-6 text-center">
+            <p className="text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{label}</p>
+            <div className={`mt-2 text-2xl font-black tracking-tight ${color || 'text-slate-900 dark:text-white'}`}>
+                {value} {subValue && <span className="text-sm font-bold text-slate-400">{subValue}</span>}
+            </div>
+        </div>
     );
 }

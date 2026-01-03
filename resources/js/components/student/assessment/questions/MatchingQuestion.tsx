@@ -13,6 +13,9 @@ import {
 import { ArrowRight, ChevronDown, GripHorizontal, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
+// Utility function to generate sequential labels (A, B, C, ...)
+const getOptionLabel = (index) => String.fromCharCode(65 + index);
+
 export default function MatchingQuestion({
     question,
     answer = {},
@@ -90,7 +93,7 @@ export default function MatchingQuestion({
 
             {/* MATCHING WORKSPACE */}
             <div className="grid gap-3">
-                {left.map((l) => {
+                {left.map((l,index) => {
                     const matchedText = answer[l.id];
                     const isCurrentlyDropping = isDropping === l.id;
 
@@ -115,7 +118,7 @@ export default function MatchingQuestion({
                         >
                             <div className="flex flex-1 items-center gap-3">
                                 <span className="w-6 text-sm font-bold text-description">
-                                    {l.id}
+                                    {getOptionLabel(index)}.
                                 </span>
                                 <span className="font-medium text-body">
                                     {l.text}

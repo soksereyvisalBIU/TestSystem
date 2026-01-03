@@ -1,4 +1,3 @@
-// --- ASSESSMENT PAGE ---
 import { Badge } from '@/components/ui/badge';
 import {
     Card,
@@ -14,8 +13,8 @@ import { motion } from 'framer-motion';
 import { CalendarIcon, ClockIcon, FileTextIcon } from 'lucide-react';
 import { route } from 'ziggy-js';
 import AssessmentActions from './assessment-action';
+import { cn } from '@/lib/utils';
 
-// --- ASSESSMENT CARD ---
 export default function AssessmentCard({
     assessment,
     viewMode,
@@ -28,20 +27,24 @@ export default function AssessmentCard({
 }: any) {
     const status = getStatus(assessment.start_time, assessment.end_time);
 
+    // Mapped to your semantic colors: primary, success, muted, and warning (amber)
     const statusStyles: Record<string, string> = {
-        upcoming: 'bg-blue-50 text-blue-700 border-blue-200',
-        ongoing: 'bg-green-50 text-green-700 border-green-200 animate-pulse',
-        closed: 'bg-slate-100 text-slate-700 border-slate-200',
-        draft: 'bg-amber-50 text-amber-700 border-amber-200',
+        upcoming: 'bg-primary/10 text-primary border-primary/20',
+        ongoing: 'bg-success/10 text-success border-success/20 animate-pulse',
+        closed: 'bg-muted text-description border-border',
+        draft: 'bg-orange-500/10 text-orange-600 border-orange-500/20', // Warning state
     };
 
     const StatusBadge = () => (
         <Badge
             variant="outline"
-            className={`gap-1.5 font-medium capitalize ${statusStyles[status]}`}
+            className={cn('gap-1.5 font-bold uppercase text-[10px] tracking-tight', statusStyles[status])}
         >
             <span
-                className={`h-1.5 w-1.5 rounded-full ${status === 'ongoing' ? 'bg-green-600' : 'bg-current'}`}
+                className={cn(
+                    'h-1.5 w-1.5 rounded-full',
+                    status === 'ongoing' ? 'bg-success' : 'bg-current'
+                )}
             />
             {status}
         </Badge>
@@ -50,9 +53,9 @@ export default function AssessmentCard({
     if (viewMode === 'list') {
         return (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <Card className="flex items-center justify-between p-4 transition-all hover:border-blue-300 hover:shadow-md">
+                <Card className="flex items-center justify-between p-4 transition-all hover:border-primary/50 hover:shadow-md bg-card">
                     <div className="flex items-center gap-4">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                             <FileTextIcon className="h-5 w-5" />
                         </div>
                         <div>
@@ -61,7 +64,7 @@ export default function AssessmentCard({
                                     'instructor.classes.subjects.assessments.show',
                                     [classId, subjectId, assessment.id],
                                 )}
-                                className="font-semibold text-slate-900 hover:text-blue-600 hover:underline"
+                                className="font-bold text-title hover:text-primary transition-colors"
                             >
                                 {assessment.title}
                             </Link>
@@ -91,16 +94,20 @@ export default function AssessmentCard({
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
         >
-            <Card className="group relative overflow-hidden border-slate-200 transition-all hover:border-blue-300 hover:shadow-lg">
-                {/* Status line */}
+            <Card className="group pb-0 relative overflow-hidden border-border bg-card transition-all hover:border-primary/40 hover:shadow-lg">
+                {/* Status line - using fixed colors that work in dark mode */}
                 <div
-                    className={`absolute top-0 left-0 h-1 w-full ${status === 'ongoing' ? 'bg-green-500' : status === 'upcoming' ? 'bg-blue-500' : 'bg-slate-300'}`}
+                    className={cn(
+                        'absolute top-0 left-0 h-1 w-full',
+                        status === 'ongoing' ? 'bg-success' : 
+                        status === 'upcoming' ? 'bg-primary' : 'bg-muted-foreground/30'
+                    )}
                 />
+                
                 <CardHeader className="flex flex-row items-start justify-between space-y-0">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-600 group-hover:bg-blue-50 group-hover:text-blue-600">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-description group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                         <FileTextIcon className="h-5 w-5" />
                     </div>
-                    {/* FIXED: Added availableClasses + classId + subjectId */}
                     <AssessmentActions
                         assessment={assessment}
                         availableClasses={availableClasses}
@@ -110,6 +117,7 @@ export default function AssessmentCard({
                         setOpenAssessmentModal={setOpenAssessmentModal}
                     />
                 </CardHeader>
+
                 <CardContent className="pb-3">
                     <Link
                         href={route(
@@ -117,53 +125,44 @@ export default function AssessmentCard({
                             [classId, subjectId, assessment.id],
                         )}
                     >
-                        <CardTitle className="line-clamp-1 text-lg font-bold group-hover:text-blue-700">
-                            <motion.div
-                                layoutId={`assessment-title-${assessment.id}`}
-                            >
+                        <CardTitle className="line-clamp-1 text-lg font-bold text-title group-hover:text-primary transition-colors">
+                            <motion.div layoutId={`assessment-title-${assessment.id}`}>
                                 {assessment.title}
                             </motion.div>
                         </CardTitle>
-                        <CardDescription className="mt-1 line-clamp-2 text-xs">
-                            Description goes here if available...
+                        <CardDescription className="mt-1 line-clamp-2 text-xs text-description">
+                            {assessment.description || "No description provided."}
                         </CardDescription>
                     </Link>
+
                     <div className="mt-4 space-y-2">
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-                            <CalendarIcon className="h-4 w-4 text-slate-400" />
+                        <div className="flex items-center gap-2 text-body">
+                            <CalendarIcon className="h-4 w-4 text-description/50" />
                             <span className="text-xs font-medium">
                                 {assessment.start_time
-                                    ? format(
-                                          new Date(assessment.start_time),
-                                          'MMM d',
-                                      )
+                                    ? format(new Date(assessment.start_time), 'MMM d')
                                     : 'TBA'}
-                                -
+                                {' - '}
                                 {assessment.end_time
-                                    ? format(
-                                          new Date(assessment.end_time),
-                                          'MMM d, yyyy',
-                                      )
+                                    ? format(new Date(assessment.end_time), 'MMM d, yyyy')
                                     : ''}
                             </span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-                            <ClockIcon className="h-4 w-4 text-slate-400" />
+                        <div className="flex items-center gap-2 text-body">
+                            <ClockIcon className="h-4 w-4 text-description/50" />
                             <span className="text-xs font-medium">
                                 {assessment.start_time
-                                    ? format(
-                                          new Date(assessment.start_time),
-                                          'h:mm a',
-                                      )
+                                    ? format(new Date(assessment.start_time), 'h:mm a')
                                     : '--:--'}
                             </span>
                         </div>
                     </div>
                 </CardContent>
-                <CardFooter className="flex items-center justify-between border-t bg-slate-50/50 px-4 py-3">
+
+                <CardFooter className="flex items-center justify-between border-t border-border bg-muted/30 px-4 py-3">
                     <StatusBadge />
-                    <span className="text-xs font-medium text-slate-500">
-                        {assessment.questions_count || 0} Qs
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-description/70">
+                        {assessment.questions_count || 0} Questions
                     </span>
                 </CardFooter>
             </Card>

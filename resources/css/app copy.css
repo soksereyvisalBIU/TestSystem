@@ -1,0 +1,194 @@
+@import 'tailwindcss';
+@import "tw-animate-css";
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+    --font-sans:
+        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: calc(var(--radius) - 4px);
+
+    /* --- Core Colors --- */
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    /* --- Semantic Text Hierarchy (The Standards) --- */
+    --color-title: var(--title);
+    --color-subtitle: var(--subtitle);
+    --color-body: var(--body);
+    --color-description: var(--description);
+    --color-link: var(--link);
+    --color-success: var(--success);
+
+    /* --- Component Colors --- */
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+    /* --- Charts & Sidebar --- */
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+    /* Base Backgrounds */
+    --background: oklch(0.99 0.005 260);
+    --foreground: oklch(0.20 0.04 260); 
+
+    /* Standard Text Hierarchy - Light Mode */
+    --title: oklch(0.20 0.04 260);       /* 1. Main Headings (H1, H2) */
+    --subtitle: oklch(0.35 0.06 262);    /* 2. Secondary Headings (H3) */
+    --body: oklch(0.25 0.03 260);        /* 3. Main content text */
+    --description: oklch(0.50 0.04 260); /* 4. Muted hints/captions */
+    --link: oklch(0.42 0.16 262);        /* 5. Clickable links (Navy) */
+    --success: oklch(0.50 0.15 150);     /* 6. Success Messages (Green) */
+    /* Note: Destructive is handled by --destructive variable below */
+
+    /* Brand Palette - BELTEI */
+    --primary: oklch(0.42 0.16 262);     /* BELTEI Navy Blue */
+    --primary-foreground: oklch(0.98 0 0);
+    --secondary: oklch(0.94 0.03 230);
+    --secondary-foreground: oklch(0.42 0.16 262);
+
+    /* BELTEI Gold */
+    /* --accent: oklch(0.86 0.18 88);       
+    --accent-foreground: oklch(0.25 0.05 260); */
+
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    
+    --destructive: oklch(0.55 0.22 25);  /* Logo Crimson */
+    --destructive-foreground: oklch(0.98 0 0);
+
+    /* UI & Others */
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.20 0.04 260);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.20 0.04 260);
+    --muted: oklch(0.96 0.01 260);
+    --muted-foreground: oklch(0.45 0.05 260);
+    --border: oklch(0.92 0.02 260);
+    --input: oklch(0.92 0.02 260);
+    --ring: oklch(0.42 0.16 262);
+    --radius: 0.625rem;
+
+    /* Charts */
+    --chart-1: oklch(0.42 0.16 262);
+    --chart-2: oklch(0.86 0.18 88); 
+    --chart-3: oklch(0.55 0.22 25); 
+    --chart-4: oklch(0.70 0.15 220);
+    --chart-5: oklch(0.45 0.10 200);
+
+    /* Sidebar */
+    --sidebar: oklch(0.98 0.005 260);
+    --sidebar-foreground: oklch(0.20 0.04 260);
+    --sidebar-primary: oklch(0.42 0.16 262);
+    --sidebar-primary-foreground: oklch(0.98 0 0);
+    --sidebar-accent: oklch(0.92 0.02 260);
+    --sidebar-accent-foreground: oklch(0.42 0.16 262);
+    --sidebar-border: oklch(0.92 0.02 260);
+    --sidebar-ring: oklch(0.42 0.16 262);
+}
+
+.dark {
+    --background: oklch(0.14 0.04 260); 
+    --foreground: oklch(0.98 0.01 260);
+
+    /* Standard Text Hierarchy - Dark Mode */
+    --title: oklch(0.99 0.01 260);
+    --subtitle: oklch(0.88 0.02 260);
+    --body: oklch(0.92 0.01 260);
+    --description: oklch(0.70 0.02 260);
+    --link: oklch(0.65 0.15 230);        /* Brighter blue for dark mode */
+    --success: oklch(0.75 0.15 150);
+
+    --card: oklch(0.18 0.04 260);
+    --card-foreground: oklch(0.98 0.01 260);
+    --popover: oklch(0.14 0.04 260);
+    --popover-foreground: oklch(0.98 0.01 260);
+    --primary: oklch(0.65 0.15 230); 
+    --primary-foreground: oklch(0.1 0.05 260);
+    --secondary: oklch(0.25 0.05 260);
+    --secondary-foreground: oklch(0.98 0.01 260);
+    --muted: oklch(0.25 0.05 260);
+    --muted-foreground: oklch(0.70 0.02 260);
+
+
+    /* --accent: oklch(0.86 0.18 88);
+    --accent-foreground: oklch(0.15 0.05 260); */
+
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+
+    
+    --destructive: oklch(0.45 0.18 25);
+    --destructive-foreground: oklch(0.98 0 0);
+    --border: oklch(0.25 0.05 260);
+    --input: oklch(0.25 0.05 260);
+    --ring: oklch(0.65 0.15 230);
+
+    --sidebar: oklch(0.16 0.04 260);
+    --sidebar-foreground: oklch(0.98 0.01 260);
+    --sidebar-primary: oklch(0.65 0.15 230);
+    --sidebar-primary-foreground: oklch(0.1 0.05 260);
+    --sidebar-accent: oklch(0.25 0.05 260);
+    --sidebar-accent-foreground: oklch(0.98 0.01 260);
+    --sidebar-border: oklch(0.25 0.05 260);
+    --sidebar-ring: oklch(0.65 0.15 230);
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-body antialiased;
+    }
+
+    /* Automated Hierarchy */
+    h1, h2 {
+        @apply text-title font-bold tracking-tight;
+    }
+
+    /* h3, h4 {
+        @apply text-subtitle font-semibold;
+    }
+
+    a {
+        @apply text-link underline-offset-4 hover:underline transition-colors;
+    } */
+}

@@ -25,22 +25,11 @@ export default function AssessmentHeader({
     role = 'viewer',
 }: Props) {
     const [openAssessmentModal, setOpenAssessmentModal] = useState(false);
-    const [selectedAssessment, setSelectedAssessment] = useState<any | null>(
-        null,
-    );
-
-    console.log(assessment);
+    const [selectedAssessment, setSelectedAssessment] = useState<any | null>(null);
 
     return (
-        <div className="relative flex flex-col gap-6 border-b border-slate-100 pb-4 md:flex-row md:items-end md:justify-between">
+        <div className="relative flex flex-col gap-6 border-b border-border pb-6 md:flex-row md:items-end md:justify-between transition-colors">
             <div className="space-y-4">
-                {/* 1. Breadcrumb/Category Line
-                <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-slate-400">
-                    <span>Assessments</span>
-                    <ChevronRight className="h-3 w-3" />
-                    <span className="text-blue-600">{assessment.type || 'Exam'}</span>
-                </div> */}
-
                 <div className="space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
                         <AnimatePresence>
@@ -51,9 +40,9 @@ export default function AssessmentHeader({
                                 >
                                     <Badge
                                         variant="secondary"
-                                        className="border-emerald-100 bg-emerald-50 px-2.5 py-0.5 text-emerald-700 transition-colors hover:bg-emerald-100"
+                                        className="border-success/20 bg-success/10 px-2.5 py-0.5 text-success transition-colors hover:bg-success/20"
                                     >
-                                        <span className="mr-1.5 flex h-1.5 w-1.5 items-center justify-center rounded-full bg-emerald-500" />
+                                        <span className="mr-1.5 flex h-1.5 w-1.5 items-center justify-center rounded-full bg-success animate-pulse" />
                                         Published
                                     </Badge>
                                 </motion.div>
@@ -63,54 +52,51 @@ export default function AssessmentHeader({
 
                     <motion.h1
                         layoutId={`assessment-title-${assessment.id}`}
-                        className="text-4xl font-extrabold tracking-tight text-slate-900 md:text-5xl"
+                        className="text-4xl font-black tracking-tight text-title md:text-5xl uppercase"
                     >
                         {assessment.title}
                     </motion.h1>
                 </div>
 
-                {/* 2. Metadata: Refined for better scannability */}
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium text-slate-600">
+                {/* Metadata: Using adaptive muted surfaces */}
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-4 text-sm font-bold text-body">
                     <div className="flex items-center gap-2">
-                        <div className="rounded-md bg-slate-100 p-1.5 text-slate-500">
+                        <div className="rounded-xl bg-muted p-2 text-muted-foreground transition-colors">
                             <Calendar className="h-4 w-4" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase">
+                            <span className="text-[10px] font-black text-description uppercase tracking-wider">
                                 Due Date
                             </span>
-                            <span>
+                            <span className="text-title">
                                 {assessment.due_date
-                                    ? format(
-                                          new Date(assessment.due_date),
-                                          'PPP',
-                                      )
+                                    ? format(new Date(assessment.due_date), 'PPP')
                                     : 'Open Ended'}
                             </span>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <div className="rounded-md bg-slate-100 p-1.5 text-slate-500">
+                        <div className="rounded-xl bg-muted p-2 text-muted-foreground transition-colors">
                             <Clock className="h-4 w-4" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase">
+                            <span className="text-[10px] font-black text-description uppercase tracking-wider">
                                 Duration
                             </span>
-                            <span>{assessment.duration} Minutes</span>
+                            <span className="text-title">{assessment.duration} Minutes</span>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <div className="rounded-md bg-blue-50 p-1.5 text-blue-500">
+                        <div className="rounded-xl bg-primary/10 p-2 text-primary transition-colors">
                             <Trophy className="h-4 w-4" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-[10px] font-bold text-blue-400 uppercase">
+                            <span className="text-[10px] font-black text-primary uppercase tracking-wider">
                                 Weightage
                             </span>
-                            <span className="text-blue-700">
+                            <span className="text-primary font-black">
                                 {totalMarks} Points
                             </span>
                         </div>
@@ -118,11 +104,11 @@ export default function AssessmentHeader({
                 </div>
             </div>
 
-            {/* 3. Actions: Visual Priority */}
+            {/* Actions: Refined for Theme Consistency */}
             <div className="flex items-center gap-3">
                 <Button
-                    variant="ghost"
-                    className="h-11 px-6 text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900"
+                    variant="outline"
+                    className="h-12 px-6 font-bold border-border bg-card hover:bg-muted transition-all"
                 >
                     <Download className="mr-2 h-4 w-4" />
                     Export
@@ -131,10 +117,10 @@ export default function AssessmentHeader({
                 {role === 'editor' && (
                     <Button
                         onClick={() => {
-                            setSelectedAssessment(assessment); // edit mode
+                            setSelectedAssessment(assessment);
                             setOpenAssessmentModal(true);
                         }}
-                        className="h-11 bg-blue-600 px-6 shadow-lg shadow-blue-500/20 transition-all hover:bg-blue-700 active:scale-95"
+                        className="h-12 bg-primary text-primary-foreground px-6 font-black shadow-lg shadow-primary/20 transition-all hover:opacity-90 active:scale-95"
                     >
                         <Edit3 className="mr-2 h-4 w-4" />
                         Edit Assessment
@@ -142,16 +128,14 @@ export default function AssessmentHeader({
                 )}
             </div>
 
-            {/* CREATE / EDIT MODAL */}
             <AssessmentModal
                 isOpen={openAssessmentModal}
                 setIsOpen={(v) => {
                     setOpenAssessmentModal(v);
-                    if (!v) setSelectedAssessment(null); // reset when closing
+                    if (!v) setSelectedAssessment(null);
                 }}
                 classId={1}
                 subjectId={1}
-                // Mode prop removed. The Modal now detects "Edit" mode if assessment object exists.
                 assessment={assessment ?? undefined}
             />
         </div>

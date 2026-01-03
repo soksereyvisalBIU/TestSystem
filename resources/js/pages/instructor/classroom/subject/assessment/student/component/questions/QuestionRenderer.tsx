@@ -10,18 +10,39 @@ import TextQuestion from './TextQuestion';
 import { calculateAutoScore } from './calculateAutoScore';
 
 const StatusBadge = ({ status, isManual }) => {
+    // Updated to use semantic colors with alpha transparency for theme compatibility
     const config = {
-        correct: { color: 'bg-emerald-50 text-emerald-700 border-emerald-200', icon: CheckCircle2, label: 'Correct' },
-        incorrect: { color: 'bg-rose-50 text-rose-700 border-rose-200', icon: XCircle, label: 'Incorrect' },
-        partial: { color: 'bg-amber-50 text-amber-700 border-amber-200', icon: AlertCircle, label: 'Partial' },
-        review: { color: 'bg-indigo-50 text-indigo-700 border-indigo-200', icon: Edit3, label: isManual ? 'Graded' : 'Needs Review' },
-        unanswered: { color: 'bg-slate-50 text-slate-500 border-slate-200', icon: HelpCircle, label: 'No Answer' },
+        correct: { 
+            color: 'bg-success/10 text-success border-success/20', 
+            icon: CheckCircle2, 
+            label: 'Correct' 
+        },
+        incorrect: { 
+            color: 'bg-destructive/10 text-destructive border-destructive/20', 
+            icon: XCircle, 
+            label: 'Incorrect' 
+        },
+        partial: { 
+            color: 'bg-amber-500/10 text-amber-500 border-amber-500/20', 
+            icon: AlertCircle, 
+            label: 'Partial' 
+        },
+        review: { 
+            color: 'bg-primary/10 text-primary border-primary/20', 
+            icon: Edit3, 
+            label: isManual ? 'Graded' : 'Needs Review' 
+        },
+        unanswered: { 
+            color: 'bg-muted text-muted-foreground border-border', 
+            icon: HelpCircle, 
+            label: 'No Answer' 
+        },
     };
     const current = config[status] || config.unanswered;
     const Icon = current.icon;
 
     return (
-        <Badge variant="outline" className={cn('gap-1.5 py-1.5 px-3 ring-1 ring-inset', current.color)}>
+        <Badge variant="outline" className={cn('gap-1.5 py-1.5 px-3 ring-0', current.color)}>
             <Icon className="h-3.5 w-3.5" />
             <span className="text-[10px] font-bold uppercase tracking-wider">{current.label}</span>
         </Badge>
@@ -32,7 +53,6 @@ export const QuestionRenderer = ({ question, answers, onTeacherScore }) => {
     const autoResult = calculateAutoScore(question, answers);
     const ans = answers[0] || {};
 
-    // Determine final score based on priority: Manual Draft > Stored DB > Auto Calculated
     const isManualDraft = ans.manual_score !== undefined && ans.manual_score !== null && ans.manual_score !== '';
     const hasStoredScore = ans.points_earned !== undefined && ans.points_earned !== null;
 
@@ -40,7 +60,6 @@ export const QuestionRenderer = ({ question, answers, onTeacherScore }) => {
         ? parseFloat(ans.manual_score) 
         : (hasStoredScore ? parseFloat(ans.points_earned) : autoResult.earnedPoints);
 
-    // Determine Status
     let displayStatus = autoResult.status;
     if (isManualDraft || hasStoredScore) {
         if (finalScore >= autoResult.maxPoints) displayStatus = 'correct';
@@ -49,10 +68,13 @@ export const QuestionRenderer = ({ question, answers, onTeacherScore }) => {
     }
 
     return (
-        <div className="flex flex-col h-full bg-white">
-            <div className="relative mb-6 rounded-xl bg-slate-50/50 p-5 ring-1 ring-slate-100">
-                <div className="prose prose-sm max-w-none text-slate-800"
-                     dangerouslySetInnerHTML={{ __html: question.question_text }} />
+        <div className="flex flex-col h-full bg-card">
+            {/* Question Box: bg-muted and border-border */}
+            <div className="relative mb-6 rounded-xl bg-muted/30 p-5 border border-border">
+                <div 
+                    className="prose prose-sm max-w-none text-body dark:prose-invert"
+                    dangerouslySetInnerHTML={{ __html: question.question_text }} 
+                />
             </div>
 
             <div className="flex-grow">
@@ -64,31 +86,36 @@ export const QuestionRenderer = ({ question, answers, onTeacherScore }) => {
                 )}
             </div>
 
-            <Separator className="my-8" />
+            <Separator className="my-8 bg-border" />
 
-            <div className="flex items-center justify-between bg-slate-50/30 p-4 rounded-2xl border border-slate-100">
+            {/* Score Footer: bg-muted and border-border */}
+            <div className="flex items-center justify-between bg-muted/20 p-4 rounded-2xl border border-border">
                 <div className="flex items-center gap-4">
                     <StatusBadge status={displayStatus} isManual={isManualDraft || hasStoredScore} />
+                    
                     {isManualDraft && (
-                        <span className="flex items-center gap-1 text-[10px] font-bold text-indigo-500 uppercase tracking-widest animate-pulse">
+                        <span className="flex items-center gap-1 text-[10px] font-bold text-primary uppercase tracking-widest animate-pulse">
                             <Edit3 className="h-3 w-3" /> Draft Override
                         </span>
                     )}
                     {!isManualDraft && hasStoredScore && (
-                        <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 uppercase tracking-widest">
+                        <span className="flex items-center gap-1 text-[10px] font-bold text-success uppercase tracking-widest">
                             <Save className="h-3 w-3" /> Stored Score
                         </span>
                     )}
                 </div>
 
-                <div className="flex items-center rounded-full border border-slate-200 bg-white p-1 pr-4 shadow-sm">
+                {/* Score Pill */}
+                <div className="flex items-center rounded-full border border-border bg-card p-1 pr-4 shadow-sm">
                     <div className={cn(
                         "flex h-9 w-12 items-center justify-center rounded-full text-sm font-black",
-                        finalScore > 0 ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-400"
+                        finalScore > 0 
+                            ? "bg-title text-card" 
+                            : "bg-muted text-description"
                     )}>
                         {finalScore}
                     </div>
-                    <span className="ml-3 text-[10px] font-bold uppercase text-slate-400">
+                    <span className="ml-3 text-[10px] font-bold uppercase text-description">
                         / {autoResult.maxPoints} pts
                     </span>
                 </div>

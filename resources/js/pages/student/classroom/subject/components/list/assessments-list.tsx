@@ -95,7 +95,7 @@ export function AssessmentsList({
     };
 
     return (
-        <Card className="gap-0 overflow-hidden rounded-[2rem] border border-border bg-card text-card-foreground shadow-xl shadow-black/5 dark:shadow-black/40">
+        <Card className="gap-0 py-0 overflow-hidden rounded-[2rem] border border-border bg-card text-card-foreground shadow-xl shadow-black/5 dark:shadow-black/40">
             <CardHeader className="space-y-2 border-b border-border p-8 py-4">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div className="space-y-1">

@@ -1,7 +1,10 @@
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { ChevronLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
-
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 interface SingleViewNavigationProps {
     currentIndex: number;
     totalQuestions: number;
@@ -22,48 +25,77 @@ export function SingleViewNavigation({
     isLastQuestion,
 }: SingleViewNavigationProps) {
     return (
-        <div className="mt-12 flex items-center justify-between border-t border-slate-100 pt-8 dark:border-zinc-800">
-            {/* Previous Button: Subtle but accessible */}
-            <Button
-                variant="ghost"
-                onClick={onPrevious}
-                disabled={isFirstQuestion}
-                className="h-14 rounded-2xl px-6 font-bold text-slate-500 hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-zinc-800"
-            >
-                <ChevronLeft className="mr-2 h-5 w-5" /> Previous
-            </Button>
+        <div className="mt-12 flex items-center justify-between border-t border-border pt-8 transition-colors">
+            {/* Previous Button */}
+
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        variant="ghost"
+                        onClick={onPrevious}
+                        disabled={isFirstQuestion}
+                        className="h-12 rounded-2xl px-6 font-bold text-description hover:bg-accent hover:text-accent-foreground disabled:opacity-30"
+                    >
+                        <ChevronLeft className="mr-2 h-5 w-5" /> Previous
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent
+                    side="bottom"
+                    className="border-none bg-slate-900 text-[10px] text-white"
+                >
+                    Shortcut:{' '}
+                    <kbd className="ml-1 rounded bg-slate-700 px-1">
+                        Alt + ←
+                    </kbd>
+                </TooltipContent>
+            </Tooltip>
 
             {/* Central Counter: Progress Indicator */}
-            <div className="flex flex-col items-center gap-1">
-                <div className="rounded-full bg-slate-100 px-4 py-1.5 text-[10px] font-black tracking-widest text-slate-500 uppercase dark:bg-zinc-800">
+            <div className="flex flex-col items-center gap-2">
+                <div className="rounded-full bg-muted px-4 py-1.5 text-[10px] font-black tracking-widest text-description uppercase">
                     Question {currentIndex + 1} of {totalQuestions}
                 </div>
                 <div className="flex gap-1">
-                    {/* Optional: Tiny dot indicator for quick visual context */}
-                    <div className="h-1 w-12 rounded-full bg-primary/20">
-                        <div 
-                            className="h-full rounded-full bg-primary transition-all duration-300" 
-                            style={{ width: `${((currentIndex + 1) / totalQuestions) * 100}%` }}
+                    <div className="h-1.5 w-24 overflow-hidden rounded-full bg-primary/10">
+                        <div
+                            className="h-full rounded-full bg-primary transition-all duration-500 ease-out"
+                            style={{
+                                width: `${((currentIndex + 1) / totalQuestions) * 100}%`,
+                            }}
                         />
                     </div>
                 </div>
             </div>
 
-            {/* Action Button: Dynamic Color Shift */}
+            {/* Action Button: Dynamic Content */}
             {isLastQuestion ? (
                 <Button
                     onClick={onSubmit}
-                    className="h-14 rounded-2xl bg-emerald-600 px-8 font-black text-white shadow-lg shadow-emerald-200 hover:bg-emerald-700 dark:shadow-none"
+                    className="h-12 rounded-2xl bg-emerald-600 px-8 font-black text-white shadow-none transition-transform hover:bg-emerald-700 active:scale-95 dark:bg-emerald-500 dark:hover:bg-emerald-600"
                 >
                     <CheckCircle2 className="mr-2 h-5 w-5" /> Finish & Submit
                 </Button>
             ) : (
-                <Button
-                    onClick={onNext}
-                    className="h-14 rounded-2xl bg-slate-900 px-10 font-black text-white shadow-xl shadow-slate-200 transition-all hover:-translate-x-1 hover:bg-slate-800 dark:bg-white dark:text-black dark:shadow-none"
-                >
-                    Next Question <ChevronRight className="ml-2 h-5 w-5" />
-                </Button>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button
+                            onClick={onNext}
+                            className="h-12 rounded-2xl bg-title px-10 font-black text-background transition-all hover:opacity-90 active:scale-95"
+                        >
+                            Next Question
+                            <ChevronRight className="ml-2 h-5 w-5" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent
+                        side="bottom"
+                        className="border-none bg-slate-900 text-[10px] text-white"
+                    >
+                        Shortcut:{' '}
+                        <kbd className="ml-1 rounded bg-slate-700 px-1">
+                            Alt + →
+                        </kbd>
+                    </TooltipContent>
+                </Tooltip>
             )}
         </div>
     );

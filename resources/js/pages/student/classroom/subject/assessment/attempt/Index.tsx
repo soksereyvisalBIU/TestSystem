@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { useForm, usePage } from '@inertiajs/react';
-import { conforms, debounce } from 'lodash';
+import { debounce } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { route } from 'ziggy-js';
 
@@ -43,7 +43,6 @@ export default function AssessmentAttempt({
     const subject = assessment.subjects[0];
     const isCompleted = studentAssessmentAttempt.status !== 'draft';
 
-    
     const STORAGE_KEY = `exam_draft_${student_assessment_attempt_id}`;
 
     // ========================================================================
@@ -55,7 +54,7 @@ export default function AssessmentAttempt({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isFocusMode, setIsFocusMode] = useState(false);
     const [fontSize, setFontSize] = useState(16);
-    const [highContrast, setHighContrast] = useState(false);
+    // Removed highContrast state
     const [activeQuestionId, setActiveQuestionId] = useState<number | null>(
         null,
     );
@@ -75,7 +74,21 @@ export default function AssessmentAttempt({
     const form = useForm({ answers: {}, user_id: props?.auth?.user?.id });
 
     // ========================================================================
-    // NAVIGATION LOGIC (Reusable for Shortcuts & Buttons)
+    // HYDRATION (Continue from Storage)
+    // ========================================================================
+    useEffect(() => {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            try {
+                setAnswers(JSON.parse(saved));
+            } catch (e) {
+                console.error('Failed to parse saved answers', e);
+            }
+        }
+    }, [STORAGE_KEY]);
+
+    // ========================================================================
+    // NAVIGATION LOGIC
     // ========================================================================
     const goToNext = useCallback(() => {
         if (currentQuestionIndex < questions.data.length - 1) {
@@ -182,83 +195,6 @@ export default function AssessmentAttempt({
         setIsSubmitting(true);
         form.transform((data) => ({ ...data, answers }));
 
-        console.log('Submitting answers:', answers);
-        // {
-        //     "1": "True",
-        //     "2": "Officia porro ad quo",
-        //     "3": "Consectetur rerum ad",
-        //     "4": {
-        //         "8": "Atque quam quae aut",
-        //         "9": "Quos quam voluptas a",
-        //         "10": "Veniam voluptatem n",
-        //         "11": "Corrupti in consect",
-        //         "12": "Itaque enim incidunt"
-        //     },
-        //     "5": "Provident laudantiu",
-        //     "6": {}
-        // }
-
-        // {1: 'True', 2: 'Officia porro ad quo', 3: 'Consectetur rerum ad', 4: {…}, 5: 'Provident laudantiu', 6: File}
-        // 1
-        // : 
-        // "True"
-        // 2
-        // : 
-        // "Officia porro ad quo"
-        // 3
-        // : 
-        // "Consectetur rerum ad"
-        // 4
-        // : 
-        // 8
-        // : 
-        // "Atque quam quae aut"
-        // 9
-        // : 
-        // "Quos quam voluptas a"
-        // 10
-        // : 
-        // "Veniam voluptatem n"
-        // 11
-        // : 
-        // "Corrupti in consect"
-        // 12
-        // : 
-        // "Itaque enim incidunt"
-        // [[Prototype]]
-        // : 
-        // Object
-        // 5
-        // : 
-        // "Provident laudantiu"
-        // 6
-        // : 
-        // File
-        // lastModified
-        // : 
-        // 1764040586689
-        // lastModifiedDate
-        // : 
-        // Tue Nov 25 2025 10:16:26 GMT+0700 (Indochina Time) {}
-        // name
-        // : 
-        // "19988.jpg"
-        // size
-        // : 
-        // 185265
-        // type
-        // : 
-        // "image/jpeg"
-        // webkitRelativePath
-        // : 
-        // ""
-        // [[Prototype]]
-        // : 
-        // File
-        // [[Prototype]]
-        // : 
-        // Object
-
         form.post(
             route('student.classes.subjects.assessments.attempt.store', {
                 class_id: subject.class_id,
@@ -290,9 +226,7 @@ export default function AssessmentAttempt({
         <div
             className={cn(
                 'min-h-screen transition-colors duration-500 ease-in-out',
-                highContrast
-                    ? 'bg-zinc-950 text-zinc-100'
-                    : 'bg-slate-50/50 text-slate-900',
+                'bg-background text-body', // Now purely uses CSS variables for light/dark
             )}
             style={{ fontSize: `${fontSize}px` }}
         >
@@ -306,37 +240,9 @@ export default function AssessmentAttempt({
             />
 
             <div className="mx-auto flex max-w-7xl gap-8 px-4 py-8">
-                {!isFocusMode && (
-                    <aside className="sticky top-24 me-3 h-[calc(100vh-8rem)] w-64 shrink-0">
-                        <NavigationSidebar
-                            questions={questions.data}
-                            answers={answers}
-                            activeQuestionId={activeQuestionId}
-                            currentQuestionIndex={currentQuestionIndex}
-                            viewMode={viewMode}
-                            onNavigate={(id, index) => {
-                                setActiveQuestionId(id);
-                                if (viewMode === 'single') {
-                                    setCurrentQuestionIndex(index);
-                                    window.scrollTo({
-                                        top: 0,
-                                        behavior: 'smooth',
-                                    });
-                                } else {
-                                    questionRefs.current[id]?.scrollIntoView({
-                                        behavior: 'smooth',
-                                        block: 'center',
-                                    });
-                                }
-                            }}
-                            onViewModeChange={setViewMode}
-                        />
-                    </aside>
-                )}
-
                 <main
                     className={cn(
-                        'flex-1 pb-32 transition-all duration-500',
+                        'flex-1 space-y-4 pb-32 transition-all duration-500',
                         isFocusMode && 'mx-auto max-w-3xl',
                     )}
                 >
@@ -346,7 +252,8 @@ export default function AssessmentAttempt({
                             questionCount={questions.data.length}
                         />
                     )}
-                    <div className="mt-10 space-y-12">
+                    {/* <div className="mt-10 space-y-12"> */}
+                    <div className="space-y-12">
                         {questions.data.map((q, index) => {
                             if (
                                 viewMode === 'single' &&
@@ -419,11 +326,38 @@ export default function AssessmentAttempt({
                         />
                     )}
                 </main>
+
+                {!isFocusMode && (
+                    <aside className="sticky top-24 me-3 h-[calc(100vh-8rem)] w-64 shrink-0">
+                        <NavigationSidebar
+                            questions={questions.data}
+                            answers={answers}
+                            activeQuestionId={activeQuestionId}
+                            currentQuestionIndex={currentQuestionIndex}
+                            viewMode={viewMode}
+                            onNavigate={(id, index) => {
+                                setActiveQuestionId(id);
+                                if (viewMode === 'single') {
+                                    setCurrentQuestionIndex(index);
+                                    window.scrollTo({
+                                        top: 0,
+                                        behavior: 'smooth',
+                                    });
+                                } else {
+                                    questionRefs.current[id]?.scrollIntoView({
+                                        behavior: 'smooth',
+                                        block: 'center',
+                                    });
+                                }
+                            }}
+                            onViewModeChange={setViewMode}
+                        />
+                    </aside>
+                )}
             </div>
 
             <FloatingTools
                 fontSize={fontSize}
-                highContrast={highContrast}
                 isFocusMode={isFocusMode}
                 onFontSizeIncrease={() =>
                     setFontSize((s) => Math.min(s + 2, 24))
@@ -431,7 +365,6 @@ export default function AssessmentAttempt({
                 onFontSizeDecrease={() =>
                     setFontSize((s) => Math.max(s - 2, 12))
                 }
-                onToggleContrast={() => setHighContrast(!highContrast)}
                 onToggleFocusMode={() => setIsFocusMode(!isFocusMode)}
             />
 

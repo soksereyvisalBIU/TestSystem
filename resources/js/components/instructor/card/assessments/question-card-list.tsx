@@ -14,15 +14,25 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Link } from '@inertiajs/react';
-import { CheckCircle2, ChevronRight } from 'lucide-react';
+import { CheckCircle2, ChevronRight, ListOrdered } from 'lucide-react';
 import { route } from 'ziggy-js';
 
 export default function QuestionCardList({ assessment, classId, subjectId }: any) {
     return (
-        <Card className="border-none shadow-sm">
-            <CardHeader>
-                <div className="flex items-center justify-between">
-                    <CardTitle>Assessment Content</CardTitle>
+        <Card className="border-none bg-card shadow-sm transition-colors rounded-[2rem] overflow-hidden">
+            <CardHeader className="pb-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="space-y-1">
+                        <div className="flex items-center gap-2 text-primary">
+                            <ListOrdered className="h-5 w-5" />
+                            <CardTitle className="text-xl font-black uppercase tracking-tight">
+                                Assessment Content
+                            </CardTitle>
+                        </div>
+                        <CardDescription className="font-medium text-description">
+                            There are {assessment.questions?.length} questions in this assessment.
+                        </CardDescription>
+                    </div>
                     <Link
                         href={route(
                             'instructor.classes.subjects.assessments.questions.index',
@@ -32,89 +42,77 @@ export default function QuestionCardList({ assessment, classId, subjectId }: any
                                 assessment: assessment.id,
                             },
                         )}
-                        className=""
                     >
                         <Button
                             size="sm"
-                            className="cursor-pointer shadow-lg transition-shadow hover:shadow-xl"
+                            className="group h-10 rounded-xl bg-primary px-4 font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:opacity-90 active:scale-95"
                         >
                             Question Detail
-                            <ChevronRight />
+                            <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
                         </Button>
                     </Link>
                 </div>
-                <CardDescription>
-                    There are {assessment.questions?.length} questions in this assessment.
-                </CardDescription>
             </CardHeader>
+
             <CardContent>
                 <Accordion
                     type="single"
                     collapsible
-                    className="w-full space-y-2"
+                    className="w-full space-y-3"
                 >
                     {assessment.questions?.map((q: any, index: number) => (
                         <AccordionItem
                             key={q.id}
                             value={`item-${q.id}`}
-                            className="rounded-lg border border-slate-200 px-4 data-[state=open]:bg-slate-50"
+                            className="overflow-hidden rounded-2xl border border-border px-4 transition-all data-[state=open]:border-primary/30 data-[state=open]:bg-primary/5"
                         >
-                            <AccordionTrigger className="py-4 hover:no-underline">
+                            <AccordionTrigger className="py-5 hover:no-underline">
                                 <div className="flex flex-1 items-center gap-4 text-left">
-                                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600">
+                                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-xs font-black text-primary transition-colors">
                                         {index + 1}
                                     </span>
-                                    <span className="line-clamp-1 flex-1 font-medium text-slate-900">
+                                    <span className="line-clamp-1 flex-1 font-bold text-title">
                                         {q.question_text}
                                     </span>
-                                    <Badge variant="secondary" className="mr-2">
-                                        {q.point} pts
+                                    <Badge variant="secondary" className="mr-2 rounded-md bg-muted font-bold text-muted-foreground border-none">
+                                        {q.point} PTS
                                     </Badge>
                                 </div>
                             </AccordionTrigger>
-                            <AccordionContent className="pt-1 pb-4 pl-10">
-                                {/* Logic to display question types nicely */}
-                                <div className="rounded-md border border-slate-100 bg-white p-4 text-sm text-slate-700 shadow-sm">
+                            
+                            <AccordionContent className="pb-5 pl-11 pr-2">
+                                <div className="rounded-xl border border-border bg-card p-5 shadow-inner">
                                     {q.type === 'multiple_choice' && (
-                                        <ul className="space-y-2">
-                                            {q.options?.map(
-                                                (opt: any, i: number) => (
-                                                    <li
-                                                        key={i}
-                                                        className={`flex items-center gap-2 ${opt.correct ? 'font-medium text-green-700' : ''}`}
-                                                    >
-                                                        <div
-                                                            className={`h-4 w-4 rounded-full border ${opt.correct ? 'border-green-600 bg-green-100' : 'border-slate-300'}`}
-                                                        />
-                                                        {opt.label}. {opt.text}
-                                                        {opt.correct && (
-                                                            <CheckCircle2 className="h-3 w-3" />
-                                                        )}
-                                                    </li>
-                                                ),
-                                            )}
+                                        <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                                            {q.options?.map((opt: any, i: number) => (
+                                                <li
+                                                    key={i}
+                                                    className={`flex items-center gap-3 rounded-lg border p-3 transition-colors ${
+                                                        opt.correct 
+                                                        ? 'border-success/30 bg-success/5 text-success' 
+                                                        : 'border-border bg-muted/30 text-description'
+                                                    }`}
+                                                >
+                                                    <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
+                                                        opt.correct ? 'border-success bg-success text-white' : 'border-description/30'
+                                                    }`}>
+                                                        {opt.correct && <CheckCircle2 className="h-3 w-3" />}
+                                                    </div>
+                                                    <span className="text-sm font-bold">
+                                                        <span className="mr-1 opacity-60">{opt.label}.</span> {opt.text}
+                                                    </span>
+                                                </li>
+                                            ))}
                                         </ul>
                                     )}
-                                    {/* Add other types as needed */}
+
                                     {q.type === 'true_false' && (
-                                        <div className="flex gap-4">
-                                            <Badge
-                                                variant={
-                                                    q.answer
-                                                        ? 'success'
-                                                        : 'outline'
-                                                }
-                                            >
-                                                True
+                                        <div className="flex gap-3">
+                                            <Badge className={`h-10 px-6 rounded-lg font-black tracking-widest ${q.answer ? 'bg-success text-white' : 'bg-muted text-description'}`}>
+                                                TRUE
                                             </Badge>
-                                            <Badge
-                                                variant={
-                                                    !q.answer
-                                                        ? 'success'
-                                                        : 'outline'
-                                                }
-                                            >
-                                                False
+                                            <Badge className={`h-10 px-6 rounded-lg font-black tracking-widest ${!q.answer ? 'bg-success text-white' : 'bg-muted text-description'}`}>
+                                                FALSE
                                             </Badge>
                                         </div>
                                     )}

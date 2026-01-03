@@ -3,21 +3,20 @@ import { Check, X, ArrowRight, CornerDownRight } from 'lucide-react';
 
 export default function MatchingQuestion({ question, answers }) {
     return (
-        <div className="mt-4 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-            {/* Table Header */}
-            <div className="grid grid-cols-12 bg-slate-50/80 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-500 border-b">
+        <div className="mt-4 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+            {/* Table Header: Using bg-muted/80 and text-description */}
+            <div className="grid grid-cols-12 bg-muted/80 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-description border-b border-border">
                 <div className="col-span-5">Term / Prompt</div>
-                <div className="col-span-1 flex justify-center text-slate-300">
+                <div className="col-span-1 flex justify-center text-muted-foreground/40">
                     <ArrowRight className="h-3 w-3" />
                 </div>
                 <div className="col-span-6 pl-2">Student Connection</div>
             </div>
 
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-border">
                 {question.options?.map((option) => {
                     const answer = answers.find((a) => a.option_id === option.id);
                     const studentSelection = answer?.answer_text;
-                    const isUnanswered = !studentSelection;
                     const isCorrect = studentSelection === option.match_key;
 
                     return (
@@ -25,12 +24,13 @@ export default function MatchingQuestion({ question, answers }) {
                             key={option.id}
                             className={cn(
                                 'grid grid-cols-12 items-center px-4 py-3.5 transition-colors',
-                                isCorrect ? 'bg-white' : 'bg-rose-50/30'
+                                // Correct rows stay clean, incorrect rows get a subtle destructive tint
+                                isCorrect ? 'bg-card' : 'bg-destructive/5'
                             )}
                         >
                             {/* Left Side: The Question Option */}
                             <div className="col-span-5">
-                                <span className="text-sm font-semibold text-slate-700">
+                                <span className="text-sm font-semibold text-body">
                                     {option.option_text}
                                 </span>
                             </div>
@@ -38,12 +38,12 @@ export default function MatchingQuestion({ question, answers }) {
                             {/* Middle: Connector Icon */}
                             <div className="col-span-1 flex justify-center">
                                 {isCorrect ? (
-                                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100">
-                                        <Check className="h-3.5 w-3.5 text-emerald-600" />
+                                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-success/20">
+                                        <Check className="h-3.5 w-3.5 text-success" />
                                     </div>
                                 ) : (
-                                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-100">
-                                        <X className="h-3.5 w-3.5 text-rose-600" />
+                                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-destructive/20">
+                                        <X className="h-3.5 w-3.5 text-destructive" />
                                     </div>
                                 )}
                             </div>
@@ -54,18 +54,18 @@ export default function MatchingQuestion({ question, answers }) {
                                     <span
                                         className={cn(
                                             'text-sm font-medium',
-                                            isCorrect ? 'text-slate-600' : 'text-rose-700 line-through decoration-rose-300/50'
+                                            isCorrect ? 'text-body' : 'text-destructive line-through decoration-destructive/30'
                                         )}
                                     >
                                         {studentSelection || (
-                                            <span className="italic text-slate-400">No match selected</span>
+                                            <span className="italic text-description/60">No match selected</span>
                                         )}
                                     </span>
                                 </div>
 
-                                {/* Correction Logic */}
+                                {/* Correction Logic: Emerald replaced with Success */}
                                 {!isCorrect && (
-                                    <div className="mt-1 flex items-center gap-1.5 text-[11px] font-bold text-emerald-600">
+                                    <div className="mt-1 flex items-center gap-1.5 text-[11px] font-bold text-success">
                                         <CornerDownRight className="h-3 w-3" />
                                         <span>Correct Key: {option.match_key}</span>
                                     </div>

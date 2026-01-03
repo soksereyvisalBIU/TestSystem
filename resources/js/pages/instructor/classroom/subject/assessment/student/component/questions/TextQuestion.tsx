@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { GraduationCap } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function TextQuestion({ question, answers, onTeacherScore }) {
     const ans = answers[0] || {};
@@ -23,18 +24,20 @@ export default function TextQuestion({ question, answers, onTeacherScore }) {
 
     return (
         <div className="space-y-6">
-            <div className="rounded-2xl border-2 border-slate-100 bg-white p-5 shadow-sm">
-                <Label className="mb-2 block text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+            {/* Student Response Box */}
+            <div className="rounded-2xl border-2 border-border bg-card p-5 shadow-sm">
+                <Label className="mb-2 block text-[10px] font-bold tracking-widest text-description uppercase">
                     Student Response
                 </Label>
-                <p className="text-sm font-medium text-slate-700 italic">
+                <p className="text-sm font-medium text-body italic">
                     {studentText ? `"${studentText}"` : 'No response provided.'}
                 </p>
             </div>
 
+            {/* Accepted Keys (Success/Emerald state) */}
             {!isAutoCorrect && correctOptions.length > 0 && (
-                <div className="rounded-xl bg-emerald-50/50 p-4 ring-1 ring-emerald-100">
-                    <span className="text-[10px] font-bold tracking-wider text-emerald-700 uppercase">
+                <div className="rounded-xl bg-success/10 p-4 ring-1 ring-success/20">
+                    <span className="text-[10px] font-bold tracking-wider text-success uppercase">
                         Accepted Keys
                     </span>
                     <div className="mt-2 flex flex-wrap gap-2">
@@ -42,7 +45,7 @@ export default function TextQuestion({ question, answers, onTeacherScore }) {
                             <Badge
                                 key={i}
                                 variant="outline"
-                                className="border-emerald-200 bg-white text-emerald-700"
+                                className="border-success/30 bg-card text-success"
                             >
                                 {opt}
                             </Badge>
@@ -51,20 +54,22 @@ export default function TextQuestion({ question, answers, onTeacherScore }) {
                 </div>
             )}
 
-            <div className="flex flex-col items-center gap-4 rounded-2xl border border-indigo-100 bg-indigo-50/30 p-5 sm:flex-row">
+            {/* Grading Action Box (Primary/Indigo state) */}
+            <div className="flex flex-col items-center gap-4 rounded-2xl border border-primary/20 bg-primary/5 p-5 sm:flex-row">
                 <div className="flex flex-1 items-center gap-3">
-                    <div className="rounded-lg bg-indigo-600 p-2 text-white">
-                        <GraduationCap className="h-5 w-5" />
+                    <div className="rounded-lg bg-primary p-2 text-primary-foreground">
+                        < GraduationCap className="h-5 w-5" />
                     </div>
                     <div>
-                        <Label className="text-sm font-bold text-slate-800">
+                        <Label className="text-sm font-bold text-title">
                             Assign Grade
                         </Label>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-description">
                             Max Points: {maxPoints}
                         </p>
                     </div>
                 </div>
+                
                 <div className="flex items-center gap-2">
                     <div className="relative">
                         <Input
@@ -72,16 +77,16 @@ export default function TextQuestion({ question, answers, onTeacherScore }) {
                             step="0.5"
                             value={ans.manual_score ?? ans.points_earned ?? ''}
                             onChange={handleScoreChange}
-                            className="w-28 border-indigo-200 pr-8 text-right font-mono font-bold focus:ring-indigo-500"
+                            className="w-28 border-primary/30 bg-card pr-8 text-right font-mono font-bold focus:ring-primary"
                         />
-                        <span className="absolute top-2.5 right-3 text-[10px] font-bold text-slate-400">
+                        <span className="absolute top-2.5 right-3 text-[10px] font-bold text-description">
                             PTS
                         </span>
                     </div>
                     <Button
                         size="sm"
                         variant="outline"
-                        className="text-[10px] font-bold"
+                        className="text-[10px] font-bold border-primary/30 hover:bg-primary hover:text-primary-foreground"
                         onClick={() => onTeacherScore(question.id, maxPoints)}
                     >
                         MAX

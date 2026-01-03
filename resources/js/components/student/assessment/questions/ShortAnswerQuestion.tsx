@@ -95,11 +95,11 @@ return (
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
             <div className="flex items-center gap-2">
                 <div className="rounded-lg bg-primary/10 p-2">
-                    <MessageSquareText className="h-5 w-5 text-primary" />
+                    <MessageSquareText className="h-4 w-4 text-primary" />
                 </div>
                 <Label
                     htmlFor={`question-${question.id}`}
-                    className="text-lg font-bold text-title"
+                    className="text-muted-foreground"
                 >
                     {question.text || 'Technical Response'}
                 </Label>

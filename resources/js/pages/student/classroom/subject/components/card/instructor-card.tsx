@@ -16,24 +16,24 @@ export function InstructorCard({ name, title, avatar }: InstructorCardProps) {
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
         >
-            <Card className="overflow-hidden rounded-[2rem] border-none shadow-xl shadow-slate-200/50 py-0">
-                {/* Visual Header Decoration */}
-                <div className="h-20 w-full bg-gradient-to-r from-blue-600 to-indigo-700 p-6 relative">
+            <Card className="overflow-hidden rounded-[2rem] border-none bg-card shadow-xl shadow-black/5 transition-colors duration-300 py-0">
+                {/* Visual Header Decoration - Using Primary Brand Color */}
+                <div className="h-20 w-full bg-gradient-to-r from-primary to-primary/80 p-6 relative">
                     <div className="absolute top-0 right-0 p-4 opacity-20">
                         <BadgeCheck className="h-16 w-16 text-white rotate-12" />
                     </div>
-                    <p className="text-xs font-bold uppercase tracking-widest text-blue-100/80">
+                    <p className="text-xs font-bold uppercase tracking-widest text-white/80">
                         Lead Instructor
                     </p>
                 </div>
 
                 <CardContent className="relative px-6 pb-6 pt-0">
                     <div className="flex flex-col items-center">
-                        {/* Overlapping Avatar */}
-                        <div className="-mt-10 mb-4 rounded-full border-4 border-white shadow-lg">
+                        {/* Overlapping Avatar - border matches card background for "cutout" effect */}
+                        <div className="-mt-10 mb-4 rounded-full border-4 border-card shadow-lg transition-colors duration-300">
                             <Avatar className="h-20 w-20">
                                 <AvatarImage src={avatar} alt={name} className="object-cover" />
-                                <AvatarFallback className="bg-slate-100 text-xl font-bold text-blue-600">
+                                <AvatarFallback className="bg-muted text-xl font-bold text-primary">
                                     {name.split(' ').map((n) => n[0]).join('')}
                                 </AvatarFallback>
                             </Avatar>
@@ -41,26 +41,26 @@ export function InstructorCard({ name, title, avatar }: InstructorCardProps) {
 
                         {/* Text Info */}
                         <div className="text-center space-y-1">
-                            <h3 className="text-xl font-black text-slate-900 tracking-tight">
+                            <h3 className="text-xl font-black text-title tracking-tight">
                                 {name}
                             </h3>
-                            <p className="text-sm font-semibold text-blue-600">
+                            <p className="text-sm font-semibold text-primary">
                                 {title}
                             </p>
                         </div>
 
-                        {/* Quick Actions for Students */}
+                        {/* Quick Actions */}
                         <div className="mt-6 flex w-full gap-2">
                             <Button 
                                 variant="outline" 
-                                className="flex-1 rounded-xl border-slate-200 font-bold hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                                onClick={() => window.location.href = `mailto:instructor@university.edu`}
+                                className="flex-1 rounded-xl border-border font-bold hover:bg-primary/10 hover:text-primary transition-colors"
+                                onClick={() => window.location.href = `mailto:instructor@beltei.edu.kh`}
                             >
                                 <Mail className="mr-2 h-4 w-4" />
                                 Email
                             </Button>
                             <Button 
-                                className="flex-1 rounded-xl bg-slate-900 font-bold hover:bg-blue-600 transition-all shadow-md active:scale-95"
+                                className="flex-1 rounded-xl bg-primary text-primary-foreground font-bold hover:opacity-90 transition-all shadow-md active:scale-95"
                                 onClick={() => console.log('Open Chat')}
                             >
                                 <MessageSquare className="mr-2 h-4 w-4" />

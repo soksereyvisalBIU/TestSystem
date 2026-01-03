@@ -16,17 +16,18 @@ export function PerformanceChart({
     description = 'Average scores over the last seven graded activities.',
 }: PerformanceChartProps) {
     return (
-        <Card className="overflow-hidden rounded-[2rem] border-none bg-white shadow-xl shadow-slate-200/50">
+        <Card className="overflow-hidden rounded-[2rem] border-none bg-card transition-colors duration-300">
             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-6">
                 <div className="space-y-1">
-                    <CardTitle className="text-xl font-black tracking-tight text-slate-900">
+                    <CardTitle className="text-xl font-black tracking-tight text-title">
                         {title}
                     </CardTitle>
-                    <CardDescription className="text-sm font-medium text-slate-500">
+                    <CardDescription className="text-sm font-medium text-description">
                         {description}
                     </CardDescription>
                 </div>
-                <div className="flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-blue-600">
+                {/* Trend Badge */}
+                <div className="flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-primary">
                     <TrendingUp className="h-4 w-4" />
                     <span className="text-xs font-black uppercase tracking-wider">+4.2%</span>
                 </div>
@@ -34,10 +35,10 @@ export function PerformanceChart({
 
             <CardContent>
                 <div className="relative pt-10">
-                    {/* Background Grid Lines for context */}
-                    <div className="absolute inset-0 flex flex-col justify-between pb-10 pt-10 opacity-[0.03]">
+                    {/* Background Grid Lines - Adaptive Opacity */}
+                    <div className="absolute inset-0 flex flex-col justify-between pb-10 pt-10 opacity-10">
                         {[0, 25, 50, 75, 100].map((line) => (
-                            <div key={line} className="w-full border-t-2 border-slate-900" />
+                            <div key={line} className="w-full border-t border-border" />
                         ))}
                     </div>
 
@@ -48,10 +49,10 @@ export function PerformanceChart({
                                 <motion.div 
                                     initial={{ opacity: 0, y: 10 }}
                                     whileHover={{ opacity: 1, y: 0 }}
-                                    className="absolute -top-8 left-1/2 z-20 -translate-x-1/2 rounded-lg bg-slate-900 px-2 py-1 shadow-xl shadow-slate-900/20"
+                                    className="absolute -top-8 left-1/2 z-20 -translate-x-1/2 rounded-lg bg-title px-2 py-1 shadow-xl shadow-black/20"
                                 >
-                                    <span className="text-xs font-black text-white">{h}%</span>
-                                    <div className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-slate-900" />
+                                    <span className="text-xs font-black text-background">{h}%</span>
+                                    <div className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-title" />
                                 </motion.div>
 
                                 {/* The Animated Bar */}
@@ -64,20 +65,20 @@ export function PerformanceChart({
                                         damping: 15,
                                         delay: i * 0.1 
                                     }}
-                                    className={`relative w-full min-w-[12px] rounded-t-xl transition-all duration-300 group-hover:brightness-110 ${
+                                    // Gradient logic: Destructive for low scores, Primary for high
+                                    className={`relative w-full min-w-[12px] rounded-t-xl transition-all duration-300 group-hover:brightness-125 ${
                                         h < 60 
-                                            ? 'bg-gradient-to-t from-rose-500 to-rose-400' 
-                                            : 'bg-gradient-to-t from-blue-600 to-indigo-400'
+                                            ? 'bg-gradient-to-t from-destructive to-destructive/60' 
+                                            : 'bg-gradient-to-t from-primary to-primary/60'
                                     }`}
                                 >
-                                    {/* Glass reflection effect inside the bar */}
                                     <div className="absolute inset-x-0 top-0 h-1/2 bg-white/10 opacity-0 transition-opacity group-hover:opacity-100" />
                                 </motion.div>
 
                                 {/* Label */}
                                 <div className="mt-4 text-center">
-                                    <span className="text-[10px] font-black uppercase tracking-tighter text-slate-400 transition-colors group-hover:text-slate-900">
-                                        Activity {i + 1}
+                                    <span className="text-[10px] font-black uppercase tracking-tighter text-description transition-colors group-hover:text-title">
+                                        Act {i + 1}
                                     </span>
                                 </div>
                             </div>
@@ -86,25 +87,26 @@ export function PerformanceChart({
                 </div>
 
                 {/* Legend / Info Footer */}
-                <div className="mt-8 flex items-center justify-between border-t border-slate-50 pt-6">
+                <div className="mt-8 flex items-center justify-between border-t border-border pt-6">
                     <div className="flex gap-4">
                         <div className="flex items-center gap-2">
-                            <div className="h-2 w-2 rounded-full bg-blue-500" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Average</span>
+                            <div className="h-2 w-2 rounded-full bg-primary" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-description">Average</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="h-2 w-2 rounded-full bg-rose-500" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">At Risk</span>
+                            <div className="h-2 w-2 rounded-full bg-destructive" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-description">At Risk</span>
                         </div>
                     </div>
+                    
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-300">
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:bg-muted">
                                     <Info className="h-4 w-4" />
                                 </Button>
                             </TooltipTrigger>
-                            <TooltipContent>
+                            <TooltipContent side="top" className="bg-popover text-popover-foreground">
                                 <p className="text-xs">Based on latest LMS sync data</p>
                             </TooltipContent>
                         </Tooltip>

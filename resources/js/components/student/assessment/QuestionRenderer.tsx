@@ -4,7 +4,6 @@ import MultipleChoiceQuestion from "./questions/MultipleChoiceQuestion";
 import MatchingQuestion from "./questions/MatchingQuestion";
 import ShortAnswerQuestion from "./questions/ShortAnswerQuestion";
 import FileUploadQuestion from "./questions/FileUploadQuestion";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export default function QuestionRenderer({ question, index, answer, onAnswerChange }) {  
 
@@ -22,19 +21,27 @@ export default function QuestionRenderer({ question, index, answer, onAnswerChan
                 return <ShortAnswerQuestion question={question} answer={answer} onChange={onAnswerChange} />;
             case "fileupload":
                 return <FileUploadQuestion question={question} answer={answer} onChange={onAnswerChange} />;
+            default:
+                return null;
         }
     };
 
     return (
-        <Card className="shadow-sm">
-            <CardHeader>
-                <CardTitle className="flex gap-3">
-                    <span className="text-muted-foreground">{index + 1}.</span>
-                    <span>{question.question}</span>
-                </CardTitle>
-            </CardHeader>
+        <div className="space-y-4 pt-2">
+            {/* Question Text Styling */}
+            <div className="flex gap-4 items-center">
+                <span className="text-xl font-black text-description/40 tabular-nums">
+                    Q{index + 1}:
+                </span>
+                <h2 className="text-lg md:text-xl font-black tracking-tight text-title leading-tight">
+                    {question.question}
+                </h2>
+            </div>
 
-            <CardContent>{renderByType()}</CardContent>
-        </Card>
+            {/* Answer Input Area */}
+            <div className="relative rounded-3xl transition-all">
+                {renderByType()}
+            </div>
+        </div>
     );
 }
