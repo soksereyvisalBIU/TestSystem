@@ -57,22 +57,33 @@ export default function TrueFalseQuestion({ question, answer, onChange }) {
                         <Label
                             key={opt.id}
                             htmlFor={`${question.id}-${opt.id}`}
-                            className={`flex cursor-pointer flex-col items-center justify-center space-y-3 rounded-xl border-2 px-4 py-6 text-base font-semibold shadow-sm transition-all duration-200 active:scale-95 ${
+                            className={`relative flex cursor-pointer flex-col items-center justify-center space-y-3 rounded-xl border-2 px-4 py-6 text-base font-semibold shadow-sm transition-all duration-200 active:scale-95 ${
                                 isChecked
                                     ? `ring-4 ${activeClasses}`
                                     : 'border-border bg-card text-body hover:border-muted-foreground/40 hover:bg-muted/30'
-                            } `}
+                            }`}
                             data-state={isChecked ? 'checked' : 'unchecked'}
                         >
+                            {/* Selected Badge */}
+                            {isChecked && (
+                                <div className="absolute -top-2 -right-2 rounded-full bg-blue-500 px-2 py-0.5 text-[10px] font-black tracking-tighter text-white uppercase shadow-sm">
+                                    Selected
+                                </div>
+                            )}
+
                             <RadioGroupItem
                                 id={`${question.id}-${opt.id}`}
                                 value={opt.text}
                                 className="sr-only"
                             />
 
-                            {/* Icon with dynamic theme coloring */}
+                            {/* Icon */}
                             <div
-                                className={`transition-transform duration-200 ${isChecked ? 'scale-110 ' + iconColor : 'text-muted-foreground'}`}
+                                className={`transition-transform duration-200 ${
+                                    isChecked
+                                        ? 'scale-110 ' + iconColor
+                                        : 'text-muted-foreground'
+                                }`}
                             >
                                 {icon}
                             </div>
@@ -86,7 +97,7 @@ export default function TrueFalseQuestion({ question, answer, onChange }) {
                 })}
             </RadioGroup>
             {/* Footer Instruction */}
-            <div className="flex items-center justify-center gap-2 text-muted-foreground/60 mt-3">
+            <div className="mt-3 flex items-center justify-center gap-2 text-muted-foreground/60">
                 <HelpCircle className="h-3 w-3" />
                 <span className="text-[10px] font-medium tracking-widest uppercase">
                     Select one to proceed

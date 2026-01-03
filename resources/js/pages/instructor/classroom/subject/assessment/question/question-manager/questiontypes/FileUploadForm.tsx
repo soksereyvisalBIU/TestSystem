@@ -22,11 +22,7 @@ interface Props {
 export default function FileUploadForm({ data, onChange }: Props) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     
-    // Map backend property "accepted_file_types" to local UI state
     const selectedType = data.accepted_file_types || 'image';
-    
-    // Backend provides 'media' array. We also handle 'referenceImages' for new local uploads.
-    // In edit mode, 'media' contains objects with 'path'.
     const existingMedia = data.media || [];
 
     const fileTypes = [
@@ -35,11 +31,9 @@ export default function FileUploadForm({ data, onChange }: Props) {
         { id: 'zip', label: 'Zip', icon: Archive },
     ];
 
-    // Helper to resolve image source (handles both backend paths and base64)
     const getFilePreview = (item: any) => {
-        if (typeof item === 'string') return item; // Base64 or Blob
+        if (typeof item === 'string') return item; 
         if (item.path) {
-            // Adjust this URL based on your backend storage config
             return `${import.meta.env.VITE_ASSET_URL || ''}/storage/${item.path}`;
         }
         return '';
@@ -47,12 +41,9 @@ export default function FileUploadForm({ data, onChange }: Props) {
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []);
-        
         files.forEach(file => {
             const reader = new FileReader();
             reader.onloadend = () => {
-                // We append new images to the media array as base64 strings
-                // The backend should handle strings as new files and objects as existing
                 onChange({ 
                     ...data, 
                     media: [...existingMedia, reader.result as string] 
@@ -60,7 +51,6 @@ export default function FileUploadForm({ data, onChange }: Props) {
             };
             reader.readAsDataURL(file);
         });
-        
         if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
@@ -74,14 +64,14 @@ export default function FileUploadForm({ data, onChange }: Props) {
             
             {/* Instruction Field */}
             <div className="space-y-3">
-                <Label htmlFor="question" className="text-sm font-semibold text-slate-700 ml-1">
+                <Label htmlFor="question" className="text-sm font-semibold text-subtitle ml-1">
                     Upload Instructions
                 </Label>
                 <Textarea
                     id="question"
                     required
                     placeholder="e.g., Please design a poster based on the examples provided below..."
-                    className="min-h-[100px] bg-white border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all resize-none text-base shadow-sm"
+                    className="min-h-[100px] bg-background border-input focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all resize-none text-body shadow-sm"
                     value={data.question || ""}
                     onChange={(e) => onChange({ ...data, question: e.target.value })}
                 />
@@ -90,14 +80,14 @@ export default function FileUploadForm({ data, onChange }: Props) {
             {/* Multi-Image Upload Section */}
             <div className="space-y-4">
                 <div className="flex items-center justify-between px-1">
-                    <Label className="text-sm font-semibold text-slate-700">
+                    <Label className="text-sm font-semibold text-subtitle">
                         Reference Examples ({existingMedia.length})
                     </Label>
                     {existingMedia.length > 0 && (
                         <button 
                             type="button"
                             onClick={() => fileInputRef.current?.click()}
-                            className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+                            className="text-xs font-bold text-primary hover:text-primary/80 flex items-center gap-1 transition-colors"
                         >
                             <Plus className="w-3 h-3" /> Add More
                         </button>
@@ -106,17 +96,17 @@ export default function FileUploadForm({ data, onChange }: Props) {
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                     {existingMedia.map((item: any, index: number) => (
-                        <div key={index} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 group shadow-sm bg-slate-100">
+                        <div key={index} className="relative aspect-square rounded-xl overflow-hidden border border-border group shadow-sm bg-muted">
                             <img 
                                 src={getFilePreview(item)} 
                                 alt="Example" 
                                 className="w-full h-full object-cover" 
                             />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <button
                                     type="button"
                                     onClick={() => removeImage(index)}
-                                    className="p-1.5 bg-white rounded-full text-rose-500 hover:scale-110 transition-transform"
+                                    className="p-1.5 bg-destructive rounded-full text-destructive-foreground hover:scale-110 transition-transform"
                                 >
                                     <X className="w-4 h-4" />
                                 </button>
@@ -130,15 +120,14 @@ export default function FileUploadForm({ data, onChange }: Props) {
                         onClick={() => fileInputRef.current?.click()}
                         className={cn(
                             "flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed transition-all aspect-square",
-                            existingMedia.length === 0 
-                                ? "col-span-full h-32 border-slate-200 hover:border-primary hover:bg-primary/5" 
-                                : "border-slate-200 hover:border-primary hover:bg-primary/5"
+                            "border-border hover:border-primary hover:bg-primary/5 group",
+                            existingMedia.length === 0 && "col-span-full h-32"
                         )}
                     >
-                        <div className="p-2 bg-slate-50 rounded-full">
-                            <Images className="w-5 h-5 text-slate-400" />
+                        <div className="p-2 bg-muted rounded-full group-hover:bg-primary/10 transition-colors">
+                            <Images className="w-5 h-5 text-description" />
                         </div>
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                        <span className="text-[10px] font-bold text-description uppercase tracking-wider">
                             {existingMedia.length === 0 ? "Add Example Images" : "Add Another"}
                         </span>
                     </button>
@@ -154,12 +143,12 @@ export default function FileUploadForm({ data, onChange }: Props) {
                 />
             </div>
 
-            <hr className="border-slate-100" />
+            <hr className="border-border" />
 
             {/* Constraints Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
-                    <Label className="text-sm font-semibold text-slate-700 ml-1">
+                    <Label className="text-sm font-semibold text-subtitle ml-1">
                         Student Submission Format
                     </Label>
                     <div className="flex gap-2">
@@ -174,12 +163,12 @@ export default function FileUploadForm({ data, onChange }: Props) {
                                     className={cn(
                                         "flex-1 flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all",
                                         isActive 
-                                            ? `border-primary bg-primary/5 shadow-sm` 
-                                            : "border-slate-100 bg-white hover:border-slate-200"
+                                            ? "border-primary bg-primary/10 shadow-sm" 
+                                            : "border-border bg-card hover:border-primary/50 text-description"
                                     )}
                                 >
-                                    <Icon className={cn("w-5 h-5", isActive ? "text-primary" : "text-slate-400")} />
-                                    <span className={cn("text-xs font-bold", isActive ? "text-primary" : "text-slate-500")}>
+                                    <Icon className={cn("w-5 h-5", isActive ? "text-primary" : "text-description/60")} />
+                                    <span className={cn("text-xs font-bold", isActive ? "text-primary" : "text-description")}>
                                         {type.label}
                                     </span>
                                 </button>
@@ -189,19 +178,19 @@ export default function FileUploadForm({ data, onChange }: Props) {
                 </div>
 
                 <div className="space-y-3">
-                    <Label className="text-sm font-semibold text-slate-700 ml-1">
+                    <Label className="text-sm font-semibold text-subtitle ml-1">
                         Max Size Limit
                     </Label>
                     <div className="relative group">
-                        <HardDrive className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-primary transition-colors" />
+                        <HardDrive className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-description/50 group-focus-within:text-primary transition-colors" />
                         <Input 
                             type="number" 
                             placeholder="10" 
-                            className="pl-10 h-11 bg-white border-slate-200 focus:ring-primary/10"
+                            className="pl-10 h-11 bg-background border-input text-body focus:ring-primary/10"
                             value={data.max_file_size || ''}
                             onChange={(e) => onChange({...data, max_file_size: e.target.value})} 
                         />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-description/50">
                             MB
                         </span>
                     </div>
@@ -209,12 +198,12 @@ export default function FileUploadForm({ data, onChange }: Props) {
             </div>
 
             {/* Preview Box */}
-            <div className="p-6 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center text-center space-y-3">
-                <UploadCloud className="w-6 h-6 text-slate-400" />
+            <div className="p-6 rounded-2xl border-2 border-dashed border-border bg-muted/30 flex flex-col items-center justify-center text-center space-y-3">
+                <UploadCloud className="w-6 h-6 text-description/50" />
                 <div>
-                    <p className="text-sm font-semibold text-slate-600">Submission Zone Preview</p>
-                    <p className="text-xs text-slate-400 mt-1">
-                        Students will upload their <span className="font-bold text-slate-600 uppercase">{selectedType}</span> here.
+                    <p className="text-sm font-semibold text-subtitle">Submission Zone Preview</p>
+                    <p className="text-xs text-description mt-1">
+                        Students will upload their <span className="font-bold text-subtitle uppercase">{selectedType}</span> here.
                     </p>
                 </div>
             </div>

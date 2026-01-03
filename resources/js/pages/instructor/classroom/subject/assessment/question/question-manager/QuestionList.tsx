@@ -3,7 +3,6 @@ import {
     SortableContext,
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { Badge } from '@/components/ui/badge';
 import { FileQuestion, Calculator, Layers } from 'lucide-react';
 import SortableItem from './SortableItem';
 import QuestionCard from './QuestionCard';
@@ -29,13 +28,13 @@ export default function QuestionList({
 
     if (!questions.length) {
         return (
-            <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-slate-100 p-12 text-center">
-                <div className="bg-slate-50 p-4 rounded-full">
-                    <FileQuestion className="w-8 h-8 text-slate-300" />
+            <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-border p-12 text-center bg-muted/10">
+                <div className="bg-muted p-4 rounded-full">
+                    <FileQuestion className="w-8 h-8 text-description/50" />
                 </div>
                 <div className="space-y-1">
-                    <p className="text-slate-500 font-medium">No questions added yet</p>
-                    <p className="text-xs text-slate-400">Click the button above to start building your quiz.</p>
+                    <p className="text-subtitle font-medium">No questions added yet</p>
+                    <p className="text-xs text-description">Click the button above to start building your quiz.</p>
                 </div>
             </div>
         );
@@ -45,13 +44,17 @@ export default function QuestionList({
         <div className="space-y-6">
             {/* Summary Dashboard */}
             <div className="flex items-center gap-4 p-1">
-                <div className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-100 rounded-xl shadow-sm">
-                    <Layers className="w-4 h-4 text-violet-500" />
-                    <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">{totalQuestions} Questions</span>
+                <div className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-xl shadow-sm">
+                    <Layers className="w-4 h-4 text-primary" />
+                    <span className="text-xs font-bold text-subtitle uppercase tracking-wider">
+                        {totalQuestions} Questions
+                    </span>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-100 rounded-xl shadow-sm">
-                    <Calculator className="w-4 h-4 text-emerald-500" />
-                    <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">{totalScore} Total Points</span>
+                <div className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-xl shadow-sm">
+                    <Calculator className="w-4 h-4 text-success" />
+                    <span className="text-xs font-bold text-subtitle uppercase tracking-wider">
+                        {totalScore} Total Points
+                    </span>
                 </div>
             </div>
 

@@ -1,7 +1,8 @@
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Question } from '@/types/student/assessment';
-import { CheckCircle2, Circle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { CheckCircle2, Circle, Info, Layers, Target } from 'lucide-react';
+import React from 'react';
 
 interface QuestionCardProps {
     question: Question;
@@ -27,7 +28,6 @@ export function QuestionCard({
     answer,
     isActive,
     isCompleted,
-    viewMode,
     onAnswerChange,
     questionRef,
     renderQuestion,
@@ -35,85 +35,132 @@ export function QuestionCard({
     const hasAnswer = !!answer;
 
     return (
-        <section
+        <motion.section
             ref={questionRef}
+            initial={false}
+            // animate={{
+            //     opacity: isActive ? 1 : 0.4,
+            //     scale: isActive ? 1 : 0.98,
+            //     // filter: isActive ? 'blur(0px)' : 'blur(1px)',
+            // }}
+            // className={cn(
+            //     'relative grid grid-cols-1 overflow-hidden rounded-[2.5rem] border transition-all duration-700 md:grid-cols-[280px_1fr]',
+            //     isActive
+            //         ? 'border-primary/30 bg-card shadow-[0_0_80px_-20px_rgba(0,0,0,0.12)]'
+            //         : 'border-transparent bg-muted/20',
+            // )}
             className={cn(
-                'relative overflow-hidden rounded-[3rem] border p-8 transition-all duration-500 ease-in-out md:p-12',
-                // Theme-aware states
-                isActive || viewMode === 'single'
-                    ? 'border-primary/30 bg-card shadow-2xl shadow-primary/5 ring-1 ring-primary/5'
-                    : 'border-border bg-card/40 opacity-60 grayscale-[0.3] hover:opacity-100 hover:grayscale-0',
-                // Submitted/Disabled state
-                isCompleted && 'pointer-events-none opacity-90'
+                'relative grid grid-cols-1 overflow-hidden rounded-[2.5rem] border border-primary/30 bg-card shadow-[0_0_80px_-20px_rgba(0,0,0,0.12)] transition-all duration-700 md:grid-cols-[280px_1fr]',
+                // isActive ? '' : 'border-transparent bg-muted/20',
             )}
         >
-            {/* Top Indicator Line */}
-            {(isActive || viewMode === 'single') && (
-                <div className="absolute top-0 left-0 h-1.5 w-full bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
-            )}
+            {/* LEFT SIDEBAR: Meta Information */}
+            <div
+                className={cn(
+                    'relative flex flex-col justify-between p-8 md:p-10',
+                    isActive ? 'bg-primary/[0.03]' : 'bg-transparent',
+                )}
+            >
+                <div className="space-y-8">
+                    {/* Index & Type */}
+                    <div className="space-y-4">
+                        <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-foreground text-2xl font-black text-background shadow-xl">
+                            {index + 1}
+                        </div>
+                        <div className="space-y-1">
+                            <h4 className="text-[10px] font-black tracking-[0.2em] text-primary uppercase">
+                                Question Meta
+                            </h4>
+                            <p className="text-sm leading-relaxed font-medium text-muted-foreground">
+                                Subjective analysis of the provided text.
+                            </p>
+                        </div>
+                    </div>
 
-            <div className="mb-5 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <Badge className={cn(
-                        "rounded-xl px-4 py-1.5 text-xs font-black uppercase transition-all duration-300",
-                        isActive || viewMode === 'single' 
-                            ? "bg-primary text-primary-foreground" 
-                            : "bg-muted text-description"
-                    )}>
-                        Qustion {index + 1}
-                    </Badge>
-                    
-                    {/* Visual Progress Dot */}
-                    <div className="hidden items-center gap-1.5 md:flex">
-                        <div className={cn(
-                            "h-2 w-2 rounded-full transition-colors", 
-                            hasAnswer ? "bg-emerald-500" : "bg-muted-foreground/30"
-                        )} />
-                        <span className="text-[10px] font-bold text-description uppercase tracking-wider">
-                            {hasAnswer ? 'Ready' : 'Pending'}
-                        </span>
+                    {/* Stats/Tags List */}
+                    <div className="space-y-4 pt-4">
+                        <div className="flex items-center gap-3 text-muted-foreground">
+                            <Target className="h-4 w-4" />
+                            <span className="text-xs font-semibold">
+                                10 Points
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-3 text-muted-foreground">
+                            <Layers className="h-4 w-4" />
+                            <span className="text-xs font-semibold tracking-tighter uppercase">
+                                Medium Difficulty
+                            </span>
+                        </div>
                     </div>
                 </div>
 
-                {/* Response Status Indicator */}
-                <div className={cn(
-                    "flex items-center gap-2 rounded-2xl px-4 py-2 text-[10px] font-black uppercase transition-all duration-500",
-                    hasAnswer 
-                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" 
-                        : "bg-muted text-description/70"
-                )}>
-                    {hasAnswer ? (
-                        <>
-                            <CheckCircle2 className="h-3.5 w-3.5" /> 
-                            <span>Selection Saved</span>
-                        </>
-                    ) : (
-                        <>
-                            <Circle className="h-3.5 w-3.5" />
-                            <span>Unanswered</span>
-                        </>
+                {/* Status Pill at Bottom */}
+                <div
+                    className={cn(
+                        'mt-8 flex items-center gap-3 rounded-2xl p-4 transition-colors',
+                        hasAnswer
+                            ? 'bg-emerald-500/10 text-emerald-600'
+                            : 'bg-muted text-muted-foreground/60',
                     )}
+                >
+                    {hasAnswer ? (
+                        <CheckCircle2 className="h-5 w-5" />
+                    ) : (
+                        <Circle className="h-5 w-5" />
+                    )}
+                    <span className="text-[10px] font-bold tracking-widest uppercase">
+                        {hasAnswer ? 'Captured' : 'Pending'}
+                    </span>
                 </div>
             </div>
 
-            {/* Question Content */}
-            <div className={cn(
-                "transition-transform duration-500",
-                isActive ? "scale-100" : "scale-[0.99]"
-            )}>
-                {renderQuestion(
-                    question,
-                    index,
-                    answer,
-                    onAnswerChange,
-                    isCompleted,
-                )}
+            {/* RIGHT SIDE: Content Area */}
+            <div className="relative flex flex-col bg-background p-8 md:p-12">
+                {/* Subtle Progress Header */}
+                {/* <div className="mb-8 flex items-center justify-between">
+                    <Badge
+                        variant="outline"
+                        className="rounded-full border-dashed px-4 py-1 font-mono text-[10px]"
+                    >
+                        ID: {question.id.slice(0, 8)}
+                    </Badge>
+                    {isActive && (
+                        <div className="flex items-center gap-2">
+                            <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-primary" />
+                            <span className="text-[10px] font-bold tracking-widest text-primary uppercase">
+                                Live
+                            </span>
+                        </div>
+                    )}
+                </div> */}
+
+                {/* Main Render Area */}
+                <div className="min-h-[200px]">
+                    {renderQuestion(
+                        question,
+                        index,
+                        answer,
+                        onAnswerChange,
+                        isCompleted,
+                    )}
+                </div>
+
+                {/* Footer Auto-save */}
+                <div className="mt-12 flex items-center gap-2 opacity-30 transition-opacity hover:opacity-100">
+                    <Info className="h-3 w-3" />
+                    <span className="text-[9px] font-bold tracking-[0.2em] uppercase">
+                        Syncing to local storage in real-time
+                    </span>
+                </div>
             </div>
 
-            {/* Inactive Overlay for Scroll View */}
-            {!isActive && viewMode === 'scroll' && (
-                <div className="absolute inset-0 z-10 cursor-pointer" />
+            {/* Accent Line */}
+            {isActive && (
+                <motion.div
+                    layoutId="accent"
+                    className="absolute top-0 left-0 h-full w-1 bg-primary"
+                />
             )}
-        </section>
+        </motion.section>
     );
 }

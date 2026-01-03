@@ -29,12 +29,15 @@ export default function QuestionManager({
         setTypePercentages,
         autoPoints,
         setAutoPoints,
-        recalculatePoints,
-        setQuestions, // make sure useQuestionManager exposes this
+        setQuestions, 
     } = useQuestionManager(assessmentId);
 
     if (isLoading) {
-        return <p className="p-4 text-gray-500">Loading questions...</p>;
+        return (
+            <div className="flex h-64 items-center justify-center">
+                <p className="animate-pulse font-medium text-description">Loading questions...</p>
+            </div>
+        );
     }
 
     // ✅ Create question type list with counts
@@ -53,12 +56,11 @@ export default function QuestionManager({
         setQuestions(newOrder);
     };
 
-    // Inside QuestionManager.tsx
     return (
-        <div className="mx-auto flex max-w-[1600px] animate-in flex-col gap-6 p-4 duration-700 fade-in lg:flex-row">
+        <div className=" flex animate-in flex-col gap-6 p-4 duration-700 fade-in lg:flex-row bg-background">
             {/* Main Content: Question List */}
-            <div className="min-w-0 flex-1 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                <div className="p-6">
+            <div className="min-w-0 flex-1 overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+                <div className="p-6 space-y-4">
                     <QuestionActions
                         onAdd={() => setModalOpen(true)}
                         onSave={handleSubmitAll}
@@ -92,7 +94,7 @@ export default function QuestionManager({
                 />
             </aside>
 
-            {/* Modal remains the same */}
+            {/* Modal */}
             <QuestionFormModal
                 assessmentId={assessmentId}
                 isOpen={isModalOpen}

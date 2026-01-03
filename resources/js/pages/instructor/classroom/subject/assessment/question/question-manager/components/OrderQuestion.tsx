@@ -14,7 +14,7 @@ import {
 } from '@dnd-kit/sortable';
 import { useEffect, useMemo, useState } from 'react';
 import SortableItem from '../SortableItem';
-import { GripHorizontal, GripVertical, Save, LayoutList, Hash } from 'lucide-react';
+import { GripHorizontal, GripVertical, Save, LayoutList } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function OrderQuestionByTypeSetting({
@@ -94,30 +94,30 @@ export default function OrderQuestionByTypeSetting({
     };
 
     return (
-        <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+        <div className="w-full max-w-md rounded-2xl border border-border bg-card shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
             {/* Header Section */}
-            <div className="bg-slate-50/80 px-5 py-4 flex items-center justify-between border-b border-slate-100">
+            <div className="bg-muted/50 px-5 py-4 flex items-center justify-between border-b border-border">
                 <div className="flex items-center gap-2">
                     <div className="p-1.5 bg-primary/10 rounded-lg">
                         <LayoutList className="w-4 h-4 text-primary" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-bold text-slate-800">Quiz Structure</h3>
-                        <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">Grouped by Type</p>
+                        <h3 className="text-sm font-bold text-title">Quiz Structure</h3>
+                        <p className="text-[10px] text-description font-medium uppercase tracking-wider">Grouped by Type</p>
                     </div>
                 </div>
                 <Button 
                     variant="default" 
                     size="sm" 
                     onClick={handleSaveOrder}
-                    className="h-8 gap-2 bg-primary hover:bg-primary/90 shadow-sm transition-all active:scale-95"
+                    className="h-8 gap-2 bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm transition-all active:scale-95"
                 >
                     <Save className="w-3.5 h-3.5" />
                     Save Order
                 </Button>
             </div>
 
-            <div className="p-4 overflow-y-auto max-h-[60vh] custom-scrollbar">
+            <div className="p-4 overflow-y-auto max-h-[60vh] custom-scrollbar bg-card">
                 <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
@@ -133,16 +133,16 @@ export default function OrderQuestionByTypeSetting({
                                     key={`group:${group.type}`}
                                     id={`group:${group.type}`}
                                 >
-                                    <div className="group/parent relative rounded-xl border border-slate-200 bg-white p-1 transition-all hover:border-primary/30 hover:shadow-md">
+                                    <div className="group/parent relative rounded-xl border border-border bg-background p-1 transition-all hover:border-primary/30 hover:shadow-md">
                                         {/* Group Label / Drag Handle */}
-                                        <div className="flex items-center justify-between px-3 py-2 bg-slate-50/50 rounded-t-lg border-b border-slate-50 cursor-grab active:cursor-grabbing">
+                                        <div className="flex items-center justify-between px-3 py-2 bg-muted/30 rounded-t-lg border-b border-border cursor-grab active:cursor-grabbing">
                                             <div className="flex items-center gap-2">
-                                                <GripHorizontal className="w-4 h-4 text-slate-300 group-hover/parent:text-primary transition-colors" />
-                                                <span className="text-[11px] font-black text-slate-500 uppercase tracking-widest">
+                                                <GripHorizontal className="w-4 h-4 text-muted-foreground group-hover/parent:text-primary transition-colors" />
+                                                <span className="text-[11px] font-black text-subtitle uppercase tracking-widest">
                                                     {group.type.replaceAll('_', ' ')}
                                                 </span>
                                             </div>
-                                            <span className="text-[10px] bg-white border border-slate-200 px-2 py-0.5 rounded-full font-bold text-slate-400">
+                                            <span className="text-[10px] bg-card border border-border px-2 py-0.5 rounded-full font-bold text-description">
                                                 {group.questions.length} Items
                                             </span>
                                         </div>
@@ -163,13 +163,13 @@ export default function OrderQuestionByTypeSetting({
                                                                 key={`${group.type}:${q.id}`}
                                                                 id={`${group.type}:${q.id}`}
                                                             >
-                                                                <div className="group/item flex items-center gap-3 rounded-lg border border-transparent hover:border-slate-100 hover:bg-slate-50/50 px-3 py-2 cursor-grab active:cursor-grabbing transition-all">
-                                                                    <GripVertical className="w-3.5 h-3.5 text-slate-200 group-hover/item:text-slate-400" />
+                                                                <div className="group/item flex items-center gap-3 rounded-lg border border-transparent hover:border-border hover:bg-muted/50 px-3 py-2 cursor-grab active:cursor-grabbing transition-all">
+                                                                    <GripVertical className="w-3.5 h-3.5 text-muted-foreground/40 group-hover/item:text-muted-foreground" />
                                                                     <div className="flex items-center gap-2 overflow-hidden">
-                                                                        <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded-md bg-white border border-slate-100 text-[10px] font-black text-slate-400">
+                                                                        <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded-md bg-card border border-border text-[10px] font-black text-description">
                                                                             {index + 1}
                                                                         </span>
-                                                                        <span className="text-xs text-slate-600 font-medium truncate">
+                                                                        <span className="text-xs text-body font-medium truncate">
                                                                             {q.question_text || q.question}
                                                                         </span>
                                                                     </div>
@@ -188,8 +188,8 @@ export default function OrderQuestionByTypeSetting({
                 </DndContext>
             </div>
 
-            <div className="p-3 bg-slate-50 border-t border-slate-100">
-                <p className="text-[10px] text-center text-slate-400 font-medium">
+            <div className="p-3 bg-muted/50 border-t border-border">
+                <p className="text-[10px] text-center text-description font-medium">
                     Drag blocks to reorder types, or items to reorder questions.
                 </p>
             </div>

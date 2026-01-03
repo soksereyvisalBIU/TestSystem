@@ -19,8 +19,6 @@ export default function MultipleChoiceForm({ data, onChange }: Props) {
     updated[index] = value;
     setOptions(updated);
     
-    // If we're updating the text of the currently selected correct answer, 
-    // we need to update the answer value in the parent state too.
     const isCurrentCorrect = data.answer === options[index];
     onChange({ 
       ...data, 
@@ -30,14 +28,14 @@ export default function MultipleChoiceForm({ data, onChange }: Props) {
   };
 
   const addOption = () => {
-    if (options.length >= 6) return; // UX choice: prevent overwhelming lists
+    if (options.length >= 6) return;
     const updated = [...options, ""];
     setOptions(updated);
     onChange({ ...data, options: updated });
   };
 
   const removeOption = (index: number) => {
-    if (options.length <= 2) return; // Pedagogy: MCQs usually need at least 2 options
+    if (options.length <= 2) return;
     const updated = options.filter((_, i) => i !== index);
     const wasCorrect = data.answer === options[index];
     
@@ -57,14 +55,14 @@ export default function MultipleChoiceForm({ data, onChange }: Props) {
     <div className="space-y-8 animate-in fade-in slide-in-from-top-2 duration-500">
       {/* Question Textarea */}
       <div className="space-y-3">
-        <Label htmlFor="question" className="text-sm font-semibold text-slate-700 ml-1">
+        <Label htmlFor="question" className="text-sm font-semibold text-subtitle ml-1">
           Question Stem
         </Label>
         <Textarea
           id="question"
           required
           placeholder="e.g., Which of the following is a primary color?"
-          className="min-h-[100px] bg-white border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all resize-none text-lg"
+          className="min-h-[100px] bg-background border-input focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all resize-none text-lg text-body shadow-sm"
           value={data.question || ""}
           onChange={(e) => onChange({ ...data, question: e.target.value })}
         />
@@ -73,8 +71,8 @@ export default function MultipleChoiceForm({ data, onChange }: Props) {
       {/* Options Section */}
       <div className="space-y-4">
         <div className="flex justify-between items-center px-1">
-          <Label className="text-sm font-semibold text-slate-700">Answer Options</Label>
-          <span className="text-[10px] text-slate-400 font-medium uppercase tracking-tighter">
+          <Label className="text-sm font-semibold text-subtitle">Answer Options</Label>
+          <span className="text-[10px] text-description font-medium uppercase tracking-tighter opacity-70">
             Mark one as correct
           </span>
         </div>
@@ -89,8 +87,8 @@ export default function MultipleChoiceForm({ data, onChange }: Props) {
                 className={cn(
                   "group flex items-center gap-3 p-2 rounded-xl border transition-all duration-200",
                   isCorrect 
-                    ? "bg-emerald-50/50 border-emerald-200 shadow-sm" 
-                    : "bg-white border-slate-100 hover:border-slate-200"
+                    ? "bg-success/10 border-success/50 shadow-sm" 
+                    : "bg-card border-border hover:border-primary/30"
                 )}
               >
                 {/* Correct Answer Toggle */}
@@ -100,11 +98,11 @@ export default function MultipleChoiceForm({ data, onChange }: Props) {
                   disabled={!opt.trim()}
                   className={cn(
                     "flex-shrink-0 ml-2 transition-transform active:scale-90 disabled:opacity-30",
-                    isCorrect ? "text-emerald-500" : "text-slate-300 hover:text-slate-400"
+                    isCorrect ? "text-success" : "text-description/40 hover:text-primary"
                   )}
                 >
                   {isCorrect ? (
-                    <CheckCircle2 className="w-6 h-6 fill-emerald-50" />
+                    <CheckCircle2 className="w-6 h-6 fill-success/10" />
                   ) : (
                     <Circle className="w-6 h-6" />
                   )}
@@ -119,7 +117,7 @@ export default function MultipleChoiceForm({ data, onChange }: Props) {
                   onChange={(e) => updateOption(i, e.target.value)}
                   className={cn(
                     "flex-1 border-none bg-transparent shadow-none focus-visible:ring-0 text-base font-medium",
-                    isCorrect ? "text-emerald-900" : "text-slate-700"
+                    isCorrect ? "text-success-foreground" : "text-body"
                   )}
                 />
 
@@ -130,7 +128,7 @@ export default function MultipleChoiceForm({ data, onChange }: Props) {
                   size="icon"
                   onClick={() => removeOption(i)}
                   className={cn(
-                    "opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-red-500 hover:bg-red-50",
+                    "opacity-0 group-hover:opacity-100 transition-opacity text-description/60 hover:text-destructive hover:bg-destructive/10",
                     options.length <= 2 && "hidden"
                   )}
                 >
@@ -147,7 +145,7 @@ export default function MultipleChoiceForm({ data, onChange }: Props) {
           variant="outline"
           disabled={options.length >= 6}
           onClick={addOption}
-          className="w-full py-6 border-dashed border-2 border-slate-200 text-slate-500 hover:text-primary hover:border-primary hover:bg-primary/5 transition-all group rounded-xl"
+          className="w-full py-6 border-dashed border-2 border-border text-description hover:text-primary hover:border-primary hover:bg-primary/5 transition-all group rounded-xl bg-transparent"
         >
           <Plus className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" />
           Add Choice

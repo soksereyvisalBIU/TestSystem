@@ -57,14 +57,14 @@ export default function OrderingForm({ data, onChange }: Props) {
         <div className="space-y-8 animate-in fade-in slide-in-from-top-2 duration-500">
             {/* Question Textarea */}
             <div className="space-y-3">
-                <Label htmlFor="question" className="text-sm font-semibold text-slate-700 ml-1">
+                <Label htmlFor="question" className="text-sm font-semibold text-subtitle ml-1">
                     Instruction / Question
                 </Label>
                 <Textarea
                     id="question"
                     required
                     placeholder="e.g., Arrange the steps of the water cycle in the correct order."
-                    className="min-h-[100px] bg-white border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all resize-none text-base shadow-sm"
+                    className="min-h-[100px] bg-background border-input focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all resize-none text-base shadow-sm text-body"
                     value={data.question || ""}
                     onChange={(e) => onChange({ ...data, question: e.target.value })}
                 />
@@ -74,12 +74,12 @@ export default function OrderingForm({ data, onChange }: Props) {
             <div className="space-y-4">
                 <div className="flex items-center gap-2 mb-2">
                     <ListOrdered className="w-4 h-4 text-primary" />
-                    <Label className="text-sm font-semibold text-slate-700">Correct Sequence</Label>
+                    <Label className="text-sm font-semibold text-subtitle">Correct Sequence</Label>
                 </div>
 
                 <div className="space-y-3 relative">
                     {/* Visual Vertical Line Connector */}
-                    <div className="absolute left-[51px] top-6 bottom-6 w-[2px] bg-slate-100 -z-0" />
+                    <div className="absolute left-[51px] top-6 bottom-6 w-[2px] bg-border -z-0" />
 
                     {items.map((item, index) => (
                         <div 
@@ -100,7 +100,7 @@ export default function OrderingForm({ data, onChange }: Props) {
                                 
                                 <div className={cn(
                                     "w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shadow-sm border-2 transition-colors",
-                                    "bg-white border-slate-200 text-slate-500 group-hover:border-primary group-hover:text-primary"
+                                    "bg-background border-border text-description group-hover:border-primary group-hover:text-primary"
                                 )}>
                                     {index + 1}
                                 </div>
@@ -117,12 +117,12 @@ export default function OrderingForm({ data, onChange }: Props) {
                             </div>
                             
                             {/* Content Input */}
-                            <div className="flex-1 bg-white p-1 rounded-xl border border-slate-100 group-hover:border-slate-200 group-hover:shadow-md transition-all">
+                            <div className="flex-1 bg-background p-1 rounded-xl border border-border group-hover:border-primary/30 group-hover:shadow-md transition-all">
                                 <Input
                                     value={item.content}
                                     placeholder={`Step ${index + 1} description...`}
                                     onChange={(e) => handleItemChange(index, e.target.value)}
-                                    className="border-none shadow-none focus-visible:ring-0 text-slate-700 font-medium"
+                                    className="border-none shadow-none focus-visible:ring-0 text-body font-medium bg-transparent"
                                 />
                             </div>
 
@@ -132,7 +132,7 @@ export default function OrderingForm({ data, onChange }: Props) {
                                 size="icon" 
                                 onClick={() => removeItem(index)}
                                 disabled={items.length <= 2}
-                                className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all rounded-full"
+                                className="opacity-0 group-hover:opacity-100 text-description/60 hover:text-destructive hover:bg-destructive/10 transition-all rounded-full"
                             >
                                 <Trash2 className="h-4 w-4" />
                             </Button>
@@ -145,7 +145,7 @@ export default function OrderingForm({ data, onChange }: Props) {
                     <Button 
                         variant="outline" 
                         onClick={addItem} 
-                        className="w-full py-6 border-dashed border-2 border-slate-200 text-slate-500 hover:text-primary hover:border-primary hover:bg-primary/5 transition-all group rounded-xl"
+                        className="w-full py-6 border-dashed border-2 border-border text-description hover:text-primary hover:border-primary hover:bg-primary/5 transition-all group rounded-xl bg-transparent"
                     >
                         <Plus className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" /> 
                         Add Next Sequence Step
@@ -154,10 +154,10 @@ export default function OrderingForm({ data, onChange }: Props) {
             </div>
 
             {/* User Note */}
-            <div className="flex gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100 items-start">
-                <Info className="w-4 h-4 text-slate-400 mt-0.5" />
-                <p className="text-xs text-slate-500 leading-relaxed italic">
-                    <strong>Note:</strong> Define the items in their <strong>absolute correct order</strong>. The system will automatically randomize these for students, requiring them to rearrange them back to this sequence.
+            <div className="flex gap-3 p-4 bg-muted/30 rounded-xl border border-border items-start">
+                <Info className="w-4 h-4 text-description/60 mt-0.5" />
+                <p className="text-xs text-description leading-relaxed italic">
+                    <strong className="text-subtitle not-italic">Note:</strong> Define the items in their <strong className="text-subtitle not-italic">absolute correct order</strong>. The system will automatically randomize these for students.
                 </p>
             </div>
         </div>
