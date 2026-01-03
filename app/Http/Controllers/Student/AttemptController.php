@@ -15,7 +15,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests; // ✅ ADD THIS
 
 class AttemptController extends Controller
 {
-     use AuthorizesRequests; // ✅ ADD THIS 
+    use AuthorizesRequests; // ✅ ADD THIS 
     /**
      * Show attempt page
      */
@@ -36,7 +36,7 @@ class AttemptController extends Controller
                 ->get()
         );
 
-        
+
 
         return Inertia::render(
             'student/classroom/subject/assessment/attempt/Index',
@@ -72,6 +72,9 @@ class AttemptController extends Controller
 
         // Increment attempt count
         $assessmentAttempt->studentAssessment->increment('attempted_amount');
+        $assessmentAttempt->studentAssessment()->update([
+            'status'       => 'submitted',
+        ]);
 
         // Save answers
         foreach ($request->answers as $questionId => $answer) {

@@ -97,7 +97,7 @@ export default function TrueFalseQuestion({ question, answer, onChange }) {
                 })}
             </RadioGroup>
             {/* Footer Instruction */}
-            <div className="mt-3 flex items-center justify-center gap-2 text-muted-foreground/60">
+            <div className="mt-4 flex items-center justify-center gap-2 text-muted-foreground/60">
                 <HelpCircle className="h-3 w-3" />
                 <span className="text-[10px] font-medium tracking-widest uppercase">
                     Select one to proceed

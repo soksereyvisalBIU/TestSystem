@@ -50,14 +50,14 @@ export function QuestionCard({
             //         : 'border-transparent bg-muted/20',
             // )}
             className={cn(
-                'relative grid grid-cols-1 overflow-hidden rounded-[2.5rem] border border-primary/30 bg-card shadow-[0_0_80px_-20px_rgba(0,0,0,0.12)] transition-all duration-700 md:grid-cols-[280px_1fr]',
+                'relative grid grid-cols-1 overflow-hidden rounded-[2.5rem] border border-primary/30 bg-card shadow-[0_0_80px_-20px_rgba(0,0,0,0.12)] transition-all duration-700 md:grid-cols-[200px_1fr]',
                 // isActive ? '' : 'border-transparent bg-muted/20',
             )}
         >
             {/* LEFT SIDEBAR: Meta Information */}
             <div
                 className={cn(
-                    'relative flex flex-col justify-between p-8 md:p-10',
+                    'relative flex flex-col justify-between p-6 md:p-10',
                     isActive ? 'bg-primary/[0.03]' : 'bg-transparent',
                 )}
             >
@@ -69,10 +69,10 @@ export function QuestionCard({
                         </div>
                         <div className="space-y-1">
                             <h4 className="text-[10px] font-black tracking-[0.2em] text-primary uppercase">
-                                Question Meta
+                                {question?.type}
                             </h4>
                             <p className="text-sm leading-relaxed font-medium text-muted-foreground">
-                                Subjective analysis of the provided text.
+                                {question?.question_text}
                             </p>
                         </div>
                     </div>
@@ -82,7 +82,7 @@ export function QuestionCard({
                         <div className="flex items-center gap-3 text-muted-foreground">
                             <Target className="h-4 w-4" />
                             <span className="text-xs font-semibold">
-                                10 Points
+                                {question?.point} Points
                             </span>
                         </div>
                         <div className="flex items-center gap-3 text-muted-foreground">
@@ -97,7 +97,7 @@ export function QuestionCard({
                 {/* Status Pill at Bottom */}
                 <div
                     className={cn(
-                        'mt-8 flex items-center gap-3 rounded-2xl p-4 transition-colors',
+                        'mt-8 flex items-center gap-3 rounded-2xl px-4 py-2 transition-colors',
                         hasAnswer
                             ? 'bg-emerald-500/10 text-emerald-600'
                             : 'bg-muted text-muted-foreground/60',
@@ -146,12 +146,12 @@ export function QuestionCard({
                 </div>
 
                 {/* Footer Auto-save */}
-                <div className="mt-12 flex items-center gap-2 opacity-30 transition-opacity hover:opacity-100">
+                {/* <div className="mt-6 flex items-center gap-2 opacity-30 transition-opacity hover:opacity-100">
                     <Info className="h-3 w-3" />
                     <span className="text-[9px] font-bold tracking-[0.2em] uppercase">
                         Syncing to local storage in real-time
                     </span>
-                </div>
+                </div> */}
             </div>
 
             {/* Accent Line */}

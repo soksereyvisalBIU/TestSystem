@@ -4,7 +4,7 @@ import { debounce } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { route } from 'ziggy-js';
 
-// Components...
+// Components
 import QuestionRenderer from '@/components/student/assessment/QuestionRenderer';
 import { AssessmentAttemptData, Question, StudentAttemptData } from '@/types/student/assessment';
 import { AssessmentHeader } from './components/AssessmentHeader';
@@ -14,11 +14,10 @@ import { NavigationSidebar } from './components/Navigator';
 import { ScrollViewEndSection } from './components/ScrollViewEndSection';
 import { SingleViewNavigation } from './components/SingleViewNavigation';
 import { AssessmentTitleCard } from './components/card/AssessmentTitleCard';
-// import { QuestionCard } from './components/card/QuestionCard';
+import { QuestionCard } from './components/card/QuestionCard';
 import { ReviewSummaryDialog } from './components/dialog/ReviewSummaryDialog';
 import { SubmitConfirmationDialog } from './components/dialog/SubmitConfirmationDialog';
 import { calculateRemainingTime, calculateStats } from './components/function/formatTime';
-import { QuestionCard } from './components/card/QuestionCard';
 
 interface AssessmentAttemptProps {
     assessment: AssessmentAttemptData;
@@ -50,18 +49,74 @@ export default function AssessmentAttempt({
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [showSubmitModal, setShowSubmitModal] = useState(false);
     const [showReviewModal, setShowReviewModal] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(() => calculateRemainingTime(studentAssessmentAttempt.started_at, assessment.duration));
+    
+    // Timer State
+    const [timeLeft, setTimeLeft] = useState(() => 
+        calculateRemainingTime(studentAssessmentAttempt.started_at, assessment.duration)
+    );
 
     const questionRefs = useRef<Record<number, HTMLDivElement | null>>({});
     const form = useForm({ answers: {}, user_id: props?.auth?.user?.id });
 
-    // SCROLL SPY LOGIC: Automatically updates activeQuestionId as user scrolls
+    // SUBMISSION LOGIC
+    const handleFinalSubmit = useCallback(() => {
+        if (isSubmitting) return;
+        setIsSubmitting(true);
+        
+        form.transform((data) => ({ ...data, answers }));
+        form.post(route('student.classes.subjects.assessments.attempt.store', {
+            class_id: subject.class_id,
+            subject_id: subject.id,
+            assessment_id: assessment.id,
+            student_assessment_attempt_id,
+        }), {
+            onFinish: () => setIsSubmitting(false),
+            onSuccess: () => {
+                localStorage.removeItem(STORAGE_KEY);
+                persistAnswers.cancel();
+            },
+        });
+    }, [answers, isSubmitting, subject, assessment.id, student_assessment_attempt_id]);
+
+    // TIMER EFFECT
+    useEffect(() => {
+        if (isCompleted || isSubmitting) return;
+
+        const timer = setInterval(() => {
+            const remaining = calculateRemainingTime(studentAssessmentAttempt.started_at, assessment.duration);
+            
+            if (remaining <= 0) {
+                setTimeLeft(0);
+                clearInterval(timer);
+                // Auto-submit when time runs out
+                handleFinalSubmit();
+            } else {
+                setTimeLeft(remaining);
+            }
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [studentAssessmentAttempt.started_at, assessment.duration, isCompleted, isSubmitting, handleFinalSubmit]);
+
+    // ONLINE STATUS MONITOR
+    useEffect(() => {
+        const handleOnline = () => setIsOnline(true);
+        const handleOffline = () => setIsOnline(false);
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, []);
+
+    // SCROLL SPY LOGIC
     useEffect(() => {
         if (viewMode !== 'scroll') return;
 
         const observerOptions = {
             root: null,
-            rootMargin: '-20% 0px -60% 0px', // Adjust these values to change sensitivity
+            rootMargin: '-20% 0px -60% 0px',
             threshold: 0,
         };
 
@@ -81,11 +136,11 @@ export default function AssessmentAttempt({
         return () => observer.disconnect();
     }, [viewMode, questions.data]);
 
-    // REST OF LOGIC (Keep existing useEffects for Storage, Timer, Keyboard Shortcuts)
+    // RESTORE ANSWERS
     useEffect(() => {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
-            try { setAnswers(JSON.parse(saved)); } catch (e) { console.error(e); }
+            try { setAnswers(JSON.parse(saved)); } catch (e) { console.error("Failed to parse local answers", e); }
         }
     }, [STORAGE_KEY]);
 
@@ -120,24 +175,6 @@ export default function AssessmentAttempt({
 
     const stats = useMemo(() => calculateStats(answers, questions.data.length), [answers, questions.data]);
 
-    const handleFinalSubmit = () => {
-        if (isSubmitting) return;
-        setIsSubmitting(true);
-        form.transform((data) => ({ ...data, answers }));
-        form.post(route('student.classes.subjects.assessments.attempt.store', {
-            class_id: subject.class_id,
-            subject_id: subject.id,
-            assessment_id: assessment.id,
-            student_assessment_attempt_id,
-        }), {
-            onFinish: () => setIsSubmitting(false),
-            onSuccess: () => {
-                localStorage.removeItem(STORAGE_KEY);
-                persistAnswers.cancel();
-            },
-        });
-    };
-
     if (isCompleted) return <CompletionScreen onReturnToDashboard={() => (window.location.href = '/')} />;
 
     return (
@@ -146,8 +183,11 @@ export default function AssessmentAttempt({
             style={{ fontSize: `${fontSize}px` }}
         >
             <AssessmentHeader 
-                stats={stats} isOnline={isOnline} isSaving={isSaving || isSubmitting} 
-                timeLeft={timeLeft} onSubmit={() => setShowSubmitModal(true)} 
+                stats={stats} 
+                isOnline={isOnline} 
+                isSaving={isSaving || isSubmitting} 
+                timeLeft={timeLeft} 
+                onSubmit={() => setShowSubmitModal(true)} 
                 disableSubmit={!isOnline || isSubmitting} 
             />
 
@@ -165,7 +205,7 @@ export default function AssessmentAttempt({
                                     key={q.id} 
                                     data-q-id={q.id} 
                                     ref={(el) => (questionRefs.current[q.id] = el)}
-                                    onClick={() => setActiveQuestionId(q.id)} // Click card to focus
+                                    onClick={() => setActiveQuestionId(q.id)}
                                 >
                                     <QuestionCard
                                         question={q}
@@ -231,7 +271,13 @@ export default function AssessmentAttempt({
                 onToggleFocusMode={() => setIsFocusMode(!isFocusMode)}
             />
 
-            <SubmitConfirmationDialog isOpen={showSubmitModal} onOpenChange={setShowSubmitModal} stats={stats} onConfirm={handleFinalSubmit} />
+            <SubmitConfirmationDialog 
+                isOpen={showSubmitModal} 
+                onOpenChange={setShowSubmitModal} 
+                stats={stats} 
+                onConfirm={handleFinalSubmit} 
+            />
+            
             <ReviewSummaryDialog 
                 isOpen={showReviewModal} onOpenChange={setShowReviewModal} 
                 questions={questions.data} answers={answers}
