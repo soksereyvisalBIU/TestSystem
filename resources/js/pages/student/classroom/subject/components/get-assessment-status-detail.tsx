@@ -10,116 +10,100 @@ export type AssessmentStatusDetails = {
     isUrgent: boolean;
 };
 
-/**
- * getAssessmentStatusDetails
- * Determines the visual state of an assessment based on the current time 
- * and the specific student's progress.
- */
 export function getAssessmentStatusDetails(assessment: Assessment): AssessmentStatusDetails {
-    // 1. Initialize Dates
     const now = new Date();
     const start = new Date(assessment.start_time);
     const end = new Date(assessment.end_time);
     
-    // 2. Determine Temporal State (Dynamic calculation)
     const isUpcoming = now < start;
     const isExpired = now > end;
     const isOngoing = now >= start && now <= end;
 
-    // 3. Extract Student Specifics (Handle potential nulls from backend)
-    const studentStatus = assessment?.student_assessment?.status; // 'scored' | 'attempted' | 'missed' | null
+    const studentStatus = assessment?.student_assessment?.status; 
     const studentScore = assessment?.student_assessment?.score;
 
-    console.log(assessment?.student_assessment);
-
-    // Default "Unknown" state
+    // Default "Unknown" state using your new theme variables
     const defaults: AssessmentStatusDetails = {
         badgeVariant: 'outline',
-        badgeColorClass: 'bg-slate-50 text-slate-500 border-slate-200',
+        badgeColorClass: 'bg-muted text-muted-foreground border-border',
         icon: <Clock className="h-3 w-3" />,
         subtitle: 'View Details',
         label: 'STATUS',
         isUrgent: false,
     };
 
-    // ==========================================================
-    // PRIORITY 1: PERSONAL PROGRESS (What the student did)
-    // ==========================================================
-
+    // 1. COMPLETED / SCORED
     if (studentStatus === 'scored') {
         return {
             ...defaults,
             label: 'COMPLETED',
-            badgeColorClass: 'bg-emerald-500 text-white border-transparent shadow-sm shadow-emerald-100',
+            // Using your semantic --success color
+            badgeColorClass: 'bg-success text-white border-transparent shadow-sm',
             icon: <CheckCircle className="h-3 w-3" />,
             subtitle: `Score: ${studentScore}%`,
         };
     }
 
-    if (studentStatus === 'attempted' || assessment?.student_assessment?.attempted_amount > 0) {
+    // 2. SUBMITTED / AWAITING GRADE
+    if (studentStatus === 'attempted' || (assessment?.student_assessment?.attempted_amount ?? 0) > 0) {
         return {
             ...defaults,
             label: 'SUBMITTED',
-            badgeColorClass: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+            // Using your primary (BELTEI Navy) but as a subtle outline/soft background
+            badgeColorClass: 'bg-primary/10 text-primary border-primary/20',
             icon: <Hourglass className="h-3 w-3" />,
             subtitle: 'Awaiting Grade',
         };
     }
 
-    // A student only "misses" an assessment if the time has actually expired
+    // 3. MISSED
     if (studentStatus === 'missed' || (isExpired && !studentStatus)) {
         return {
             ...defaults,
             label: 'MISSED',
-            badgeColorClass: 'bg-rose-50 text-rose-700 border-rose-200',
+            // Using your --destructive (Logo Crimson) color
+            badgeColorClass: 'bg-destructive/10 text-destructive border-destructive/20',
             icon: <XOctagon className="h-3 w-3" />,
             subtitle: `Closed ${end.toLocaleDateString([], { month: 'short', day: 'numeric' })}`,
         };
     }
 
-    // ==========================================================
-    // PRIORITY 2: ACTIVE STATES (What is happening now)
-    // ==========================================================
-
+    // 4. ACTIVE / ONGOING
     if (isOngoing) {
         const diffMs = end.getTime() - now.getTime();
         const diffInHours = Math.floor(diffMs / (1000 * 60 * 60));
         const diffInMinutes = Math.floor(diffMs / (1000 * 60));
         const diffInDays = Math.floor(diffInHours / 24);
 
-        let timeLabel = "";
-        if (diffInDays > 0) timeLabel = `${diffInDays}d left`;
-        else if (diffInHours > 0) timeLabel = `${diffInHours}h left`;
-        else timeLabel = `${diffInMinutes}m left`;
+        let timeLabel = diffInDays > 0 ? `${diffInDays}d left` : diffInHours > 0 ? `${diffInHours}h left` : `${diffInMinutes}m left`;
 
         return {
             ...defaults,
             label: 'ACTIVE',
-            badgeColorClass: 'bg-amber-100 text-amber-700 border-amber-300 shadow-sm animate-pulse',
+            // Using a custom amber logic or your --accent color
+            badgeColorClass: 'bg-amber-500/10 text-amber-600 border-amber-500/30 shadow-sm animate-pulse dark:text-amber-400',
             icon: <AlertTriangle className="h-3 w-3" />,
             subtitle: timeLabel,
             isUrgent: diffInHours < 24,
         };
     }
 
+    // 5. UPCOMING
     if (isUpcoming) {
         return {
             ...defaults,
             label: 'UPCOMING',
-            badgeColorClass: 'bg-blue-50 text-blue-700 border-blue-200',
+            badgeColorClass: 'bg-secondary text-secondary-foreground border-border',
             icon: <Calendar className="h-3 w-3" />,
             subtitle: `Starts ${start.toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
         };
     }
 
-    // ==========================================================
-    // PRIORITY 3: FALLBACK (Generic Closed state)
-    // ==========================================================
-
+    // 6. FALLBACK
     return {
         ...defaults,
         label: 'CLOSED',
-        badgeColorClass: 'bg-slate-100 text-slate-600 border-slate-200',
+        badgeColorClass: 'bg-muted text-muted-foreground border-border',
         icon: <CheckCircle className="h-3 w-3" />,
         subtitle: assessment.score ? `Class Avg: ${assessment.score}%` : 'Past Due',
     };

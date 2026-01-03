@@ -154,9 +154,9 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                             className="space-y-6"
                         >
                             <InstructorCard
-                                name="Mr. Sok Sereyvisal"
-                                title="Senior Lecturer"
-                                avatar="https://images.unsplash.com/photo-1535713875002-d1d0cf3795b2?w=200&h=200&fit=crop"
+                                name="Mr. RIN CHETRA"
+                                title="Lecturer"
+                                avatar="/assets/img/profile/rinchetra.jpg"
                             />
 
                             <LogisticsCard
