@@ -70,15 +70,22 @@ export default function Welcome() {
 
                 {/* --- NAVIGATION --- */}
                 <nav className="sticky top-4 z-50 mx-auto max-w-6xl px-4">
-                    <div className="flex flex-wrap items-center justify-center gap-4 rounded-2xl border border-white/40 bg-white/60 p-2 shadow-2xl shadow-indigo-500/5 backdrop-blur-2xl sm:flex-nowrap sm:justify-between sm:gap-0 dark:border-white/10 dark:bg-slate-900/60">
+                    <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/40 bg-white/60 p-2 shadow-2xl shadow-indigo-500/5 backdrop-blur-2xl sm:flex-nowrap sm:justify-between sm:gap-0 dark:border-white/10 dark:bg-slate-900/60">
                         <Link
                             href="/"
-                            className="group flex items-center gap-3 pl-3"
+                            className="group flex items-center gap-3 sm:pl-3"
                         >
                             {/* <img className="h-9 w-auto" src="https://belteigroup.com.kh/images/beltei_international_university_in_cambodia.png" alt="BIU" /> */}
                             <img
-                                className="h-10"
-                                src="/assets/logo/BIU.png"
+                                className="h-10 hidden sm:block"
+                                src="/assets/logo/BIU.png" // the horizantal one
+                                // src="/assets/logo/beltei.svg" // the icon one
+                                alt=""
+                            />
+                            <img
+                                className="h-10 sm:hidden"
+                                // src="/assets/logo/BIU.png" // the horizantal one
+                                src="/assets/logo/beltei.svg" // the icon one
                                 alt=""
                             />
                             {/* <div className="flex flex-col">
@@ -124,7 +131,7 @@ export default function Welcome() {
                         The complete digital ecosystem for Online Testing,
                         Scoring, and Student Life. Proudly developed and
                         maintained by the <br />{' '}
-                        <span className="text-2xl font-bold text-slate-900 underline decoration-indigo-500 decoration-2 underline-offset-4 dark:text-white">
+                        <span className="text-lg xs:text-2xl font-bold text-slate-900 underline decoration-indigo-500 decoration-2 underline-offset-4 dark:text-white">
                             Faculty of Information Technology and Science.
                         </span>
                     </p>
@@ -132,7 +139,7 @@ export default function Welcome() {
                     <div className="mt-8 flex flex-col items-center justify-center gap-4 pb-24 sm:mt-12 sm:flex-row">
                         <Link
                             href="/login"
-                            className="group text-md xs:px-10 flex h-12 w-full items-center justify-center gap-4 rounded-2xl bg-indigo-600 font-black text-white shadow-2xl shadow-indigo-500/40 transition-all hover:bg-indigo-700 sm:h-16 sm:w-auto sm:text-lg"
+                            className="group text-md xs:px-10 flex h-14 w-full items-center justify-center gap-4 rounded-2xl bg-indigo-600 font-black text-white shadow-2xl shadow-indigo-500/40 transition-all hover:bg-indigo-700 sm:h-16 sm:w-auto sm:text-lg"
                         >
                             Access Student Portal
                             <ArrowRight className="transition-transform group-hover:translate-x-1" />
