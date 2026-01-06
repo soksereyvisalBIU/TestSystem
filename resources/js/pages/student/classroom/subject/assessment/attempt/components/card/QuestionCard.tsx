@@ -57,23 +57,23 @@ export function QuestionCard({
             {/* LEFT SIDEBAR: Meta Information */}
             <div
                 className={cn(
-                    'relative flex flex-col justify-between p-6 md:p-10',
+                    'relative flex flex-col justify-between  p-6 md:p-10',
                     isActive ? 'bg-primary/[0.03]' : 'bg-transparent',
                 )}
             >
-                <div className="space-y-8">
+                <div className="space-y-0 flex md:flex-col justify-between md:space-y-8 ">
                     {/* Index & Type */}
                     <div className="space-y-4">
-                        <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-foreground text-2xl font-black text-background shadow-xl">
+                        <div className="inline-flex h-8 w-8 text-lg rounded-lg md:h-14 md:w-14 items-center justify-center md:rounded-2xl bg-foreground md:text-2xl font-black text-background shadow-xl">
                             {index + 1}
                         </div>
                         <div className="space-y-1">
                             <h4 className="text-[10px] font-black tracking-[0.2em] text-primary uppercase">
                                 {question?.type}
                             </h4>
-                            <p className="text-sm leading-relaxed font-medium text-muted-foreground">
+                            {/* <p className="text-sm leading-relaxed font-medium text-muted-foreground ">
                                 {question?.question_text}
-                            </p>
+                            </p> */}
                         </div>
                     </div>
 
@@ -97,7 +97,7 @@ export function QuestionCard({
                 {/* Status Pill at Bottom */}
                 <div
                     className={cn(
-                        'mt-8 flex items-center gap-3 rounded-2xl px-4 py-2 transition-colors',
+                        'mt-2 md:mt-8 flex items-center gap-3 rounded-2xl px-4 py-2 transition-colors',
                         hasAnswer
                             ? 'bg-emerald-500/10 text-emerald-600'
                             : 'bg-muted text-muted-foreground/60',
@@ -115,7 +115,7 @@ export function QuestionCard({
             </div>
 
             {/* RIGHT SIDE: Content Area */}
-            <div className="relative flex flex-col bg-background p-8 md:p-12">
+            <div className="relative flex flex-col bg-background pt-4 p-8 md:p-12">
                 {/* Subtle Progress Header */}
                 {/* <div className="mb-8 flex items-center justify-between">
                     <Badge

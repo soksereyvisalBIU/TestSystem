@@ -156,7 +156,7 @@ export default function ClassCard({ classroom, onEdit }: ClassCardProps) {
             <motion.div
                 layoutId={`classroom-card-${classroom.id}`}
                 // 1. Replaced shadow-xl with a dynamic shadow that works in both modes
-                className="group relative h-64 w-full cursor-pointer overflow-hidden rounded-[2rem] bg-card shadow-lg transition-all hover:shadow-2xl hover:shadow-primary/20"
+                className="group relative h-42 sm:h-64 w-full cursor-pointer overflow-hidden rounded-[2rem] bg-card shadow-lg transition-all hover:shadow-2xl hover:shadow-primary/20"
                 whileHover={{ y: -8 }}
             >
                 {/* Image Layer */}
@@ -197,7 +197,7 @@ export default function ClassCard({ classroom, onEdit }: ClassCardProps) {
 
                     <div className="space-y-2">
                         {/* 5. Title - Using text-white explicitly because it's on an image overlay */}
-                        <h3 className="text-2xl leading-tight font-black text-white group-hover:text-primary-foreground transition-colors drop-shadow-md">
+                        <h3 className="text-lg sm:text-2xl leading-tight font-black text-white group-hover:text-primary-foreground transition-colors drop-shadow-md">
                             {classroom?.name}
                         </h3>
                         

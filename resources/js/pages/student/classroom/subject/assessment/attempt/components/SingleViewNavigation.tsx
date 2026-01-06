@@ -34,9 +34,9 @@ export function SingleViewNavigation({
                         variant="ghost"
                         onClick={onPrevious}
                         disabled={isFirstQuestion}
-                        className="h-12 rounded-2xl px-6 font-bold text-description hover:bg-accent hover:text-accent-foreground disabled:opacity-30"
+                        className="h-12 rounded-2xl px-3 sm:px-6 font-bold text-description hover:bg-accent hover:text-accent-foreground disabled:opacity-30"
                     >
-                        <ChevronLeft className="mr-2 h-5 w-5" /> Previous
+                        <ChevronLeft className="mr-2 h-5 w-5" /> <span className='hidden sm:block'>Previous</span>
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent
@@ -53,7 +53,7 @@ export function SingleViewNavigation({
             {/* Central Counter: Progress Indicator */}
             <div className="flex flex-col items-center gap-2">
                 <div className="rounded-full bg-muted px-4 py-1.5 text-[10px] font-black tracking-widest text-description uppercase">
-                    Question {currentIndex + 1} of {totalQuestions}
+                    <span className='hidden sm:block'>Question</span> {currentIndex + 1} of {totalQuestions}
                 </div>
                 <div className="flex gap-1">
                     <div className="h-1.5 w-24 overflow-hidden rounded-full bg-primary/10">
@@ -71,9 +71,9 @@ export function SingleViewNavigation({
             {isLastQuestion ? (
                 <Button
                     onClick={onSubmit}
-                    className="h-12 rounded-2xl bg-emerald-600 px-8 font-black text-white shadow-none transition-transform hover:bg-emerald-700 active:scale-95 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+                    className="h-12  rounded-2xl bg-emerald-600 px-4 sm:px-8 font-black text-white shadow-none transition-transform hover:bg-emerald-700 active:scale-95 dark:bg-emerald-500 dark:hover:bg-emerald-600"
                 >
-                    <CheckCircle2 className="mr-2 h-5 w-5" /> Finish & Submit
+                    <CheckCircle2 className=" sm:mr-2 h-5 w-5" /> <span className='hidden sm:block'>Finish &</span> Submit
                 </Button>
             ) : (
                 <Tooltip>
@@ -82,7 +82,7 @@ export function SingleViewNavigation({
                             onClick={onNext}
                             className="h-12 rounded-2xl bg-title px-10 font-black text-background transition-all hover:opacity-90 active:scale-95"
                         >
-                            Next Question
+                            Next <span className='hidden :block'>Question</span>
                             <ChevronRight className="ml-2 h-5 w-5" />
                         </Button>
                     </TooltipTrigger>

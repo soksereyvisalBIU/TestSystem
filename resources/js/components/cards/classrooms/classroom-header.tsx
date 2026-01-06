@@ -94,7 +94,7 @@ export function ClassroomHeader({ classroom }: any) {
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             // Changed slate shadow to a neutral black shadow for better dark mode blending
-            className="group relative h-[320px] w-full overflow-hidden rounded-[2.5rem] shadow-2xl shadow-black/20 transition-colors duration-300"
+            className="group relative h-[220px] sm:h-[320px] w-full overflow-hidden rounded-lg sm:rounded-[2.5rem] shadow-2xl shadow-black/20 transition-colors duration-300"
         >
             {/* Background Image Layer */}
             <div
@@ -107,23 +107,23 @@ export function ClassroomHeader({ classroom }: any) {
             {/* Adaptive Gradient Overlay - Ensuring text always pops */}
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80" />
 
-            <div className="absolute bottom-0 left-0 w-full p-8 md:p-12">
+            <div className="absolute bottom-0 left-0 w-full p-6 sm:p-8 md:p-12">
                 <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
                     <div className="space-y-4">
                         <div className="flex flex-wrap gap-2">
                             {/* Primary Brand Badge */}
-                            <span className="rounded-lg bg-primary px-3 py-1 text-[10px] font-black tracking-widest text-primary-foreground uppercase shadow-lg shadow-primary/30">
+                            <span className="rounded-lg bg-primary px-2 sm:px-3 py-1 text-[10px] font-black tracking-widest text-primary-foreground uppercase shadow-lg shadow-primary/30">
                                 Batch {classroom.batch}
                             </span>
                             
                             {/* Session Badge with Glassmorphism */}
-                            <span className="rounded-lg border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-black tracking-widest text-white uppercase backdrop-blur-md">
+                            <span className="rounded-lg border border-white/20 bg-white/10 px-2 sm:px-3 py-1 text-[10px] font-black tracking-widest text-white uppercase backdrop-blur-md">
                                 {classroom.shift === 1 ? 'Morning Session' : 'Evening Session'}
                             </span>
                         </div>
 
                         {/* Heading - Explicitly white for image contrast */}
-                        <h1 className="text-4xl font-[1000] tracking-tighter text-white uppercase md:text-6xl drop-shadow-2xl">
+                        <h1 className="text-lg sm:text-4xl font-[1000] tracking-tighter text-white uppercase md:text-6xl drop-shadow-2xl">
                             {classroom.name}
                         </h1>
 

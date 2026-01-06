@@ -62,6 +62,7 @@ export const InfoGrid = memo(({ assessment, attemptsUsed, highlightAttempts }: I
     const isLastAttempt = !isUnlimited && attemptsUsed === (assessment.max_attempts - 1);
 
     return (
+        // <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             {/* Assessment Type */}
             <InfoItem 

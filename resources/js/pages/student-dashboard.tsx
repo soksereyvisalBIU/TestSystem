@@ -96,7 +96,7 @@ const courses = [
     },
 ];
 
-export default function Dashboard() {
+export default function StudentDashboard() {
     return (
         <AppLayout>
             <Head title="Mission Control" />

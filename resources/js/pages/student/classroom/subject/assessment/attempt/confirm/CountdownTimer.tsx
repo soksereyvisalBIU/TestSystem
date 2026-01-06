@@ -48,7 +48,7 @@ export const CountdownTimer = memo(({ targetDate, label, onZero, variant = 'acti
                 {label}
             </span>
             
-            <div className="flex items-center justify-center gap-2 sm:gap-4">
+            <div className="flex items-center flex-wrap justify-center gap-2 sm:gap-4">
                 {units.map((unit, idx) => (
                     <div key={unit.label} className="flex items-center">
                         <motion.div

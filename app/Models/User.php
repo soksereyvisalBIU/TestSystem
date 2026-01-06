@@ -137,11 +137,6 @@ class User extends Authenticatable
         return $this->hasMany(StudentCourse::class, 'student_id');
     }
 
-    public function assessmentAttempts()
-    {
-        return $this->hasMany(AssessmentAttempt::class, 'student_id');
-    }
-
     public function enrolledCourses()
     {
         return $this->belongsToMany(Course::class, 'student_courses', 'student_id', 'course_id');
@@ -173,8 +168,8 @@ class User extends Authenticatable
             ->where('course_id', $courseId);
     }
 
-    public function getStudentCourseInCourseAttribute()
-    {
-        return $this->studentCourseInCourse()->first();
-    }
+    // public function getStudentCourseInCourseAttribute()
+    // {
+    //     return $this->studentCourseInCourse()->first();
+    // }
 }

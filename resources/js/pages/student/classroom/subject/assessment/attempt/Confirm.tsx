@@ -88,7 +88,7 @@ export default function AssessmentConfirmPage({
                             />
                         </div>
 
-                        <div className="space-y-2 p-8 sm:p-8 sm:pt-2">
+                        <div className="space-y-2 p-6 sm:p-8 sm:pt-2">
                             {/* Status Section with scale effect */}
                             <AnimatePresence mode="wait">
                                 <motion.div
@@ -122,7 +122,7 @@ export default function AssessmentConfirmPage({
                             </div>
 
                             {/* Information Grid with improved spacing */}
-                            <div className="rounded-2xl bg-gray-50/50 p-4  dark:bg-gray-800/30">
+                            <div className="rounded-2xl bg-gray-50/50 p-2 sm:p-4  dark:bg-gray-800/30">
                                 <InfoGrid
                                     assessment={assessment}
                                     attemptsUsed={studentAssessment?.attempted_amount ?? 0}

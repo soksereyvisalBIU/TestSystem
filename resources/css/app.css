@@ -208,3 +208,26 @@
 .animate-border-loop {
   animation: border-rotate 2.5s linear infinite;
 }
+
+
+
+/* @font-face {
+    font-family: 'NotoSansKhmer';
+    src: url('./assests/font/NotoSansKhmer.ttf');
+} */
+@font-face {
+    font-family: 'NotoSansKhmer';
+    src: url('../fonts/NotoSansKhmer.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Battambang-Regular';
+    src: url('../fonts/Battambang-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.khmerfont {
+    font-family: 'NotoSansKhmer', sans-serif;
+}

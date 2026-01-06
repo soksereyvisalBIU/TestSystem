@@ -26,7 +26,7 @@ export function AssessmentHeader({
         <header className="sticky top-0 z-50 w-full border-b bg-white/80 shadow-sm backdrop-blur-md dark:bg-zinc-900/80">
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
                 {/* Progress Section */}
-                <div className="flex flex-1 items-center gap-6">
+                <div className="flex flex-1 items-center gap-6 hidden md:block">
                     <div className="hidden md:block">
                         <div className="flex items-center gap-3">
                             <div className="flex flex-col">
@@ -67,7 +67,8 @@ export function AssessmentHeader({
                                 : '',
                         )}
                     >
-                        Finish Assessment
+                        {/* Finish Assessment */}
+                        Finish
                     </Button>
                 </div>
             </div>

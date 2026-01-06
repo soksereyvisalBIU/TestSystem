@@ -66,7 +66,7 @@ export default function SubjectShow({ classroom }: { classroom: any }) {
                     <div className="flex justify-between">
                         <div className="flex items-center gap-3">
                             <div className="h-8 w-1 rounded-full bg-blue-600" />
-                            <h2 className="text-xl font-black tracking-tight text-slate-900 uppercase dark:text-white">
+                            <h2 className="sm:text-xl font-black tracking-tight text-slate-900 uppercase dark:text-white">
                                 Subject Modules
                             </h2>
                         </div>

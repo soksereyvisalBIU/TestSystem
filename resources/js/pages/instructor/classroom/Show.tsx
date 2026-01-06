@@ -89,7 +89,7 @@ export default function SubjectShow({
         >
             <Head title={`${classroom.name} | Curriculum`} />
 
-            <div className="p-6 lg:p-8 lg:px-12">
+            <div className="p-4 sm:p-6 lg:p-8 lg:px-12">
                 {/* HERO SECTION */}
 
                 <ClassroomHeader classroom={classroom} />
@@ -108,10 +108,10 @@ export default function SubjectShow({
                         </Button>
                     </div> */}
 
-                    <div className="mt-4 flex items-center justify-between">
+                    <div className="mt-4 flex flex-wrap items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="h-8 w-1 rounded-full bg-blue-600" />
-                            <h2 className="text-xl font-black tracking-tight text-slate-900 uppercase dark:text-white">
+                            <h2 className="text-sm sm:text-xl font-black tracking-tight text-slate-900 uppercase dark:text-white">
                                 Subject Modules
                             </h2>
                         </div>
@@ -130,9 +130,9 @@ export default function SubjectShow({
                             </div>
                             <Button
                                 onClick={openCreateModal}
-                                className="h-11 rounded-full px-6 shadow-lg transition-all hover:scale-105 active:scale-95"
+                                className="sm:h-11 rounded-full px-6 shadow-lg transition-all hover:scale-105 active:scale-95"
                             >
-                                <Plus className="mr-2 h-5 w-5" /> Add Subject
+                                <Plus className="sm:mr-2 h-5 w-5" /> Add <span className='hidden sm:block'>Subject</span>
                             </Button>
                         </div>
                     </div>

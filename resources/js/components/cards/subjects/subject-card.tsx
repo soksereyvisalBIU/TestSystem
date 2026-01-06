@@ -195,7 +195,7 @@ export default function SubjectCard({
                 <div className="relative h-full overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition-all hover:border-blue-500/50 hover:shadow-xl dark:border-slate-800 dark:bg-[#09090b]">
                     
                     {/* Cover Image Section */}
-                    <div className="relative h-44 w-full overflow-hidden">
+                    <div className="relative h-28 sm:h-44 w-full overflow-hidden">
                         <div
                             className="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
                             style={{
@@ -227,19 +227,19 @@ export default function SubjectCard({
                     </div>
 
                     {/* Content Section */}
-                    <div className="p-6">
+                    <div className="p-3 sm:p-6">
                         <div className="mb-2 flex items-start justify-between">
                             <span className="text-[9px] font-black tracking-[0.2em] text-blue-500 uppercase">
                                 {subject.code || 'IT-MOD'}
                             </span>
                         </div>
                         
-                        <h3 className="line-clamp-2 min-h-[3.5rem] text-lg leading-tight font-black text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white">
+                        <h3 className="line-clamp-2 min-h-[2rem] sm:min-h-[3.5rem] text-lg leading-tight font-black text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white">
                             {subject.name}
                         </h3>
 
                         {/* Footer Section */}
-                        <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4 text-slate-400 dark:border-slate-800">
+                        <div className="sm:mt-4 flex items-center justify-between border-t border-slate-100 pt-4 text-slate-400 dark:border-slate-800">
                             <div className="flex items-center gap-2">
                                 <Clock size={14} />
                                 <span className="text-xs font-bold">

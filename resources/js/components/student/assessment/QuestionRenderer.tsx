@@ -27,13 +27,13 @@ export default function QuestionRenderer({ question, index, answer, onAnswerChan
     };
 
     return (
-        <div className="space-y-4 pt-2">
+        <div className="space-y-4 sm:pt-2">
             {/* Question Text Styling */}
-            <div className="flex gap-4 items-center">
-                <span className="text-xl font-black text-description/40 tabular-nums">
+            <div className="flex gap-2 sm:gap-4 ">
+                <span className="text-lg md:text-xl font-black text-description/40 tabular-nums">
                     Q{index + 1}:
                 </span>
-                <h2 className="text-lg md:text-xl font-black tracking-tight text-title leading-tight">
+                <h2 className="text-lg md:text-xl font-black tracking-tight text-title leading-relaxed khmerfont">
                     {question.question}
                 </h2>
             </div>

@@ -23,10 +23,10 @@ export const AssessmentHeader = memo(({ title, description }: AssessmentHeaderPr
                 initial={{ y: -10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                className="group mx-auto mb-2 flex h-20 w-20 items-center justify-center rounded-[2rem] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-gray-100 transition-all duration-500 hover:rotate-3 hover:scale-110 dark:bg-gray-800 dark:ring-gray-700 dark:shadow-none"
+                className="group mx-auto mb-2 flex h-12 w-12 sm:h-20 sm:w-20 items-center justify-center rounded-[2rem] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-gray-100 transition-all duration-500 hover:rotate-3 hover:scale-110 dark:bg-gray-800 dark:ring-gray-700 dark:shadow-none"
             >
                 <div className="relative">
-                    <FileCheck className="h-10 w-10 text-blue-600 transition-colors group-hover:text-blue-500 dark:text-blue-400" />
+                    <FileCheck className="h-6 w-6 sm:h-10 sm:w-10 text-blue-600 transition-colors group-hover:text-blue-500 dark:text-blue-400" />
                     {/* Floating Accent Icon */}
                     <motion.div
                         animate={{ 
@@ -46,7 +46,7 @@ export const AssessmentHeader = memo(({ title, description }: AssessmentHeaderPr
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="text-3xl font-black tracking-tight text-gray-900 sm:text-4xl dark:text-white"
+                className="text-2xl font-black tracking-tight text-gray-900 sm:text-4xl dark:text-white"
             >
                 {title}
             </motion.h1>
@@ -56,7 +56,7 @@ export const AssessmentHeader = memo(({ title, description }: AssessmentHeaderPr
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.3 }}
-                    className="mx-auto mt-2 max-w-lg text-lg leading-relaxed text-gray-500 dark:text-gray-400"
+                    className="mx-auto sm:mt-2 max-w-lg text-lg leading-relaxed text-gray-500 dark:text-gray-400"
                 >
                     {description}
                 </motion.p>

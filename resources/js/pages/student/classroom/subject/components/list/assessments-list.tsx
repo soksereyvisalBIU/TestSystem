@@ -63,18 +63,21 @@ export function AssessmentsList({
                 const priorityB = getPriority(b);
 
                 if (priorityA !== priorityB) return priorityA - priorityB;
-                return new Date(b.start_time).getTime() - new Date(a.start_time).getTime();
+                return (
+                    new Date(b.start_time).getTime() -
+                    new Date(a.start_time).getTime()
+                );
             });
     }, [assessments, searchQuery]);
 
     return (
-        <Card className="py-0 overflow-hidden rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-sm shadow-2xl shadow-black/5">
+        <Card className="overflow-hidden rounded-[2.5rem] border border-border bg-card/50 py-0 shadow-2xl shadow-black/5 backdrop-blur-sm">
             <CardHeader className="space-y-4 border-b border-border/50 p-8 py-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="space-y-1">
-                        <CardTitle className="text-2xl font-black tracking-tight text-title flex gap-3 items-center">
-                            <div className="p-2 bg-primary/10 rounded-xl">
-                                <Newspaper className="h-6 w-6 text-primary"/>
+                        <CardTitle className="flex items-center gap-3 text-2xl font-black tracking-tight text-title">
+                            <div className="rounded-xl bg-primary/10 p-2">
+                                <Newspaper className="h-6 w-6 text-primary" />
                             </div>
                             Subject Assessments
                         </CardTitle>
@@ -92,15 +95,29 @@ export function AssessmentsList({
                                 if (isSearchOpen) setSearchQuery('');
                             }}
                             className={`h-11 w-11 rounded-2xl border-border transition-all ${
-                                isSearchOpen ? 'bg-primary text-primary-foreground' : 'bg-card'
+                                isSearchOpen
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'bg-card'
                             }`}
                         >
-                            {isSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
+                            {isSearchOpen ? (
+                                <X className="h-5 w-5" />
+                            ) : (
+                                <Search className="h-5 w-5" />
+                            )}
                         </Button>
 
                         {accessInstructorPage && (
-                            <Link href={route('instructor.classes.subjects.assessments.index', { class: classId, subject: subjectId })}>
-                                <Button variant="secondary" className="h-11 rounded-2xl border border-border bg-card font-bold">
+                            <Link
+                                href={route(
+                                    'instructor.classes.subjects.assessments.index',
+                                    { class: classId, subject: subjectId },
+                                )}
+                            >
+                                <Button
+                                    variant="secondary"
+                                    className="h-11 rounded-2xl border border-border bg-card font-bold"
+                                >
                                     <LayoutGrid className="mr-2 h-4 w-4" />
                                     Manage
                                 </Button>
@@ -132,7 +149,9 @@ export function AssessmentsList({
                                 <Input
                                     placeholder="Search by title..."
                                     value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onChange={(e) =>
+                                        setSearchQuery(e.target.value)
+                                    }
                                     className="h-12 rounded-2xl border-none bg-muted/50 pl-11 focus-visible:ring-2 focus-visible:ring-primary"
                                     autoFocus
                                 />
@@ -159,11 +178,16 @@ export function AssessmentsList({
                                 animate={{ opacity: 1 }}
                                 className="flex flex-col items-center justify-center py-20 text-center"
                             >
-                                <div className="mb-4 p-6 bg-muted rounded-[2rem]">
+                                <div className="mb-4 rounded-[2rem] bg-muted p-6">
                                     <BookOpen className="h-12 w-12 text-muted-foreground/50" />
                                 </div>
-                                <h3 className="text-xl font-bold text-title">No Assessments Found</h3>
-                                <p className="text-description max-w-[280px]">Try adjusting your search or check back later.</p>
+                                <h3 className="text-xl font-bold text-title">
+                                    No Assessments Found
+                                </h3>
+                                <p className="max-w-[280px] text-description">
+                                    Try adjusting your search or check back
+                                    later.
+                                </p>
                             </motion.div>
                         )}
                     </AnimatePresence>

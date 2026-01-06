@@ -53,7 +53,7 @@ export const ActionButtons = ({
                         method="post"
                         as="button"
                         disabled={processing}
-                        className={`group relative flex w-full items-center justify-center gap-3 rounded-2xl py-5 text-xl font-bold tracking-tight transition-all hover:shadow-2xl disabled:opacity-70 ${primaryStyles}`}
+                        className={`group relative flex w-full items-center justify-center gap-3 rounded-2xl py-5 text-md sm:text-xl font-bold tracking-tight transition-all hover:shadow-2xl disabled:opacity-70 ${primaryStyles}`}
                     >
                         {processing ? (
                             <Loader2 className="h-6 w-6 animate-spin" />
