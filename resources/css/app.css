@@ -6,11 +6,24 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+    font-family: 'NotoSansKhmer-Regular';
+    src: url('../fonts/NotoSansKhmer-Regular.ttf') format('truetype');
+    font-weight: normal !important;
+    font-style: normal !important;
+}
+
 @theme {
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-        'Noto Color Emoji';
+        'Instrument Sans', 
+        ui-sans-serif, 
+        system-ui, 
+        sans-serif,
+        'Apple Color Emoji', 
+        'Segoe UI Emoji', 
+        'Segoe UI Symbol',
+        'Noto Color Emoji' , 
+        'NotoSansKhmer-Regular';
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -218,7 +231,9 @@
     font-family: 'NotoSansKhmer';
     src: url('./assests/font/NotoSansKhmer.ttf');
 } */
-@font-face {
+
+
+/* @font-face {
     font-family: 'NotoSansKhmer';
     src: url('../fonts/NotoSansKhmer.ttf') format('truetype');
     font-weight: normal;
@@ -233,4 +248,4 @@
 
 .khmerfont {
     font-family: 'NotoSansKhmer', sans-serif;
-}
+} */

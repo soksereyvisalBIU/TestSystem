@@ -17,7 +17,10 @@ export default function MatchingQuestion({ question, answers }) {
                 {question.options?.map((option) => {
                     const answer = answers.find((a) => a.option_id === option.id);
                     const studentSelection = answer?.answer_text;
-                    const isCorrect = studentSelection === option.match_key;
+                    // const isCorrect = studentSelection === option.match_key;
+                    const isCorrect = studentSelection === option.option_text;
+
+                    // console.log(option);
 
                     return (
                         <div
@@ -31,7 +34,8 @@ export default function MatchingQuestion({ question, answers }) {
                             {/* Left Side: The Question Option */}
                             <div className="col-span-5">
                                 <span className="text-sm font-semibold text-body">
-                                    {option.option_text}
+                                    {option.match_key}
+                                    {/* {option.option_text} */}
                                 </span>
                             </div>
 

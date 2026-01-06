@@ -195,13 +195,12 @@ class SubjectController extends Controller
                 $copiedCount++;
 
                 /*
-            |--------------------------------------------------------------------------
-            | 4. Deep Copy: Assessments + Questions
-            |--------------------------------------------------------------------------
-            */
+                |--------------------------------------------------------------------------
+                | 4. Deep Copy: Assessments + Questions + Relations
+                |--------------------------------------------------------------------------
+                */
                 foreach ($sourceSubject->assessments as $assessment) {
-
-                    // Prevent duplicate assessments by title
+                    // Prevent duplicate assessments by title in the new subject
                     $assessmentExists = $newSubject->assessments()
                         ->where('title', $assessment->title)
                         ->exists();
@@ -210,7 +209,7 @@ class SubjectController extends Controller
                         continue;
                     }
 
-                    // Clone Assessment (without pivot)
+                    // Clone Assessment
                     $newAssessment = $assessment->replicate();
                     $newAssessment->created_at = now();
                     $newAssessment->updated_at = now();
@@ -224,6 +223,35 @@ class SubjectController extends Controller
                         $newQuestion = $question->replicate();
                         $newQuestion->assessment_id = $newAssessment->id;
                         $newQuestion->save();
+
+                        // A. Clone Options (hasMany)
+                        foreach ($question->options as $option) {
+                            $newOption = $option->replicate();
+                            $newOption->question_id = $newQuestion->id;
+                            $newOption->save();
+                        }
+
+                        // B. Clone Media (hasMany)
+                        foreach ($question->media as $mediaItem) {
+                            $newMedia = $mediaItem->replicate();
+                            $newMedia->question_id = $newQuestion->id;
+
+                            // If media has physical files, copy them (similar to subject cover)
+                            if ($mediaItem->file_path && Storage::disk('public')->exists($mediaItem->file_path)) {
+                                $newPath = 'questions/media/' . uniqid() . '-' . basename($mediaItem->file_path);
+                                Storage::disk('public')->copy($mediaItem->file_path, $newPath);
+                                $newMedia->file_path = $newPath;
+                            }
+
+                            $newMedia->save();
+                        }
+
+                        // C. Clone Submission Settings (hasOne)
+                        if ($question->submissionSetting) {
+                            $newSetting = $question->submissionSetting->replicate();
+                            $newSetting->question_id = $newQuestion->id;
+                            $newSetting->save();
+                        }
                     }
                 }
             }

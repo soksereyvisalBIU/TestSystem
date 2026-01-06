@@ -73,11 +73,11 @@ export function QuestionCard({
                         <div className="hidden xs:flex md:flex-col gap-2 md:gap-3 text-muted-foreground">
                             <div className="flex items-center gap-2">
                                 <Target className="h-3 w-3" />
-                                <span className="text-[10px] font-bold">{question?.point} pts</span>
+                                <span className="text-sm font-bold">{question?.point} pts</span>
                             </div>
                             <div className="hidden md:flex items-center gap-2">
                                 <Layers className="h-3 w-3" />
-                                <span className="text-[10px] font-bold uppercase tracking-tighter">Medium</span>
+                                <span className="text-sm font-bold uppercase tracking-tighter">Medium</span>
                             </div>
                         </div>
                     </div>

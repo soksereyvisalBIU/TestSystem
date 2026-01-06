@@ -106,8 +106,8 @@ export default function MatchingQuestion({
                         >
                             {/* Left Side (Prompt) */}
                             <div className="flex items-center gap-2 px-1">
-                                <span className="text-[10px] font-black text-muted-foreground/50">
-                                    {getOptionLabel(index)}
+                                <span className="text-sm font-black text-muted-foreground/50">
+                                    {getOptionLabel(index)}.
                                 </span>
                                 <span className="text-sm font-bold text-foreground leading-tight">
                                     {l.text}

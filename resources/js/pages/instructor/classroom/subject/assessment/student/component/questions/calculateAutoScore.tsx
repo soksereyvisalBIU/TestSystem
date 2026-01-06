@@ -41,7 +41,8 @@ export const calculateAutoScore = (question, answers = []) => {
             let correctCount = 0;
             options.forEach((opt) => {
                 const ans = answers.find((a) => a.option_id === opt.id);
-                if (ans && ans.answer_text === opt.match_key) correctCount++;
+                if (ans && ans.answer_text === opt.option_text) correctCount++;
+                // if (ans && ans.answer_text === opt.match_key) correctCount++;
             });
 
             earnedPoints = (correctCount / totalPairs) * maxPoints;
@@ -59,12 +60,12 @@ export const calculateAutoScore = (question, answers = []) => {
                     normalize(opt.option_text) === studentText,
             );
 
-            if(answers[0]?.points_earned > 0){
+            if (answers[0]?.points_earned > 0) {
                 earnedPoints = Math.min(answers[0].points_earned, maxPoints);
                 status = earnedPoints === maxPoints ? 'correct' : 'partial';
                 break;
             }
-            
+
             if (isMatch) {
                 earnedPoints = maxPoints;
                 status = 'correct';

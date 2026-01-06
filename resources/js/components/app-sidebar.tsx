@@ -58,7 +58,7 @@ export function AppSidebar() {
             label: 'Platform',
             items: [
                 { title: 'Dashboard', href: dashboard(), icon: LayoutGrid },
-                { title: 'Intelligence', href: '#', icon: Sparkles, badge: 'AI' },
+                // { title: 'Intelligence', href: '#', icon: Sparkles, badge: 'AI' },
             ],
         },
         {

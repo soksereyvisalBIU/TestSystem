@@ -44,15 +44,15 @@ export default function QuestionRenderer({
     return (
         <div className="animate-in fade-in slide-in-from-bottom-3 duration-500 space-y-4 sm:space-y-6">
             {/* Question Header */}
-            <div className="flex flex-col xs:flex-row items-start gap-1 xs:gap-3 sm:gap-4 px-1">
+            <div className="flex flex-col xs:flex-row items-start sm:items-center gap-1 xs:gap-3 sm:gap-4 px-1">
                 {/* Index Badge - Compact for XS */}
-                <div className="flex items-center gap-2 xs:block">
+                {/* <div className="flex items-center gap-2 xs:block">
                     <span className="text-sm xs:text-lg font-black text-primary/40 tabular-nums">
-                        Q{index + 1}
+                        Q{index + 1}: 
                     </span>
-                    {/* Tiny visual separator only visible on mobile stack */}
+                    Tiny visual separator only visible on mobile stack
                     <div className="h-[1px] w-4 bg-border xs:hidden" />
-                </div>
+                </div> */}
 
                 {/* Question text with Khmer support */}
                 <h2 className="khmerfont text-base xs:text-lg sm:text-xl leading-relaxed font-black tracking-tight text-title">

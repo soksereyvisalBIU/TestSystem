@@ -35,7 +35,7 @@ export default function TrueFalseQuestion({ question, answer, onChange }) {
                 value={answer || ''}
                 className="grid grid-cols-2 gap-3 sm:gap-4"
             >
-                {question.options.map((opt) => {
+                {question?.options?.map((opt) => {
                     const isChecked = answer === opt.text;
                     const { icon, activeClasses, iconColor } = getOptionVisuals(
                         opt.text,
