@@ -47,7 +47,7 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
         <AppLayout>
             <Head title={`${subject?.name} | Student Portal`} />
 
-            <div className="mx-auto min-h-screen max-w-7xl space-y-8 p-4 pb-20 md:p-8 bg-background text-body transition-colors duration-300">
+            <div className="mx-auto min-h-screen max-w-7xl space-y-6 p-4 pb-20 md:p-8 md:space-y-8 bg-background text-body transition-colors duration-300">
                 {/* 1. Hero Section */}
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
@@ -69,8 +69,9 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                             onValueChange={setActiveTab}
                             className="w-full"
                         >
+                            {/* Improved sticky header with horizontal scroll for xs screens */}
                             <div className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur-md">
-                                <TabsList className="h-auto w-full justify-start gap-1 bg-transparent p-0">
+                                <TabsList className="h-auto w-full justify-start gap-1 bg-transparent p-0 overflow-x-auto no-scrollbar scrollbar-hide flex-nowrap">
                                     <CustomTabTrigger
                                         value="assessments"
                                         label="Assessments"
@@ -98,7 +99,7 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -5 }}
                                     transition={{ duration: 0.2 }}
-                                    className="mt-3"
+                                    className="mt-4 md:mt-6"
                                 >
                                     <TabsContent value="assessments" className="m-0 focus-visible:outline-none">
                                         <AssessmentsList
@@ -108,7 +109,8 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                     </TabsContent>
 
                                     <TabsContent value="overview" className="m-0 space-y-6 focus-visible:outline-none">
-                                        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                                        {/* Adjusted grid to stack on very small screens (xs) */}
+                                        <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-4">
                                             <StatCard
                                                 icon={Users}
                                                 label="Total Students"
@@ -186,12 +188,13 @@ function CustomTabTrigger({ value, label, count }: { value: string; label: strin
     return (
         <TabsTrigger
             value={value}
-            className="group relative flex h-14 items-center justify-center rounded-none border-b-2 border-transparent bg-transparent px-5 font-medium text-muted-foreground transition-all data-[state=active]:text-primary"
+            // Use whitespace-nowrap and smaller px for xs screens
+            className="group relative flex h-14 items-center justify-center rounded-none border-b-2 border-transparent bg-transparent px-3 xs:px-4 md:px-5 font-medium text-muted-foreground transition-all data-[state=active]:text-primary whitespace-nowrap"
         >
-            <span className="relative z-10 flex items-center gap-2">
+            <span className="relative z-10 flex items-center gap-2 text-sm md:text-base">
                 {label}
                 {count !== undefined && (
-                    <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-bold text-muted-foreground transition-colors group-data-[state=active]:bg-primary/10 group-data-[state=active]:text-primary">
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] md:text-[11px] font-bold text-muted-foreground transition-colors group-data-[state=active]:bg-primary/10 group-data-[state=active]:text-primary">
                         {count}
                     </span>
                 )}

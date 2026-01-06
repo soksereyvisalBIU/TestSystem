@@ -38,104 +38,74 @@ export function QuestionCard({
         <motion.section
             ref={questionRef}
             initial={false}
-            // animate={{
-            //     opacity: isActive ? 1 : 0.4,
-            //     scale: isActive ? 1 : 0.98,
-            //     // filter: isActive ? 'blur(0px)' : 'blur(1px)',
-            // }}
-            // className={cn(
-            //     'relative grid grid-cols-1 overflow-hidden rounded-[2.5rem] border transition-all duration-700 md:grid-cols-[280px_1fr]',
-            //     isActive
-            //         ? 'border-primary/30 bg-card shadow-[0_0_80px_-20px_rgba(0,0,0,0.12)]'
-            //         : 'border-transparent bg-muted/20',
-            // )}
             className={cn(
-                'relative grid grid-cols-1 overflow-hidden rounded-[2.5rem] border border-primary/30 bg-card shadow-[0_0_80px_-20px_rgba(0,0,0,0.12)] transition-all duration-700 md:grid-cols-[200px_1fr]',
-                // isActive ? '' : 'border-transparent bg-muted/20',
+                'relative grid grid-cols-1 overflow-hidden transition-all duration-500',
+                'rounded-2xl xs:rounded-[2.5rem] border',
+                'md:grid-cols-[200px_1fr]',
+                'border-primary/30 bg-card shadow-xl ring-1 ring-primary/10' 
+                // isActive 
+                //     ? 'border-primary/30 bg-card shadow-xl ring-1 ring-primary/10' 
+                //     : 'border-border/50 bg-muted/20 opacity-80'
             )}
         >
-            {/* LEFT SIDEBAR: Meta Information */}
+            {/* LEFT SIDEBAR / TOP HEADER (Responsive) */}
             <div
                 className={cn(
-                    'relative flex flex-col justify-between  p-6 md:p-10',
-                    isActive ? 'bg-primary/[0.03]' : 'bg-transparent',
+                    'relative flex flex-row md:flex-col justify-between items-center md:items-start p-4 xs:p-6 md:p-10 gap-4',
+                    'bg-primary/[0.03]',
+                    // isActive ? 'bg-primary/[0.03]' : 'bg-transparent',
+                    'border-b md:border-b-0 md:border-r border-border/50'
                 )}
             >
-                <div className="space-y-0 flex md:flex-col justify-between md:space-y-8 ">
-                    {/* Index & Type */}
-                    <div className="space-y-4">
-                        <div className="inline-flex h-8 w-8 text-lg rounded-lg md:h-14 md:w-14 items-center justify-center md:rounded-2xl bg-foreground md:text-2xl font-black text-background shadow-xl">
-                            {index + 1}
-                        </div>
-                        <div className="space-y-1">
-                            <h4 className="text-[10px] font-black tracking-[0.2em] text-primary uppercase">
-                                {question?.type}
-                            </h4>
-                            {/* <p className="text-sm leading-relaxed font-medium text-muted-foreground ">
-                                {question?.question_text}
-                            </p> */}
-                        </div>
+                {/* ID & Info Group */}
+                <div className="flex md:flex-col items-center md:items-start gap-3 md:gap-8 w-full md:w-auto">
+                    {/* Index Square */}
+                    <div className="shrink-0 inline-flex h-10 w-10 xs:h-12 xs:w-12 md:h-14 md:w-14 items-center justify-center rounded-xl bg-foreground text-xl md:text-2xl font-black text-background shadow-lg">
+                        {index + 1}
                     </div>
 
-                    {/* Stats/Tags List */}
-                    <div className="space-y-4 pt-4">
-                        <div className="flex items-center gap-3 text-muted-foreground">
-                            <Target className="h-4 w-4" />
-                            <span className="text-xs font-semibold">
-                                {question?.point} Points
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-3 text-muted-foreground">
-                            <Layers className="h-4 w-4" />
-                            <span className="text-xs font-semibold tracking-tighter uppercase">
-                                Medium Difficulty
-                            </span>
+                    {/* Metadata - Hidden or condensed on very small screens */}
+                    <div className="flex flex-col gap-1 md:gap-4 overflow-hidden">
+                        <h4 className="text-[9px] md:text-[10px] font-black tracking-[0.2em] text-primary uppercase truncate">
+                            {question?.type?.replace('_', ' ')}
+                        </h4>
+                        
+                        <div className="hidden xs:flex md:flex-col gap-2 md:gap-3 text-muted-foreground">
+                            <div className="flex items-center gap-2">
+                                <Target className="h-3 w-3" />
+                                <span className="text-[10px] font-bold">{question?.point} pts</span>
+                            </div>
+                            <div className="hidden md:flex items-center gap-2">
+                                <Layers className="h-3 w-3" />
+                                <span className="text-[10px] font-bold uppercase tracking-tighter">Medium</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Status Pill at Bottom */}
+                {/* Status Pill - Mobile Optimized */}
                 <div
                     className={cn(
-                        'mt-2 md:mt-8 flex items-center gap-3 rounded-2xl px-4 py-2 transition-colors',
+                        'flex items-center gap-2 rounded-full md:rounded-2xl px-3 md:px-4 py-1.5 md:py-2 transition-all shrink-0',
                         hasAnswer
                             ? 'bg-emerald-500/10 text-emerald-600'
                             : 'bg-muted text-muted-foreground/60',
                     )}
                 >
                     {hasAnswer ? (
-                        <CheckCircle2 className="h-5 w-5" />
+                        <CheckCircle2 className="h-3.5 w-3.5 md:h-5 md:w-5" />
                     ) : (
-                        <Circle className="h-5 w-5" />
+                        <Circle className="h-3.5 w-3.5 md:h-5 md:w-5" />
                     )}
-                    <span className="text-[10px] font-bold tracking-widest uppercase">
-                        {hasAnswer ? 'Captured' : 'Pending'}
+                    <span className="text-[9px] md:text-[10px] font-black tracking-widest uppercase">
+                        {hasAnswer ? 'Done' : 'Open'}
                     </span>
                 </div>
             </div>
 
             {/* RIGHT SIDE: Content Area */}
-            <div className="relative flex flex-col bg-background pt-4 p-8 md:p-12">
-                {/* Subtle Progress Header */}
-                {/* <div className="mb-8 flex items-center justify-between">
-                    <Badge
-                        variant="outline"
-                        className="rounded-full border-dashed px-4 py-1 font-mono text-[10px]"
-                    >
-                        ID: {question.id.slice(0, 8)}
-                    </Badge>
-                    {isActive && (
-                        <div className="flex items-center gap-2">
-                            <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-primary" />
-                            <span className="text-[10px] font-bold tracking-widest text-primary uppercase">
-                                Live
-                            </span>
-                        </div>
-                    )}
-                </div> */}
-
-                {/* Main Render Area */}
-                <div className="min-h-[200px]">
+            <div className="relative flex flex-col bg-background p-5 xs:p-8 md:p-12">
+                <div className="min-h-[100px] md:min-h-[150px]">
                     {renderQuestion(
                         question,
                         index,
@@ -145,20 +115,20 @@ export function QuestionCard({
                     )}
                 </div>
 
-                {/* Footer Auto-save */}
-                {/* <div className="mt-6 flex items-center gap-2 opacity-30 transition-opacity hover:opacity-100">
-                    <Info className="h-3 w-3" />
-                    <span className="text-[9px] font-bold tracking-[0.2em] uppercase">
-                        Syncing to local storage in real-time
-                    </span>
-                </div> */}
+                {/* Mobile Info Bar (Visible only when inactive or XS) */}
+                <div className="mt-4 flex md:hidden items-center justify-between border-t border-border/50 pt-4 opacity-50">
+                     <div className="flex items-center gap-2">
+                        <Info className="h-3 w-3" />
+                        <span className="text-[8px] font-bold uppercase tracking-widest">Auto-saving...</span>
+                     </div>
+                </div>
             </div>
 
-            {/* Accent Line */}
+            {/* Accent Line - Only visible on Tablet/Desktop for cleaner mobile UI */}
             {isActive && (
                 <motion.div
                     layoutId="accent"
-                    className="absolute top-0 left-0 h-full w-1 bg-primary"
+                    className="absolute left-0 top-0 hidden h-full w-1.5 bg-primary md:block"
                 />
             )}
         </motion.section>

@@ -147,7 +147,7 @@ export function AppSidebar() {
                                         <AppLogoIcon />
                                     </div>
                                     <div className="grid flex-1 text-left text-sm leading-tight">
-                                        <span className="truncate font-black tracking-tight text-title">BIU CLOUD</span>
+                                        <span className="truncate font-black tracking-tight text-title">BIU SYSTEM</span>
                                         <span className="truncate text-[10px] font-bold tracking-widest text-primary uppercase">Faculty of IT</span>
                                     </div>
                                 </Link>

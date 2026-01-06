@@ -1,21 +1,18 @@
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { CheckCircle, HelpCircle } from 'lucide-react'; // Icon for selected state
+import { CheckCircle, HelpCircle } from 'lucide-react';
 
-// Utility function to generate sequential labels (A, B, C, ...)
 const getOptionLabel = (index) => String.fromCharCode(65 + index);
 
 export default function MultipleChoiceQuestion({ question, answer, onChange }) {
-    // Assuming 'answer' is the selected option value (e.g., opt.id or opt.text)
     const answerValue = answer || '';
 
     return (
-        <div className="w-full rounded-2xl border border-border bg-card p-6 shadow-md transition-shadow duration-300 hover:shadow-lg">
-            {/* Radio Group */}
+        <div className="w-full rounded-xl border border-border bg-card p-3 sm:p-6 shadow-sm transition-shadow duration-300">
             <RadioGroup
                 onValueChange={(val) => onChange(question.id, val)}
                 value={answerValue}
-                className="space-y-3"
+                className="space-y-2 sm:space-y-3"
             >
                 {question.options.map((opt, index) => {
                     const optionValue = opt.text;
@@ -26,40 +23,38 @@ export default function MultipleChoiceQuestion({ question, answer, onChange }) {
                         <Label
                             key={opt.id}
                             htmlFor={`${question.id}-${opt.id}`}
-                            className={`flex cursor-pointer items-center justify-between gap-4 rounded-xl border-2 bg-card p-4 text-base font-medium shadow-sm transition-all duration-200 ease-in-out ${
+                            className={`flex cursor-pointer items-center justify-between gap-3 rounded-xl border-2 bg-card p-3 sm:p-4 text-sm sm:text-base font-medium transition-all duration-200 active:scale-[0.98] ${
                                 isSelected
-                                    ? 'border-primary bg-primary/5 text-primary shadow-lg ring-4 ring-ring/20'
-                                    : 'border-border text-body hover:border-muted-foreground/30 hover:bg-muted/50'
-                            } `}
+                                    ? 'border-primary bg-primary/5 text-primary ring-2 sm:ring-4 ring-ring/20'
+                                    : 'border-border text-body hover:border-muted-foreground/30'
+                            }`}
                         >
-                            {/* Left side: Option Letter and Text */}
-                            <div className="flex flex-grow items-center gap-4">
+                            <div className="flex flex-1 items-center gap-3 min-w-0">
+                                {/* Letter Indicator - Scaled for XS */}
                                 <span
-                                    className={`flex h-8 w-8 items-center justify-center rounded-full border text-sm font-bold transition-colors ${
+                                    className={`flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full border text-xs sm:text-sm font-bold transition-colors ${
                                         isSelected
                                             ? 'border-primary bg-primary text-primary-foreground'
                                             : 'border-border bg-muted text-muted-foreground'
-                                    } `}
+                                    }`}
                                 >
                                     {optionLabel}
                                 </span>
-                                <span
-                                    className={`flex-grow ${isSelected ? 'font-semibold text-title' : 'text-body'}`}
-                                >
+
+                                {/* Option Text - Truncation prevention */}
+                                <span className={`leading-snug break-words ${isSelected ? 'font-semibold text-title' : 'text-body'}`}>
                                     {opt.text}
                                 </span>
                             </div>
 
-                            {/* Right side: Radio Button and Check Icon */}
-                            <div className="relative">
+                            <div className="flex shrink-0 items-center justify-center w-6">
                                 <RadioGroupItem
                                     id={`${question.id}-${opt.id}`}
                                     value={optionValue}
                                     className="sr-only"
                                 />
-
                                 {isSelected && (
-                                    <CheckCircle className="h-6 w-6 animate-in text-primary duration-200 zoom-in" />
+                                    <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 animate-in fade-in zoom-in duration-200 text-primary" />
                                 )}
                             </div>
                         </Label>
@@ -67,11 +62,10 @@ export default function MultipleChoiceQuestion({ question, answer, onChange }) {
                 })}
             </RadioGroup>
 
-            {/* Footer Instruction */}
-            <div className="flex items-center mt-3 justify-center gap-2 text-muted-foreground/60">
-                <HelpCircle className="h-3 w-3" />
-                <span className="text-[10px] font-medium tracking-widest uppercase">
-                    Select an correct option
+            <div className="flex items-center mt-3 justify-center gap-1.5 text-muted-foreground/50">
+                <HelpCircle className="h-2.5 w-2.5" />
+                <span className="text-[9px] font-bold tracking-widest uppercase">
+                    Tap an option
                 </span>
             </div>
         </div>

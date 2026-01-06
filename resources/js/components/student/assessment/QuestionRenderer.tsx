@@ -12,75 +12,67 @@ export default function QuestionRenderer({
     onAnswerChange,
 }) {
     const renderByType = () => {
-        switch (question.type) {
-            case 'fill_blank':
-                return (
-                    <FillBlankQuestion
-                        question={question}
-                        answer={answer}
-                        onChange={onAnswerChange}
-                    />
-                );
-            case 'true_false':
-                return (
-                    <TrueFalseQuestion
-                        question={question}
-                        answer={answer}
-                        onChange={onAnswerChange}
-                    />
-                );
-            case 'multiple_choice':
-                return (
-                    <MultipleChoiceQuestion
-                        question={question}
-                        answer={answer}
-                        onChange={onAnswerChange}
-                    />
-                );
-            case 'matching':
-                return (
-                    <MatchingQuestion
-                        question={question}
-                        answer={answer}
-                        onChange={onAnswerChange}
-                    />
-                );
-            case 'short_answer':
-                return (
-                    <ShortAnswerQuestion
-                        question={question}
-                        answer={answer}
-                        onChange={onAnswerChange}
-                    />
-                );
-            case 'fileupload':
-                return (
-                    <FileUploadQuestion
-                        question={question}
-                        answer={answer}
-                        onChange={onAnswerChange}
-                    />
-                );
-            default:
-                return null;
+        // Mapping types to components to keep the return clean
+        const questionComponents = {
+            fill_blank: FillBlankQuestion,
+            true_false: TrueFalseQuestion,
+            multiple_choice: MultipleChoiceQuestion,
+            matching: MatchingQuestion,
+            short_answer: ShortAnswerQuestion,
+            fileupload: FileUploadQuestion,
+        };
+
+        const Component = questionComponents[question.type];
+
+        if (!Component) {
+            return (
+                <div className="p-4 border-2 border-dashed border-destructive/20 rounded-xl text-center text-xs text-destructive uppercase font-bold">
+                    Unsupported Question Type: {question.type}
+                </div>
+            );
         }
+
+        return (
+            <Component
+                question={question}
+                answer={answer}
+                onChange={onAnswerChange}
+            />
+        );
     };
 
     return (
-        <div className="space-y-4 sm:space-y-6 sm:pt-2">
-            {/* Question Text Styling */}
-            <div className="flex gap-2 sm:gap-4">
-                <span className="text-lg font-black text-description/40 tabular-nums md:text-xl">
-                    Q{index + 1}:
-                </span>
-                <h2 className="khmerfont text-lg leading-relaxed font-black tracking-tight text-title md:text-xl">
+        <div className="animate-in fade-in slide-in-from-bottom-3 duration-500 space-y-4 sm:space-y-6">
+            {/* Question Header */}
+            <div className="flex flex-col xs:flex-row items-start gap-1 xs:gap-3 sm:gap-4 px-1">
+                {/* Index Badge - Compact for XS */}
+                <div className="flex items-center gap-2 xs:block">
+                    <span className="text-sm xs:text-lg font-black text-primary/40 tabular-nums">
+                        Q{index + 1}
+                    </span>
+                    {/* Tiny visual separator only visible on mobile stack */}
+                    <div className="h-[1px] w-4 bg-border xs:hidden" />
+                </div>
+
+                {/* Question text with Khmer support */}
+                <h2 className="khmerfont text-base xs:text-lg sm:text-xl leading-relaxed font-black tracking-tight text-title">
                     {question.question}
                 </h2>
             </div>
 
             {/* Answer Input Area */}
-            <div className="relative rounded-3xl transition-all">
+            <div className="relative">
                 {renderByType()}
+            </div>
+
+            {/* Visual Progress Indicator (Optional) */}
+            <div className="flex justify-center gap-1">
+                <div className="h-1 w-8 rounded-full bg-primary/10 overflow-hidden">
+                    <div 
+                        className="h-full bg-primary/40 transition-all duration-300" 
+                        style={{ width: answer ? '100%' : '0%' }}
+                    />
+                </div>
             </div>
         </div>
     );

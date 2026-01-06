@@ -70,7 +70,7 @@ export default function Welcome() {
 
                 {/* --- NAVIGATION --- */}
                 <nav className="sticky top-4 z-50 mx-auto max-w-6xl px-4">
-                    <div className="flex items-center justify-between rounded-2xl border border-white/40 bg-white/60 p-2 shadow-2xl shadow-indigo-500/5 backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/60">
+                    <div className="flex flex-wrap items-center justify-center gap-4 rounded-2xl border border-white/40 bg-white/60 p-2 shadow-2xl shadow-indigo-500/5 backdrop-blur-2xl sm:flex-nowrap sm:justify-between sm:gap-0 dark:border-white/10 dark:bg-slate-900/60">
                         <Link
                             href="/"
                             className="group flex items-center gap-3 pl-3"
@@ -102,7 +102,7 @@ export default function Welcome() {
                 {/* --- HERO SECTION --- */}
                 <motion.main
                     style={{ opacity: heroOpacity, scale: heroScale }}
-                    className="relative z-10 mx-auto max-w-7xl px-6 pt-24 text-center"
+                    className="relative z-10 mx-auto max-w-7xl px-6 pt-12 text-center sm:pt-24"
                 >
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -120,7 +120,7 @@ export default function Welcome() {
                         </span>
                     </h1>
 
-                    <p className="mx-auto mt-10 max-w-3xl text-lg leading-relaxed font-medium text-slate-500 md:text-xl dark:text-slate-400">
+                    <p className="text-md mx-auto mt-10 max-w-3xl leading-relaxed font-medium text-slate-500 sm:text-lg md:text-xl dark:text-slate-400">
                         The complete digital ecosystem for Online Testing,
                         Scoring, and Student Life. Proudly developed and
                         maintained by the <br />{' '}
@@ -129,10 +129,10 @@ export default function Welcome() {
                         </span>
                     </p>
 
-                    <div className="mt-12 flex flex-col items-center justify-center gap-4 pb-24 sm:flex-row">
+                    <div className="mt-8 flex flex-col items-center justify-center gap-4 pb-24 sm:mt-12 sm:flex-row">
                         <Link
                             href="/login"
-                            className="group flex h-16 w-full items-center justify-center gap-4 rounded-2xl bg-indigo-600 px-10 text-lg font-black text-white shadow-2xl shadow-indigo-500/40 transition-all hover:bg-indigo-700 sm:w-auto"
+                            className="group text-md xs:px-10 flex h-12 w-full items-center justify-center gap-4 rounded-2xl bg-indigo-600 font-black text-white shadow-2xl shadow-indigo-500/40 transition-all hover:bg-indigo-700 sm:h-16 sm:w-auto sm:text-lg"
                         >
                             Access Student Portal
                             <ArrowRight className="transition-transform group-hover:translate-x-1" />

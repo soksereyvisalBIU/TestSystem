@@ -57,7 +57,7 @@ export function SubjectHero({
 
                         {/* Title & Description: Significant font scaling for mobile */}
                         <div className="space-y-2">
-                            <h1 className="text-3xl font-[1000] text-white md:text-7xl tracking-tighter leading-[1.1] uppercase">
+                            <h1 className="text-xl xs:text-2xl sm:text-3xl font-[1000] text-white md:text-7xl tracking-tighter leading-[1.1] uppercase">
                                 {name}
                             </h1>
                             <p className="max-w-2xl text-sm md:text-xl text-white/80 leading-relaxed font-medium line-clamp-3 md:line-clamp-none">
@@ -72,7 +72,7 @@ export function SubjectHero({
                             <Button
                                 size="lg"
                                 onClick={onViewReports}
-                                className="group/btn h-12 md:h-14 rounded-xl md:rounded-2xl bg-primary text-primary-foreground hover:opacity-90 transition-all duration-300 px-6 md:px-8 shadow-xl shadow-primary/20"
+                                className="group/btn h-10 xs:h-12 md:h-14 rounded-xl md:rounded-2xl bg-primary text-primary-foreground hover:opacity-90 transition-all duration-300 px-6 md:px-8 shadow-xl shadow-primary/20"
                             >
                                 <FileText className="mr-2 h-4 w-4 md:h-5 md:w-5 transition-transform group-hover/btn:scale-110" />
                                 <span className="font-bold text-sm md:text-base">Analytics Report</span>
@@ -83,7 +83,7 @@ export function SubjectHero({
                 </div>
 
                 {/* Sub-stat strip: Grid for mobile, flex for desktop */}
-                <div className="mt-6 grid grid-cols-2 gap-4 md:flex md:flex-wrap md:gap-12 border-t border-white/10 pt-5 md:pt-6">
+                <div className="mt-3 pt-3 xs:mt-6 grid grid-cols-2 gap-4 md:flex md:flex-wrap md:gap-12 border-t border-white/10 xs:pt-5 md:pt-6">
                     <div className="flex flex-col gap-0.5">
                         <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Status</span>
                         <span className="text-white text-xs md:text-base font-bold flex items-center gap-2">

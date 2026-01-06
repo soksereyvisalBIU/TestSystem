@@ -1,3 +1,4 @@
+// components/student/confirm/AssessmentStatusContent.tsx
 import { AssessmentResultCard } from '@/components/student/confirm/AssessmentResultCard';
 import { ExpiredCard, PendingGradingCard, SubmittedNoticeCard } from './StatusCards';
 import type { Assessment, AssessmentAttempt, AssessmentStatus, StudentAssessment } from '@/types/student/confirm';
@@ -20,22 +21,22 @@ export const AssessmentStatusContent = ({
     onTimerZero,
 }: AssessmentStatusContentProps) => {
     
-    // Animation variant for content entrance
     const containerVariants = {
-        hidden: { opacity: 0, y: 10 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+        hidden: { opacity: 0, y: 5 }, // Reduced y offset for faster-feeling load
+        visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } }
     };
 
     const renderContent = () => {
         switch (currentStatus) {
             case 'UPCOMING':
                 return (
-                    <div className="rounded-3xl bg-amber-50/30 p-2 dark:bg-amber-900/5">
+                    /* UX Fix: Reduced padding and smaller radius on mobile */
+                    <div className="rounded-2xl bg-amber-50/30 p-1 dark:bg-amber-900/5 sm:rounded-3xl sm:p-2">
                         <CountdownTimer
                             targetDate={assessment.start_time}
-                            label="Assessment Starts In"
+                            label="Starts In" // Shortened label for XS
                             onZero={onTimerZero}
-                            variant="upcoming" // You can pass variants to your timer for different colors
+                            variant="upcoming"
                         />
                     </div>
                 );
@@ -66,19 +67,20 @@ export const AssessmentStatusContent = ({
                 const hasPreviousAttempt = studentAssessmentAttempt?.status === 'submitted' || (studentAssessment?.attempted_amount ?? 0) > 0;
                 
                 return (
-                    <div className="space-y-6">
+                    /* UX Fix: space-y-3 instead of space-y-6 to bring buttons up */
+                    <div className="space-y-3 sm:space-y-6">
                         {hasPreviousAttempt && (
                             <motion.div 
-                                initial={{ opacity: 0, scale: 0.95 }}
+                                initial={{ opacity: 0, scale: 0.98 }}
                                 animate={{ opacity: 1, scale: 1 }}
                             >
                                 <SubmittedNoticeCard />
                             </motion.div>
                         )}
-                        <div className="relative overflow-hidden rounded-3xl bg-blue-50/50 p-1 dark:bg-blue-900/10">
+                        <div className="relative overflow-hidden rounded-2xl bg-blue-50/50 p-1 dark:bg-blue-900/10 sm:rounded-3xl">
                             <CountdownTimer
                                 targetDate={assessment.end_time}
-                                label="Time Remaining to Join"
+                                label="Join Period Ends" // More concise label
                                 onZero={onTimerZero}
                                 variant="active"
                             />

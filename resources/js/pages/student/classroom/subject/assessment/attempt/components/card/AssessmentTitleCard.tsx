@@ -13,7 +13,7 @@ export function AssessmentTitleCard({
     duration = "60 mins"
 }: AssessmentTitleCardProps) {
     return (
-        <div className="relative overflow-hidden rounded-[3rem] border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/50 md:p-12 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-none">
+        <div className="relative overflow-hidden rounded-3xl xs:rounded-[3rem] border border-slate-200 bg-white p-6 xs:p-8 shadow-xl shadow-slate-200/50 md:p-12 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-none">
             {/* Background Accent */}
             <div className="absolute top-0 right-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-slate-50 dark:bg-zinc-800/50" />
             
@@ -22,17 +22,17 @@ export function AssessmentTitleCard({
                     <BookOpen className="h-3.5 w-3.5" /> Assessment Active
                 </div>
                 
-                <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-900 md:text-3xl dark:text-white">
+                <h1 className="mt-2 xs:mt-4 text-xl xs:text-3xl font-black tracking-tight text-slate-900 md:text-3xl dark:text-white">
                     {title}
                 </h1>
                 
-                <div className="mt-4 flex flex-wrap gap-3">
+                <div className="mt-2 xs:mt-4 flex flex-wrap gap-2 xs:gap-3">
                     <Badge variant="secondary" className="bg-slate-100 text-slate-700 hover:bg-slate-100 dark:bg-zinc-800 dark:text-zinc-300">
-                        <Info className="mr-2 h-3.5 w-3.5" /> 
+                        <Info className="xs:mr-2 h-3.5 w-3.5" /> 
                         {questionCount} Questions
                     </Badge>
                     <Badge variant="secondary" className="bg-slate-100 text-slate-700 hover:bg-slate-100 dark:bg-zinc-800 dark:text-zinc-300">
-                        <Clock className="mr-2 h-3.5 w-3.5" /> 
+                        <Clock className="xs:mr-2 h-3.5 w-3.5" /> 
                         {duration}
                     </Badge>
                 </div>

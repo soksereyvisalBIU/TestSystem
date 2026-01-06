@@ -92,15 +92,15 @@ export function AssessmentCard({ assessment, classId }: AssessmentCardProps) {
                 {/* MAIN CARD CONTENT */}
                 <div
                     className={cn(
-                        'relative z-20 flex h-full w-full flex-col items-start justify-between rounded-[calc(1rem-1.5px)] bg-card p-5 sm:flex-row sm:items-center',
+                        'relative z-20 flex h-full w-full flex-col items-start justify-between rounded-[calc(1rem-1.5px)] bg-card p-4 xs:p-5 sm:flex-row sm:items-center',
                         isScored ? 'border-2 border-success/30' : '', isSubmitted ? 'bg-primary/10 border-primary': '',
                     )}
                 >
                     {/* LEFT SECTION */}
-                    <div className="flex w-full items-center gap-5 sm:w-auto">
+                    <div className="flex w-full items-center gap-3 xs:gap-5 sm:w-auto">
                         <div
                             className={cn(
-                                'flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl transition-all duration-500 group-hover:scale-105 group-hover:rotate-6',
+                                'flex h-8 w-8 xs:h-14 xs:w-14 shrink-0 items-center justify-center rounded-md xs:rounded-2xl transition-all duration-500 group-hover:scale-105 group-hover:rotate-6',
                                 isScored
                                     ? 'bg-success/10 text-success'
                                     : isSubmitted
@@ -111,11 +111,11 @@ export function AssessmentCard({ assessment, classId }: AssessmentCardProps) {
                             )}
                         >
                             {isScored || isSubmitted ? (
-                                <CheckCircle2 className="h-7 w-7" />
+                                <CheckCircle2 className="h-5 w-5 xs:h-7 xs:w-7" />
                             ) : assessment.type === 'exam' ? (
-                                <Target className="h-7 w-7" />
+                                <Target className="h-5 w-5 xs:h-7 xs:w-7" />
                             ) : (
-                                <FileText className="h-7 w-7" />
+                                <FileText className="h-5 w-5 xs:h-7 xs:w-7" />
                             )}
                         </div>
 
@@ -153,7 +153,7 @@ export function AssessmentCard({ assessment, classId }: AssessmentCardProps) {
                     </div>
 
                     {/* RIGHT SECTION */}
-                    <div className="mt-4 flex w-full items-center justify-between gap-6 border-t border-border/40 pt-4 sm:mt-0 sm:w-auto sm:justify-end sm:border-t-0 sm:pt-0">
+                    <div className="mt-2 pt-2 xs:mt-4 flex w-full items-center justify-between gap-6 border-t border-border/40 xs:pt-4 sm:mt-0 sm:w-auto sm:justify-end sm:border-t-0 sm:pt-0">
                         <div className="flex flex-col items-start sm:items-end">
                             <p className="text-[10px] font-bold tracking-wider text-description uppercase">
                                 {isScored

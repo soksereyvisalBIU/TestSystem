@@ -3,6 +3,8 @@ import { useForm, usePage } from '@inertiajs/react';
 import { debounce } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { route } from 'ziggy-js';
+import { AnimatePresence, motion } from 'framer-motion';
+import { LayoutGrid, X } from 'lucide-react';
 
 // Components
 import QuestionRenderer from '@/components/student/assessment/QuestionRenderer';
@@ -44,196 +46,124 @@ export default function AssessmentAttempt({
     const isCompleted = studentAssessmentAttempt.status !== 'draft';
     const STORAGE_KEY = `exam_draft_${student_assessment_attempt_id}`;
 
-    // STATE
+    // --- STATE ---
     const [answers, setAnswers] = useState<Record<string, any>>({});
     const [isOnline, setIsOnline] = useState(navigator.onLine);
     const [isSaving, setIsSaving] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isFocusMode, setIsFocusMode] = useState(false);
     const [fontSize, setFontSize] = useState(16);
-    const [activeQuestionId, setActiveQuestionId] = useState<number | null>(
-        null,
-    );
+    const [activeQuestionId, setActiveQuestionId] = useState<number | null>(null);
     const [viewMode, setViewMode] = useState<'scroll' | 'single'>('scroll');
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [showSubmitModal, setShowSubmitModal] = useState(false);
     const [showReviewModal, setShowReviewModal] = useState(false);
+    const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
-    // Timer State
+    // --- REFS & TIMER ---
+    const questionRefs = useRef<Record<number, HTMLDivElement | null>>({});
     const [timeLeft, setTimeLeft] = useState(() =>
-        calculateRemainingTime(
-            studentAssessmentAttempt.started_at,
-            assessment.duration,
-        ),
+        calculateRemainingTime(studentAssessmentAttempt.started_at, assessment.duration)
     );
 
-    const questionRefs = useRef<Record<number, HTMLDivElement | null>>({});
     const form = useForm({ answers: {}, user_id: props?.auth?.user?.id });
 
-    // SUBMISSION LOGIC
-    const handleFinalSubmit = useCallback(() => {
-        if (isSubmitting) return;
-        setIsSubmitting(true);
+    // --- NAVIGATION LOGIC ---
+    const handleNavigate = useCallback((id: number, index: number) => {
+        setActiveQuestionId(id);
+        if (viewMode === 'single') {
+            setCurrentQuestionIndex(index);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            const element = questionRefs.current[id];
+            if (element) {
+                const offset = 100; // Header offset
+                const bodyRect = document.body.getBoundingClientRect().top;
+                const elementRect = element.getBoundingClientRect().top;
+                const elementPosition = elementRect - bodyRect;
+                const offsetPosition = elementPosition - offset;
 
-        form.transform((data) => ({ ...data, answers }));
-        form.post(
-            route('student.classes.subjects.assessments.attempt.store', {
-                class_id: subject.class_id,
-                subject_id: subject.id,
-                assessment_id: assessment.id,
-                student_assessment_attempt_id,
-            }),
-            {
-                onFinish: () => setIsSubmitting(false),
-                onSuccess: () => {
-                    localStorage.removeItem(STORAGE_KEY);
-                    persistAnswers.cancel();
-                },
-            },
-        );
-    }, [
-        answers,
-        isSubmitting,
-        subject,
-        assessment.id,
-        student_assessment_attempt_id,
-    ]);
-
-    // TIMER EFFECT
-    useEffect(() => {
-        if (isCompleted || isSubmitting) return;
-
-        const timer = setInterval(() => {
-            const remaining = calculateRemainingTime(
-                studentAssessmentAttempt.started_at,
-                assessment.duration,
-            );
-
-            if (remaining <= 0) {
-                setTimeLeft(0);
-                clearInterval(timer);
-                // Auto-submit when time runs out
-                handleFinalSubmit();
-            } else {
-                setTimeLeft(remaining);
-            }
-        }, 1000);
-
-        return () => clearInterval(timer);
-    }, [
-        studentAssessmentAttempt.started_at,
-        assessment.duration,
-        isCompleted,
-        isSubmitting,
-        handleFinalSubmit,
-    ]);
-
-    // ONLINE STATUS MONITOR
-    useEffect(() => {
-        const handleOnline = () => setIsOnline(true);
-        const handleOffline = () => setIsOnline(false);
-        window.addEventListener('online', handleOnline);
-        window.addEventListener('offline', handleOffline);
-        return () => {
-            window.removeEventListener('online', handleOnline);
-            window.removeEventListener('offline', handleOffline);
-        };
-    }, []);
-
-    // SCROLL SPY LOGIC
-    useEffect(() => {
-        if (viewMode !== 'scroll') return;
-
-        const observerOptions = {
-            root: null,
-            rootMargin: '-20% 0px -60% 0px',
-            threshold: 0,
-        };
-
-        const observerCallback = (entries: IntersectionObserverEntry[]) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    const id = entry.target.getAttribute('data-q-id');
-                    if (id) setActiveQuestionId(parseInt(id));
-                }
-            });
-        };
-
-        const observer = new IntersectionObserver(
-            observerCallback,
-            observerOptions,
-        );
-        const elements = document.querySelectorAll('[data-q-id]');
-        elements.forEach((el) => observer.observe(el));
-
-        return () => observer.disconnect();
-    }, [viewMode, questions.data]);
-
-    // RESTORE ANSWERS
-    useEffect(() => {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            try {
-                setAnswers(JSON.parse(saved));
-            } catch (e) {
-                console.error('Failed to parse local answers', e);
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
             }
         }
-    }, [STORAGE_KEY]);
+        setIsMobileNavOpen(false); // Close mobile drawer after jumping
+    }, [viewMode]);
 
     const goToNext = useCallback(() => {
         if (currentQuestionIndex < questions.data.length - 1) {
-            setCurrentQuestionIndex((prev) => prev + 1);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            handleNavigate(questions.data[currentQuestionIndex + 1].id, currentQuestionIndex + 1);
         }
-    }, [currentQuestionIndex, questions.data.length]);
+    }, [currentQuestionIndex, questions.data, handleNavigate]);
 
     const goToPrev = useCallback(() => {
         if (currentQuestionIndex > 0) {
-            setCurrentQuestionIndex((prev) => prev - 1);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            handleNavigate(questions.data[currentQuestionIndex - 1].id, currentQuestionIndex - 1);
         }
-    }, [currentQuestionIndex]);
+    }, [currentQuestionIndex, questions.data, handleNavigate]);
 
-    const persistAnswers = useMemo(
-        () =>
-            debounce((data: Record<string, any>) => {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-                setIsSaving(false);
-            }, 1000),
-        [STORAGE_KEY],
-    );
+    // --- SUBMISSION & PERSISTENCE ---
+    const handleFinalSubmit = useCallback(() => {
+        if (isSubmitting) return;
+        setIsSubmitting(true);
+        form.transform((data) => ({ ...data, answers }));
+        form.post(route('student.classes.subjects.assessments.attempt.store', {
+            class_id: subject.class_id,
+            subject_id: subject.id,
+            assessment_id: assessment.id,
+            student_assessment_attempt_id,
+        }), {
+            onFinish: () => setIsSubmitting(false),
+            onSuccess: () => {
+                localStorage.removeItem(STORAGE_KEY);
+                persistAnswers.cancel();
+            },
+        });
+    }, [answers, isSubmitting, subject, assessment.id, student_assessment_attempt_id, form, STORAGE_KEY]);
 
-    const updateAnswer = useCallback(
-        (id: string, value: any) => {
-            if (isCompleted || isSubmitting) return;
-            setIsSaving(true);
-            setAnswers((prev) => {
-                const updated = { ...prev, [id]: value };
-                persistAnswers(updated);
-                return updated;
-            });
-        },
-        [isCompleted, isSubmitting, persistAnswers],
-    );
+    const persistAnswers = useMemo(() => debounce((data: Record<string, any>) => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        setIsSaving(false);
+    }, 1000), [STORAGE_KEY]);
 
-    const stats = useMemo(
-        () => calculateStats(answers, questions.data.length),
-        [answers, questions.data],
-    );
+    const updateAnswer = useCallback((id: string, value: any) => {
+        if (isCompleted || isSubmitting) return;
+        setIsSaving(true);
+        setAnswers((prev) => {
+            const updated = { ...prev, [id]: value };
+            persistAnswers(updated);
+            return updated;
+        });
+    }, [isCompleted, isSubmitting, persistAnswers]);
 
-    if (isCompleted)
-        return (
-            <CompletionScreen
-                onReturnToDashboard={() => (window.location.href = '/')}
-            />
-        );
+    // --- EFFECTS ---
+    useEffect(() => {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) { setAnswers(JSON.parse(saved)); }
+    }, [STORAGE_KEY]);
+
+    useEffect(() => {
+        if (isCompleted || isSubmitting) return;
+        const timer = setInterval(() => {
+            const remaining = calculateRemainingTime(studentAssessmentAttempt.started_at, assessment.duration);
+            if (remaining <= 0) {
+                setTimeLeft(0);
+                clearInterval(timer);
+                handleFinalSubmit();
+            } else { setTimeLeft(remaining); }
+        }, 1000);
+        return () => clearInterval(timer);
+    }, [studentAssessmentAttempt.started_at, assessment.duration, isCompleted, isSubmitting, handleFinalSubmit]);
+
+    const stats = useMemo(() => calculateStats(answers, questions.data.length), [answers, questions.data]);
+
+    if (isCompleted) return <CompletionScreen onReturnToDashboard={() => (window.location.href = '/')} />;
 
     return (
-        <div
-            className={cn(
-                'min-h-screen bg-background text-body transition-colors duration-500',
-            )}
+        <div 
+            className="min-h-screen bg-background text-body transition-colors duration-500 pb-24 lg:pb-0" 
             style={{ fontSize: `${fontSize}px` }}
         >
             <AssessmentHeader
@@ -245,81 +175,36 @@ export default function AssessmentAttempt({
                 disableSubmit={!isOnline || isSubmitting}
             />
 
-            <div className="mx-auto flex max-w-7xl gap-8 px-4 py-8">
-                <main
-                    className={cn(
-                        'flex-1 space-y-4 pb-32 transition-all',
-                        isFocusMode && 'mx-auto max-w-3xl',
-                    )}
-                >
+            <div className="mx-auto flex max-w-7xl gap-8 px-4 py-4 sm:py-8">
+                <main className={cn('flex-1 space-y-4 transition-all', isFocusMode && 'mx-auto max-w-3xl')}>
                     {(currentQuestionIndex === 0 || viewMode === 'scroll') && (
-                        <AssessmentTitleCard
-                            title={assessment.title}
-                            questionCount={questions.data.length}
-                        />
+                        <AssessmentTitleCard title={assessment.title} questionCount={questions.data.length} />
                     )}
 
-                    <div className="space-y-12">
+                    <div className="space-y-6">
                         {questions.data.map((q, index) => {
-                            if (
-                                viewMode === 'single' &&
-                                index !== currentQuestionIndex
-                            )
-                                return null;
+                            if (viewMode === 'single' && index !== currentQuestionIndex) return null;
                             return (
-                                <div
-                                    key={q.id}
-                                    data-q-id={q.id}
-                                    ref={(el) =>
-                                        (questionRefs.current[q.id] = el)
-                                    }
-                                    onClick={() => setActiveQuestionId(q.id)}
-                                >
+                                <div key={q.id} data-q-id={q.id} ref={(el) => (questionRefs.current[q.id] = el)}>
                                     <QuestionCard
                                         question={q}
                                         index={index}
                                         answer={answers[q.id]}
-                                        isActive={
-                                            activeQuestionId === q.id ||
-                                            viewMode === 'single'
-                                        }
-                                        isCompleted={isSubmitting}
-                                        viewMode={viewMode}
+                                        isActive={activeQuestionId === q.id || viewMode === 'single'}
                                         onAnswerChange={updateAnswer}
-                                        renderQuestion={(
-                                            question,
-                                            idx,
-                                            ans,
-                                            onChange,
-                                            disabled,
-                                        ) => (
-                                            <QuestionRenderer
-                                                question={question}
-                                                index={idx}
-                                                answer={ans}
-                                                onAnswerChange={onChange}
-                                                disabled={disabled}
-                                            />
+                                        renderQuestion={(question, idx, ans, onChange, disabled) => (
+                                            <QuestionRenderer question={question} index={idx} answer={ans} onAnswerChange={onChange} disabled={disabled} />
                                         )}
                                     />
                                     {viewMode === 'single' && (
                                         <SingleViewNavigation
                                             currentIndex={currentQuestionIndex}
-                                            totalQuestions={
-                                                questions.data.length
-                                            }
+                                            totalQuestions={questions.data.length}
                                             onPrevious={goToPrev}
                                             onNext={goToNext}
-                                            onSubmit={() =>
-                                                setShowSubmitModal(true)
-                                            }
-                                            isFirstQuestion={
-                                                currentQuestionIndex === 0
-                                            }
-                                            isLastQuestion={
-                                                currentQuestionIndex ===
-                                                questions.data.length - 1
-                                            }
+                                            onSubmit={() => setShowSubmitModal(true)}
+                                            isFirstQuestion={currentQuestionIndex === 0}
+                                            isLastQuestion={currentQuestionIndex === questions.data.length - 1}
                                         />
                                     )}
                                 </div>
@@ -328,80 +213,87 @@ export default function AssessmentAttempt({
                     </div>
 
                     {viewMode === 'scroll' && (
-                        <ScrollViewEndSection
-                            onReview={() => setShowReviewModal(true)}
-                            onSubmit={() => setShowSubmitModal(true)}
-                        />
+                        <ScrollViewEndSection onReview={() => setShowReviewModal(true)} onSubmit={() => setShowSubmitModal(true)} />
                     )}
                 </main>
 
+                {/* DESKTOP SIDEBAR */}
                 {!isFocusMode && (
-                    <aside className="sticky top-24 h-[calc(100vh-8rem)] w-64 shrink-0">
+                    <aside className="hidden lg:block sticky top-24 h-[calc(100vh-8rem)] w-64 shrink-0">
                         <NavigationSidebar
                             questions={questions.data}
                             answers={answers}
                             activeQuestionId={activeQuestionId}
                             currentQuestionIndex={currentQuestionIndex}
                             viewMode={viewMode}
-                            onNavigate={(id, index) => {
-                                setActiveQuestionId(id);
-                                if (viewMode === 'single') {
-                                    setCurrentQuestionIndex(index);
-                                    window.scrollTo({
-                                        top: 0,
-                                        behavior: 'smooth',
-                                    });
-                                } else {
-                                    questionRefs.current[id]?.scrollIntoView({
-                                        behavior: 'smooth',
-                                        block: 'center',
-                                    });
-                                }
-                            }}
+                            onNavigate={handleNavigate}
                             onViewModeChange={setViewMode}
                         />
                     </aside>
                 )}
             </div>
 
+
+            {/* MOBILE NAVIGATION DRAWER */}
+            <AnimatePresence>
+                {isMobileNavOpen && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsMobileNavOpen(false)}
+                            className="fixed inset-0 z-[50] bg-black/60 backdrop-blur-sm lg:hidden"
+                        />
+                        <motion.div
+                            initial={{ x: '100%' }}
+                            animate={{ x: 0 }}
+                            exit={{ x: '100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            className="fixed inset-y-0 right-0 z-[51] w-full max-w-[320px] bg-white p-6 shadow-xl dark:bg-gray-900 lg:hidden"
+                        >
+                            <div className="flex flex-col h-full">
+                                <div className="flex items-center justify-between border-b pb-4 mb-4 dark:border-gray-800">
+                                    <h2 className="text-lg font-bold">Exam Navigator</h2>
+                                    <button onClick={() => setIsMobileNavOpen(false)} className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-800">
+                                        <X size={20} />
+                                    </button>
+                                </div>
+                                <div className="flex-1 overflow-y-auto">
+                                    <NavigationSidebar
+                                        questions={questions.data}
+                                        answers={answers}
+                                        activeQuestionId={activeQuestionId}
+                                        currentQuestionIndex={currentQuestionIndex}
+                                        viewMode={viewMode}
+                                        onNavigate={handleNavigate}
+                                        onViewModeChange={setViewMode}
+                                    />
+                                </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+
             <FloatingTools
                 fontSize={fontSize}
                 isFocusMode={isFocusMode}
-                onFontSizeIncrease={() =>
-                    setFontSize((s) => Math.min(s + 2, 24))
-                }
-                onFontSizeDecrease={() =>
-                    setFontSize((s) => Math.max(s - 2, 12))
-                }
+                onFontSizeIncrease={() => setFontSize((s) => Math.min(s + 2, 24))}
+                onFontSizeDecrease={() => setFontSize((s) => Math.max(s - 2, 12))}
                 onToggleFocusMode={() => setIsFocusMode(!isFocusMode)}
+                onOpenNavigator={() => setIsMobileNavOpen(true)}
             />
 
-            <SubmitConfirmationDialog
-                isOpen={showSubmitModal}
-                onOpenChange={setShowSubmitModal}
-                stats={stats}
-                onConfirm={handleFinalSubmit}
-            />
+            <SubmitConfirmationDialog isOpen={showSubmitModal} onOpenChange={setShowSubmitModal} stats={stats} onConfirm={handleFinalSubmit} />
 
             <ReviewSummaryDialog
                 isOpen={showReviewModal}
                 onOpenChange={setShowReviewModal}
                 questions={questions.data}
                 answers={answers}
-                onNavigateToQuestion={(id, index) => {
-                    setActiveQuestionId(id);
-                    if (viewMode === 'single') setCurrentQuestionIndex(index);
-                    else
-                        questionRefs.current[id]?.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center',
-                        });
-                    setShowReviewModal(false);
-                }}
-                onSubmit={() => {
-                    setShowReviewModal(false);
-                    setShowSubmitModal(true);
-                }}
+                onNavigateToQuestion={handleNavigate}
+                onSubmit={() => { setShowReviewModal(false); setShowSubmitModal(true); }}
             />
         </div>
     );

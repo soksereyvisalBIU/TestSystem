@@ -71,17 +71,17 @@ export function AssessmentsList({
     }, [assessments, searchQuery]);
 
     return (
-        <Card className="overflow-hidden rounded-[2.5rem] border border-border bg-card/50 py-0 shadow-2xl shadow-black/5 backdrop-blur-sm">
-            <CardHeader className="space-y-4 border-b border-border/50 p-8 py-6">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <Card className="overflow-hidden rounded-3xl xs:rounded-[2.5rem] border border-border bg-card/50 py-0 shadow-2xl shadow-black/5 backdrop-blur-sm">
+            <CardHeader className="space-y-4 border-b border-border/50 p-5 py-6 xs:p-8">
+                <div className="flex items-center justify-between gap-2 sm:gap-4">
                     <div className="space-y-1">
-                        <CardTitle className="flex items-center gap-3 text-2xl font-black tracking-tight text-title">
+                        <CardTitle className="flex items-center gap-1 text-lg font-black tracking-tight text-title xs:text-2xl">
                             <div className="rounded-xl bg-primary/10 p-2">
-                                <Newspaper className="h-6 w-6 text-primary" />
+                                <Newspaper className="h-5 w-5 text-primary xs:h-6 xs:w-6" />
                             </div>
                             Subject Assessments
                         </CardTitle>
-                        <CardDescription className="text-sm font-medium text-description">
+                        <CardDescription className="text-[12px] font-medium text-description xs:text-sm hidden xs:block">
                             Track your progress and upcoming deadlines.
                         </CardDescription>
                     </div>
@@ -94,7 +94,7 @@ export function AssessmentsList({
                                 setIsSearchOpen(!isSearchOpen);
                                 if (isSearchOpen) setSearchQuery('');
                             }}
-                            className={`h-11 w-11 rounded-2xl border-border transition-all ${
+                            className={`h-8 w-8 rounded-lg xs:rounded-2xl border-border transition-all xs:h-11 xs:w-11 ${
                                 isSearchOpen
                                     ? 'bg-primary text-primary-foreground'
                                     : 'bg-card'
@@ -161,7 +161,7 @@ export function AssessmentsList({
                 </AnimatePresence>
             </CardHeader>
 
-            <CardContent className="p-8 pt-0">
+            <CardContent className="p-6 pt-0 xs:p-8">
                 <div className="grid gap-6">
                     <AnimatePresence mode="popLayout">
                         {filteredAssessments.length > 0 ? (

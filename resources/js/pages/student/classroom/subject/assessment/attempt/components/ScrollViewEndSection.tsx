@@ -15,19 +15,19 @@ export function ScrollViewEndSection({
             <div className="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-primary/5 blur-3xl group-hover:bg-primary/10 transition-colors" />
             
             <div className="relative z-10">
-                <h2 className="text-xl sm:text-3xl font-black tracking-tight text-title">
+                <h2 className="text-lg xs:text-xl sm:text-3xl font-black tracking-tight text-title">
                     You've reached the end!
                 </h2>
-                <p className="mx-auto mt-2 max-w-xs font-medium text-description">
+                <p className="text-xs sm:text-md mx-auto mt-2 max-w-xs font-medium text-description">
                     Take a moment to review your answers before finalizing your submission.
                 </p>
 
-                <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                <div className="mt-6 xs:mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
                     <Button
                         variant="outline"
                         size="lg"
                         onClick={onReview}
-                        className="h-16 w-full rounded-2xl border-2 bg-background px-8 text-sm sm:text-lg font-bold transition-all hover:bg-accent sm:w-auto"
+                        className="h-12 xs:h-16 w-full rounded-2xl border-2 bg-background px-8 text-sm sm:text-lg font-bold transition-all hover:bg-accent sm:w-auto"
                     >
                         <Search className="mr-2 h-5 w-5 text-primary" /> 
                         Review Answers
@@ -36,14 +36,14 @@ export function ScrollViewEndSection({
                     <Button
                         size="lg"
                         onClick={onSubmit}
-                        className="h-16 w-full rounded-2xl bg-primary px-12 text-sm sm:text-lg font-black text-primary-foreground transition-all hover:scale-105 active:scale-95 sm:w-auto shadow-none"
+                        className="h-12 xs:h-16 w-full rounded-2xl bg-primary px-12 text-sm sm:text-lg font-black text-primary-foreground transition-all hover:scale-105 active:scale-95 sm:w-auto shadow-none"
                     >
                         Submit Assessment
                         <SendHorizontal className="ml-3 h-5 w-5" />
                     </Button>
                 </div>
                 
-                <p className="mt-6 text-[10px] font-bold uppercase tracking-widest text-description/70">
+                <p className="mt-6 text-[8px] xs:text-[10px] font-bold uppercase tracking-widest text-description/70">
                     Double-check everything. This action is final.
                 </p>
             </div>

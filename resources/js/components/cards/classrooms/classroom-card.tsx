@@ -156,7 +156,7 @@ export default function ClassCard({ classroom, onEdit }: ClassCardProps) {
             <motion.div
                 layoutId={`classroom-card-${classroom.id}`}
                 // 1. Replaced shadow-xl with a dynamic shadow that works in both modes
-                className="group relative h-42 sm:h-64 w-full cursor-pointer overflow-hidden rounded-[2rem] bg-card shadow-lg transition-all hover:shadow-2xl hover:shadow-primary/20"
+                className="group relative h-42 sm:h-64 w-full cursor-pointer overflow-hidden rounded-2xl xs:rounded-[2rem] bg-card shadow-lg transition-all hover:shadow-2xl hover:shadow-primary/20"
                 whileHover={{ y: -8 }}
             >
                 {/* Image Layer */}

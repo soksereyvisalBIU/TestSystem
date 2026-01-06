@@ -10,10 +10,9 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
-import { ArrowRight, ChevronDown, GripHorizontal, X } from 'lucide-react';
+import { ArrowRight, ChevronDown, GripHorizontal, X, HelpCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
-// Utility function to generate sequential labels (A, B, C, ...)
 const getOptionLabel = (index) => String.fromCharCode(65 + index);
 
 export default function MatchingQuestion({
@@ -22,15 +21,8 @@ export default function MatchingQuestion({
     onChange,
     disabled = false,
 }) {
-    const left = useMemo(
-        () => question.options.left.map((opt) => ({ id: opt.id, text: opt.text })),
-        [question.options.left],
-    );
-
-    const right = useMemo(
-        () => question.options.right.map((opt) => ({ id: opt.id, text: opt.text })),
-        [question.options.right],
-    );
+    const left = useMemo(() => question.options.left, [question.options.left]);
+    const right = useMemo(() => question.options.right, [question.options.right]);
 
     const shuffledRight = useMemo(
         () => [...right].sort(() => Math.random() - 0.5),
@@ -56,13 +48,13 @@ export default function MatchingQuestion({
     const unusedRight = right.filter((r) => !usedRightTexts.includes(r.text));
 
     return (
-        <div className="grid gap-6">
-            {/* AVAILABLE OPTIONS BANK */}
-            <div className="space-y-3">
-                <p className="text-xs font-bold tracking-wider text-description uppercase">
+        <div className="grid gap-4 sm:gap-6">
+            {/* AVAILABLE OPTIONS BANK - Hidden or simplified on smallest XS if needed */}
+            <div className="space-y-2">
+                <p className="text-[10px] font-black tracking-widest text-muted-foreground uppercase px-1">
                     Available Matches
                 </p>
-                <div className="flex min-h-[50px] flex-wrap gap-2 rounded-xl border-2 border-dashed border-border bg-muted/30 p-4">
+                <div className="flex min-h-[40px] flex-wrap gap-1.5 rounded-xl border-2 border-dashed border-border bg-muted/20 p-2 sm:p-4">
                     {shuffledRight.map((r) => {
                         const isUsed = usedRightTexts.includes(r.text);
                         return (
@@ -71,18 +63,15 @@ export default function MatchingQuestion({
                                 draggable={!isUsed && !disabled}
                                 onDragStart={(e) => {
                                     e.dataTransfer.setData('rightText', r.text);
-                                    e.dataTransfer.effectAllowed = 'move';
                                 }}
-                                className={`rounded-full border px-4 py-2 text-sm font-medium transition-all ${
+                                className={`rounded-lg border px-3 py-1.5 text-xs sm:text-sm font-medium transition-all ${
                                     isUsed
-                                        ? 'cursor-not-allowed border-border bg-muted text-muted-foreground opacity-50'
-                                        : 'cursor-grab border-border bg-card text-body shadow-sm hover:border-primary hover:shadow-md active:cursor-grabbing'
+                                        ? 'opacity-30 grayscale pointer-events-none'
+                                        : 'cursor-grab border-border bg-card shadow-sm active:scale-95'
                                 } `}
                             >
-                                <div className="flex items-center gap-2">
-                                    {!isUsed && (
-                                        <GripHorizontal className="h-3 w-3 text-muted-foreground" />
-                                    )}
+                                <div className="flex items-center gap-1.5">
+                                    {!isUsed && <GripHorizontal className="h-3 w-3 opacity-50" />}
                                     {r.text}
                                 </div>
                             </div>
@@ -92,8 +81,8 @@ export default function MatchingQuestion({
             </div>
 
             {/* MATCHING WORKSPACE */}
-            <div className="grid gap-3">
-                {left.map((l,index) => {
+            <div className="grid gap-2 sm:gap-3">
+                {left.map((l, index) => {
                     const matchedText = answer[l.id];
                     const isCurrentlyDropping = isDropping === l.id;
 
@@ -102,79 +91,73 @@ export default function MatchingQuestion({
                             key={l.id}
                             onDragOver={(e) => {
                                 e.preventDefault();
-                                if (!disabled && isDropping !== l.id)
-                                    setIsDropping(l.id);
+                                if (!disabled) setIsDropping(l.id);
                             }}
                             onDragLeave={() => setIsDropping(null)}
                             onDrop={(e) => {
                                 e.preventDefault();
                                 setIsDropping(null);
                                 const txt = e.dataTransfer.getData('rightText');
-                                if (txt && !disabled) assign(l.id, txt);
+                                if (txt) assign(l.id, txt);
                             }}
-                            className={`flex items-center justify-between gap-4 rounded-lg border-2 p-3 transition-all 
-                                ${isCurrentlyDropping ? 'border-primary bg-primary/5 ring-4 ring-primary/10' : 'border-border bg-card'} 
-                                ${matchedText ? 'border-success/30 bg-success/5' : ''} `}
+                            className={`flex flex-col xs:flex-row items-stretch xs:items-center justify-between gap-2 sm:gap-4 rounded-xl border-2 p-2 sm:p-3 transition-all 
+                                ${isCurrentlyDropping ? 'border-primary bg-primary/5 ring-2 ring-primary/10' : 'border-border bg-card'} 
+                                ${matchedText ? 'border-emerald-500/20 bg-emerald-500/5' : ''} `}
                         >
-                            <div className="flex flex-1 items-center gap-3">
-                                <span className="w-6 text-sm font-bold text-description">
-                                    {getOptionLabel(index)}.
+                            {/* Left Side (Prompt) */}
+                            <div className="flex items-center gap-2 px-1">
+                                <span className="text-[10px] font-black text-muted-foreground/50">
+                                    {getOptionLabel(index)}
                                 </span>
-                                <span className="font-medium text-body">
+                                <span className="text-sm font-bold text-foreground leading-tight">
                                     {l.text}
                                 </span>
                             </div>
 
-                            <ArrowRight
-                                className={`h-4 w-4 ${matchedText ? 'text-success' : 'text-muted-foreground/40'}`}
-                            />
+                            {/* Mobile Divider / Arrow */}
+                            <div className="flex items-center justify-center xs:block">
+                                <ArrowRight className={`h-3 w-3 rotate-90 xs:rotate-0 ${matchedText ? 'text-emerald-500' : 'text-muted-foreground/20'}`} />
+                            </div>
 
+                            {/* Right Side (Dropdown/Selection) */}
                             <Popover
                                 open={selectingLeftId === l.id}
-                                onOpenChange={(open) =>
-                                    !disabled &&
-                                    setSelectingLeftId(open ? l.id : null)
-                                }
+                                onOpenChange={(open) => !disabled && setSelectingLeftId(open ? l.id : null)}
                             >
                                 <PopoverTrigger asChild>
                                     <button
                                         disabled={disabled}
-                                        className={`flex h-10 min-w-[160px] items-center justify-between gap-2 rounded-md border px-4 text-sm transition-all ${
+                                        className={`flex h-10 items-center justify-between gap-2 rounded-lg border px-3 text-xs sm:text-sm transition-all w-full xs:w-[160px] sm:w-[200px] ${
                                             matchedText
-                                                ? 'border-success bg-card font-semibold text-success shadow-sm'
-                                                : 'border-dashed border-border bg-muted/50 text-muted-foreground hover:bg-muted'
+                                                ? 'border-emerald-500 bg-card font-bold text-emerald-600 shadow-sm'
+                                                : 'border-dashed border-border bg-muted/50 text-muted-foreground'
                                         } `}
                                     >
                                         <span className="truncate">
-                                            {matchedText || 'Select match...'}
+                                            {matchedText || 'Tap to match'}
                                         </span>
                                         {matchedText ? (
                                             <X
-                                                className="h-4 w-4 text-destructive hover:scale-110 transition-transform"
+                                                className="h-3.5 w-3.5 shrink-0 text-destructive active:scale-125"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     release(l.id);
                                                 }}
                                             />
                                         ) : (
-                                            <ChevronDown className="h-4 w-4 opacity-50" />
+                                            <ChevronDown className="h-3.5 w-3.5 shrink-0 opacity-40" />
                                         )}
                                     </button>
                                 </PopoverTrigger>
-                                <PopoverContent
-                                    className="w-[200px] p-0 bg-popover border-border"
-                                    align="end"
-                                >
-                                    <Command className="bg-popover">
+                                <PopoverContent className="w-[calc(100vw-3rem)] xs:w-[200px] p-0" align="end">
+                                    <Command>
                                         <CommandList>
-                                            <CommandEmpty className="text-description p-4 text-xs text-center">
-                                                No options left.
-                                            </CommandEmpty>
-                                            <CommandGroup heading="Available Options" className="text-description">
+                                            <CommandEmpty className="p-4 text-[10px] text-center uppercase tracking-tighter">No items left</CommandEmpty>
+                                            <CommandGroup heading="Available Matches">
                                                 {unusedRight.map((opt) => (
                                                     <CommandItem
                                                         key={opt.id}
-                                                        className="text-body data-[selected='true']:bg-accent data-[selected='true']:text-accent-foreground"
+                                                        className="text-sm"
                                                         onSelect={() => {
                                                             assign(l.id, opt.text);
                                                             setSelectingLeftId(null);
@@ -191,6 +174,12 @@ export default function MatchingQuestion({
                         </div>
                     );
                 })}
+            </div>
+
+            {/* Instruction Footer */}
+            <div className="flex items-center justify-center gap-1.5 opacity-40">
+                <HelpCircle className="h-2.5 w-2.5" />
+                <span className="text-[8px] font-black uppercase tracking-[0.2em]">Drag or Tap to complete pairs</span>
             </div>
         </div>
     );
