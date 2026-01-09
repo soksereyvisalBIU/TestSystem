@@ -54,6 +54,8 @@ class AttemptController extends Controller
      */
     public function store(Request $request, $class_id, $subject_id, $assessment_id)
     {
+        
+        
         $assessmentAttempt = StudentAssessmentAttempt::with('studentAssessment')
             ->findOrFail($request->student_assessment_attempt_id);
 

@@ -55,9 +55,11 @@ export default function QuestionRenderer({
                 </div> */}
 
                 {/* Question text with Khmer support */}
-                <h2 className="khmerfont text-base xs:text-lg sm:text-xl leading-relaxed font-black tracking-tight text-title">
+                {/* <h2 className="khmerfont text-base xs:text-lg sm:text-xl leading-relaxed font-black tracking-tight text-title">
                     {question.question}
-                </h2>
+                </h2> */}
+                <div className="khmerfont text-base xs:text-lg sm:text-xl leading-relaxed font-bold tracking-tight text-title" dangerouslySetInnerHTML={{ __html: question.question }} />
+                {console.log(question.question)}
             </div>
 
             {/* Answer Input Area */}

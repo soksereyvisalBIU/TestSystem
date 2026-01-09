@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { GraduationCap, Quote, CheckCircle2, Info } from 'lucide-react';
+import { 
+    GraduationCap, Quote, CheckCircle2, Info, 
+    Code2, AlertCircle, Copy, Maximize2, 
+    ThumbsUp, ThumbsDown, Eraser 
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function TextQuestion({ question, answers, onTeacherScore }) {
@@ -11,115 +15,174 @@ export default function TextQuestion({ question, answers, onTeacherScore }) {
     const studentText = ans.answer_text || '';
     const correctOptions = question.options?.map((o) => o.option_text) || [];
     const maxPoints = parseFloat(question.point || 0);
+    
+    // UI States
+    const [isExpanded, setIsExpanded] = useState(false);
 
-    const isAutoCorrect = correctOptions.some(
-        (opt) => opt.trim().toLowerCase() === studentText.trim().toLowerCase(),
-    );
+    const isCodeResponse = studentText.includes('<pre>') || studentText.includes('<code>');
+    const cleanText = studentText.replace(/<[^>]*>/g, '').trim();
 
-    const handleScoreChange = (e) => {
-        let val = e.target.value;
-        if (val === '') return onTeacherScore(question.id, '');
-        let numVal = Math.min(maxPoints, Math.max(0, parseFloat(val)));
+    const handleScoreChange = (val) => {
+        let numVal = val === '' ? '' : Math.min(maxPoints, Math.max(0, parseFloat(val)));
         onTeacherScore(question.id, numVal);
     };
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            {/* Student Response Section */}
-            <div className="group relative">
-                <Label className="mb-3 flex items-center gap-2 text-[11px] font-black tracking-[0.2em] text-muted-foreground uppercase">
-                    <Quote className="h-3 w-3 text-primary" />
-                    Student Answer
-                </Label>
+        <div className="group/main space-y-6 animate-in fade-in zoom-in-95 duration-500">
+            
+            {/* --- SECTION 1: THE SUBMISSION CARD --- */}
+            <div className="relative">
+                <div className="mb-3 flex items-center justify-between px-1">
+                    <div className="flex items-center gap-3">
+                        <div className={cn(
+                            "flex h-8 w-8 items-center justify-center rounded-lg ring-1 shadow-sm transition-all",
+                            isCodeResponse ? "bg-zinc-900 ring-white/20 text-yellow-400" : "bg-primary/10 ring-primary/20 text-primary"
+                        )}>
+                            {isCodeResponse ? <Code2 size={16} /> : <Quote size={16} />}
+                        </div>
+                        <Label className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                            {isCodeResponse ? 'Technical Implementation' : 'Conceptual Response'}
+                        </Label>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                         <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-7 w-7 opacity-0 group-hover/main:opacity-100 transition-opacity"
+                            onClick={() => setIsExpanded(!isExpanded)}
+                        >
+                            <Maximize2 size={14} />
+                        </Button>
+                    </div>
+                </div>
+
                 <div className={cn(
-                    "relative overflow-hidden rounded-2xl border-2 p-6 transition-all duration-300",
-                    studentText 
-                        ? "border-border bg-card shadow-sm group-hover:border-primary/20" 
-                        : "border-dashed border-muted-foreground/20 bg-muted/5"
+                    "relative overflow-hidden rounded-3xl border-2 transition-all duration-500",
+                    isCodeResponse ? "bg-[#0d0d0d] border-zinc-800" : "bg-card border-border",
+                    isExpanded ? "min-h-[400px]" : "min-h-[160px]"
                 )}>
-                    {/* Visual flourish: corner accent */}
-                    <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-30 transition-opacity">
-                        <Quote className="h-8 w-8 rotate-180" />
+                    {/* Syntax Highlight Styles for the dangerouslySetInnerHTML */}
+                    <style dangerouslySetInnerHTML={{ __html: `
+                        .student-content pre { background: transparent !important; padding: 0; margin: 0; font-family: 'JetBrains Mono', monospace; }
+                        .student-content code { color: #f4f4f5; }
+                        .student-content p { margin-bottom: 1rem; }
+                    `}} />
+
+                    <div className={cn(
+                        "student-content relative z-10 p-8 prose prose-sm md:prose-base max-w-none dark:prose-invert transition-all",
+                        isCodeResponse ? "prose-pre:text-zinc-300" : "prose-p:text-foreground/90 font-serif"
+                    )}>
+                        {studentText ? (
+                            <div dangerouslySetInnerHTML={{ __html: studentText }} />
+                        ) : (
+                            <div className="flex items-center gap-3 text-muted-foreground italic py-10 justify-center">
+                                <AlertCircle size={18} />
+                                <span className="tracking-tight">Student did not submit an answer for this prompt.</span>
+                            </div>
+                        )}
                     </div>
 
-                    <p className={cn(
-                        "relative z-10 text-base leading-relaxed tracking-tight",
-                        studentText 
-                            ? "font-medium text-foreground italic" 
-                            : "text-muted-foreground italic font-light"
-                    )}>
-                        {studentText ? studentText : 'The student provided no text for this response.'}
-                    </p>
+                    {/* Character/Word Meta */}
+                    {studentText && (
+                        <div className="absolute bottom-4 right-6 flex gap-4">
+                            <span className="text-[10px] font-mono text-muted-foreground/40 uppercase tracking-tighter">
+                                {cleanText.split(/\s+/).length} Words
+                            </span>
+                            <span className="text-[10px] font-mono text-muted-foreground/40 uppercase tracking-tighter">
+                                {cleanText.length} Chars
+                            </span>
+                        </div>
+                    )}
                 </div>
             </div>
 
-            {/* Answer Key Comparison */}
-            {!isAutoCorrect && correctOptions.length > 0 && (
-                <div className="rounded-2xl border border-emerald-500/20 bg-emerald-50/30 p-5 dark:bg-emerald-950/10">
-                    <div className="mb-3 flex items-center justify-between">
-                        <span className="flex items-center gap-2 text-[10px] font-black text-emerald-600 uppercase tracking-widest">
-                            <CheckCircle2 className="h-4 w-4" /> Expected Keywords
-                        </span>
-                        <Badge variant="outline" className="text-[9px] border-emerald-500/30 text-emerald-600">
-                            Exact Match Logic
-                        </Badge>
+            {/* --- SECTION 2: SMART RUBRIC --- */}
+            {correctOptions.length > 0 && (
+                <div className="relative rounded-[2rem] border border-dashed border-emerald-500/30 bg-emerald-500/[0.02] p-6 transition-all hover:bg-emerald-500/[0.04]">
+                    <div className="mb-4 flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                        <CheckCircle2 size={16} className="animate-pulse" />
+                        <span className="text-xs font-black uppercase tracking-widest">Reference Key</span>
                     </div>
                     <div className="flex flex-wrap gap-2">
                         {correctOptions.map((opt, i) => (
-                            <div
-                                key={i}
-                                className="flex items-center rounded-lg bg-background border border-emerald-200 px-3 py-1.5 shadow-sm transition-transform hover:scale-105"
+                            <Badge 
+                                key={i} 
+                                variant="outline" 
+                                className="border-emerald-200 bg-background/80 px-3 py-1 text-emerald-700 dark:border-emerald-800 dark:text-emerald-300"
                             >
-                                <code className="text-xs font-bold text-emerald-700 dark:text-emerald-400">
-                                    {opt}
-                                </code>
-                            </div>
+                                {opt}
+                            </Badge>
                         ))}
                     </div>
                 </div>
             )}
 
-            {/* Teacher Grading Control - The "Action Hub" */}
-            <div className="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-6">
-                <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-                    <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary shadow-lg shadow-primary/30">
-                            <GraduationCap className="h-6 w-6 text-primary-foreground" />
-                        </div>
-                        <div>
-                            <h4 className="text-sm font-black text-foreground uppercase tracking-tight">Evaluator Scoring</h4>
-                            <p className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
-                                <Info className="h-3 w-3" />
-                                Review answer and assign points
-                            </p>
-                        </div>
+            {/* --- SECTION 3: THE HIGH-VELOCITY GRADING BAR --- */}
+            <div className="sticky bottom-4 z-20">
+                <div className="flex flex-col items-center gap-4 rounded-[2.5rem] border border-white/20 bg-background/80 p-3 shadow-2xl backdrop-blur-xl md:flex-row">
+                    
+                    {/* Quick Grade Presets */}
+                    <div className="flex items-center gap-1 rounded-full bg-muted/50 p-1">
+                        <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-10 w-10 rounded-full hover:bg-emerald-500/10 hover:text-emerald-600"
+                            onClick={() => handleScoreChange(maxPoints)}
+                        >
+                            <ThumbsUp size={18} />
+                        </Button>
+                        <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-10 w-10 rounded-full hover:bg-destructive/10 hover:text-destructive"
+                            onClick={() => handleScoreChange(0)}
+                        >
+                            <ThumbsDown size={18} />
+                        </Button>
+                        <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-10 w-10 rounded-full hover:bg-zinc-200"
+                            onClick={() => handleScoreChange('')}
+                        >
+                            <Eraser size={18} />
+                        </Button>
                     </div>
 
-                    <div className="flex items-center gap-3 w-full md:w-auto">
-                        <div className="relative flex-1 md:flex-initial">
+                    <div className="hidden h-8 w-px bg-border/60 md:block" />
+
+                    {/* Manual Input Core */}
+                    <div className="flex flex-1 items-center justify-between gap-4 px-2 w-full md:w-auto">
+                        <div className="flex flex-col items-start gap-0">
+                            <span className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground/60">Final Score</span>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-lg font-black text-primary">Points</span>
+                            </div>
+                        </div>
+
+                        <div className="relative flex items-center">
                             <Input
                                 type="number"
                                 step="0.5"
-                                placeholder="0.0"
                                 value={ans.manual_score ?? ans.points_earned ?? ''}
-                                onChange={handleScoreChange}
-                                className="h-12 w-full md:w-32 rounded-xl border-primary/20 bg-background pr-10 text-center font-mono text-lg font-black text-primary focus-visible:ring-primary shadow-inner"
+                                onChange={(e) => handleScoreChange(e.target.value)}
+                                className="h-12 w-28 rounded-2xl border-none bg-muted/50 text-center font-mono text-xl font-black focus-visible:ring-primary shadow-inner"
                             />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-black text-muted-foreground">
-                                / {maxPoints}
-                            </span>
+                            <div className="ml-3 flex flex-col -space-y-1">
+                                <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-tighter">Max</span>
+                                <span className="text-sm font-black text-muted-foreground">{maxPoints}</span>
+                            </div>
                         </div>
-                        
-                        <Button
-                            variant="secondary"
-                            size="icon"
-                            className="h-12 w-12 rounded-xl border border-primary/20 bg-background font-black text-xs hover:bg-primary hover:text-white transition-all shadow-sm"
-                            onClick={() => onTeacherScore(question.id, maxPoints)}
-                            title="Assign Maximum Points"
-                        >
-                            MAX
-                        </Button>
                     </div>
+
+                    {/* Final Action */}
+                    <Button 
+                        size="lg"
+                        className="w-full rounded-full bg-primary font-black tracking-tight shadow-xl shadow-primary/20 md:w-auto px-8"
+                    >
+                        CONFIRM GRADE
+                    </Button>
                 </div>
             </div>
         </div>

@@ -37,9 +37,11 @@ export default function QuestionCard({
                                 {typeLabel}
                             </Badge>
                         </div>
-                        <h3 className="text-sm font-bold text-title leading-snug pr-4">
+
+                        <div className="text-sm font-bold text-title leading-snug pr-4"  dangerouslySetInnerHTML={{ __html: question.question || question.question_text || "Untitled Question" }} />
+                        {/* <h3 className="text-sm font-bold text-title leading-snug pr-4">
                             {question.question || question.question_text || "Untitled Question"}
-                        </h3>
+                        </h3> */}
                     </div>
                 </div>
 
