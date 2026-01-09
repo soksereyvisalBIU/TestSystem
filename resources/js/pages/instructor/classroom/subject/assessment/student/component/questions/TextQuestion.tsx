@@ -18,7 +18,9 @@ export default function TextQuestion({ question, answers, onTeacherScore }) {
     
     // UI States
     const [isExpanded, setIsExpanded] = useState(false);
-
+    const [tempScore, setTempScore] = useState(
+        ans.manual_score ?? ans.points_earned ?? 0,
+    );
     const isCodeResponse = studentText.includes('<pre>') || studentText.includes('<code>');
     const cleanText = studentText.replace(/<[^>]*>/g, '').trim();
 
@@ -111,7 +113,8 @@ export default function TextQuestion({ question, answers, onTeacherScore }) {
                                 variant="outline" 
                                 className="border-emerald-200 bg-background/80 px-3 py-1 text-emerald-700 dark:border-emerald-800 dark:text-emerald-300"
                             >
-                                {opt}
+                                {/* {opt} */}
+                                <div dangerouslySetInnerHTML={{ __html: opt }} />
                             </Badge>
                         ))}
                     </div>
@@ -119,72 +122,129 @@ export default function TextQuestion({ question, answers, onTeacherScore }) {
             )}
 
             {/* --- SECTION 3: THE HIGH-VELOCITY GRADING BAR --- */}
-            <div className="sticky bottom-4 z-20">
-                <div className="flex flex-col items-center gap-4 rounded-[2.5rem] border border-white/20 bg-background/80 p-3 shadow-2xl backdrop-blur-xl md:flex-row">
-                    
-                    {/* Quick Grade Presets */}
-                    <div className="flex items-center gap-1 rounded-full bg-muted/50 p-1">
-                        <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="h-10 w-10 rounded-full hover:bg-emerald-500/10 hover:text-emerald-600"
-                            onClick={() => handleScoreChange(maxPoints)}
-                        >
-                            <ThumbsUp size={18} />
-                        </Button>
-                        <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="h-10 w-10 rounded-full hover:bg-destructive/10 hover:text-destructive"
-                            onClick={() => handleScoreChange(0)}
-                        >
-                            <ThumbsDown size={18} />
-                        </Button>
-                        <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="h-10 w-10 rounded-full hover:bg-zinc-200"
-                            onClick={() => handleScoreChange('')}
-                        >
-                            <Eraser size={18} />
-                        </Button>
-                    </div>
-
-                    <div className="hidden h-8 w-px bg-border/60 md:block" />
-
-                    {/* Manual Input Core */}
-                    <div className="flex flex-1 items-center justify-between gap-4 px-2 w-full md:w-auto">
-                        <div className="flex flex-col items-start gap-0">
-                            <span className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground/60">Final Score</span>
-                            <div className="flex items-baseline gap-1">
-                                <span className="text-lg font-black text-primary">Points</span>
-                            </div>
-                        </div>
-
-                        <div className="relative flex items-center">
-                            <Input
+            {onTeacherScore && (
+                <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-primary/10 bg-card shadow-lg transition-all hover:border-primary/30 md:flex-row md:items-center">
+                    {/* LEFT: COMPACT SCORE HUD */}
+                    <div className="relative flex  flex-row items-center justify-center gap-3 bg-primary px-6 py-4 text-primary-foreground md:flex-col md:py-6">
+                        <div className="flex items-baseline gap-1">
+                            <input
                                 type="number"
                                 step="0.5"
-                                value={ans.manual_score ?? ans.points_earned ?? ''}
-                                onChange={(e) => handleScoreChange(e.target.value)}
-                                className="h-12 w-28 rounded-2xl border-none bg-muted/50 text-center font-mono text-xl font-black focus-visible:ring-primary shadow-inner"
+                                value={tempScore}
+                                onChange={(e) => {
+                                    const raw =
+                                        e.target.value === ''
+                                            ? 0
+                                            : parseFloat(e.target.value);
+                                    const val = Math.min(
+                                        question.point,
+                                        Math.max(0, raw),
+                                    );
+                                    setTempScore(val);
+                                    onTeacherScore(question.id, val);
+                                }}
+                                className="w-16 bg-transparent text-right font-mono text-xl font-black tabular-nums transition-transform outline-none focus:scale-110"
                             />
-                            <div className="ml-3 flex flex-col -space-y-1">
-                                <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-tighter">Max</span>
-                                <span className="text-sm font-black text-muted-foreground">{maxPoints}</span>
-                            </div>
+                            <span className="text-sm font-bold opacity-50">
+                                pts
+                            </span>
                         </div>
                     </div>
 
-                    {/* Final Action */}
-                    <Button 
-                        size="lg"
-                        className="w-full rounded-full bg-primary font-black tracking-tight shadow-xl shadow-primary/20 md:w-auto px-8"
-                    >
-                        CONFIRM GRADE
-                    </Button>
+                    {/* RIGHT: THE CONTROL RIBBON */}
+                    <div className="flex flex-1 flex-col gap-4 p-4 lg:flex-row lg:items-center lg:gap-8">
+                        {/* SLIDER BLOCK */}
+                        <div className="flex flex-1 flex-col gap-1.5">
+                            <div className="flex justify-between px-1">
+                                <span className="text-[10px] font-bold text-muted-foreground/60 uppercase">
+                                    Scoring Tier
+                                </span>
+                                <button
+                                    onClick={() => {
+                                        setTempScore(0);
+                                        onTeacherScore(question.id, 0);
+                                    }}
+                                    className="text-[10px] font-bold text-red-500 uppercase opacity-0 transition-opacity group-hover:opacity-100 hover:underline"
+                                >
+                                    Reset
+                                </button>
+                            </div>
+                            <div className="relative flex items-center">
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max={question.point}
+                                    step="0.5"
+                                    value={tempScore}
+                                    onChange={(e) => {
+                                        const val = parseFloat(e.target.value);
+                                        setTempScore(val);
+                                        onTeacherScore(question.id, val);
+                                    }}
+                                    style={{
+                                        background: `linear-gradient(to right, hsl(var(--primary)) ${(tempScore / question.point) * 100}%, hsl(var(--muted)) ${(tempScore / question.point) * 100}%)`,
+                                    }}
+                                    className="h-2 w-full cursor-pointer rounded-full accent-primary"
+                                />
+                            </div>
+                        </div>
+
+                        {/* ACTION GROUPS */}
+                        <div className="flex items-center gap-2">
+                            {/* Precision Controls */}
+                            <div className="flex overflow-hidden rounded-xl border border-border shadow-sm">
+                                <button
+                                    onClick={() => {
+                                        const val = Math.max(
+                                            0,
+                                            tempScore - 0.5,
+                                        );
+                                        setTempScore(val);
+                                        onTeacherScore(question.id, val);
+                                    }}
+                                    className="flex h-9 w-9 items-center justify-center bg-background font-bold transition-colors hover:bg-muted active:bg-primary/10"
+                                >
+                                    −
+                                </button>
+                                <div className="w-[1px] bg-border" />
+                                <button
+                                    onClick={() => {
+                                        const val = Math.min(
+                                            question.point,
+                                            tempScore + 0.5,
+                                        );
+                                        setTempScore(val);
+                                        onTeacherScore(question.id, val);
+                                    }}
+                                    className="flex h-9 w-9 items-center justify-center bg-background font-bold transition-colors hover:bg-muted active:bg-primary/10"
+                                >
+                                    +
+                                </button>
+                            </div>
+
+                            {/* Smart Presets */}
+                            {/* <div className="flex gap-1.5">
+                                {[
+                                    { label: '50%', val: 0.5 },
+                                    { label: 'Full', val: 1 },
+                                ].map((p) => (
+                                    <button
+                                        key={p.label}
+                                        onClick={() => {
+                                            const val = question.point * p.val;
+                                            setTempScore(val);
+                                            onTeacherScore(question.id, val);
+                                        }}
+                                        className="h-9 rounded-xl border border-primary/10 bg-primary/5 px-4 text-[10px] font-black tracking-tight text-primary uppercase transition-all hover:bg-primary hover:text-white active:scale-95"
+                                    >
+                                        {p.label}
+                                    </button>
+                                ))}
+                            </div> */}
+                        </div>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }

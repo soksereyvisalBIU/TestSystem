@@ -163,7 +163,8 @@ export const QuestionRenderer = ({
             </CardHeader>
             <CardContent className="flex-grow py-4">
                 <div className='pb-4'>
-                    <h4 className="">Q: {question.question_text}</h4>
+                    <div dangerouslySetInnerHTML={{ __html: question.question_text }} />
+                    {/* <h4 className="">Q: {question.question_text}</h4> */}
                     {/* <div className='w-12 h-[2px] bg-foreground/50'></div> */}
                 </div>
 

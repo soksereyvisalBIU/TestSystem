@@ -118,89 +118,76 @@ export default function FileQuestion({ question, answers, onTeacherScore }) {
 
             {/* 2. Grading Slider (Standard) */}
             {onTeacherScore && fileUrl && (
-                <div className="grid grid-cols-1 overflow-hidden rounded-3xl border border-primary/10 bg-card shadow-sm md:grid-cols-12">
-                    {/* Visual Status & Direct Input Panel (4 cols) */}
-                    <div className="col-span-1 flex flex-col items-center justify-center bg-primary p-6 text-primary-foreground md:col-span-4">
-                        <div className="text-[10px] font-black tracking-[0.2em] uppercase opacity-80">
-                            Points Earned
-                        </div>
-
-                        <div className="relative my-2 flex items-baseline">
+                <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-primary/10 bg-card shadow-lg transition-all hover:border-primary/30 md:flex-row md:items-center">
+                    {/* LEFT: COMPACT SCORE HUD */}
+                    <div className="relative flex  flex-row items-center justify-center gap-3 bg-primary px-6 py-4 text-primary-foreground md:flex-col md:py-6">
+                        <div className="flex items-baseline gap-1">
                             <input
                                 type="number"
                                 step="0.5"
-                                min="0"
-                                max={question.point}
                                 value={tempScore}
                                 onChange={(e) => {
+                                    const raw =
+                                        e.target.value === ''
+                                            ? 0
+                                            : parseFloat(e.target.value);
                                     const val = Math.min(
                                         question.point,
-                                        Math.max(
-                                            0,
-                                            parseFloat(e.target.value) || 0,
-                                        ),
+                                        Math.max(0, raw),
                                     );
                                     setTempScore(val);
                                     onTeacherScore(question.id, val);
                                 }}
-                                className="w-24 bg-transparent text-center font-mono text-5xl font-black transition-transform outline-none focus:scale-110"
+                                className="w-16 bg-transparent text-right font-mono text-xl font-black tabular-nums transition-transform outline-none focus:scale-110"
                             />
-                            <span className="text-xl font-bold opacity-40">
-                                / {question.point}
+                            <span className="text-sm font-bold opacity-50">
+                                pts
                             </span>
                         </div>
-
-                        <div className="h-1 w-12 rounded-full bg-primary-foreground/20" />
-                        <p className="mt-2 text-[10px] font-medium italic opacity-60">
-                            Click number to type
-                        </p>
                     </div>
 
-                    {/* Control Panel (8 cols) */}
-                    <div className="col-span-1 flex flex-col justify-center gap-6 p-6 md:col-span-8">
-                        <div className="flex items-center justify-between">
-                            <div className="flex flex-col">
-                                <h4 className="text-xs font-black tracking-wider text-foreground uppercase">
-                                    Scoring Slider
-                                </h4>
-                                <p className="text-[10px] text-muted-foreground">
-                                    Drag to adjust or use presets below
-                                </p>
+                    {/* RIGHT: THE CONTROL RIBBON */}
+                    <div className="flex flex-1 flex-col gap-4 p-4 lg:flex-row lg:items-center lg:gap-8">
+                        {/* SLIDER BLOCK */}
+                        <div className="flex flex-1 flex-col gap-1.5">
+                            <div className="flex justify-between px-1">
+                                <span className="text-[10px] font-bold text-muted-foreground/60 uppercase">
+                                    Scoring Tier
+                                </span>
+                                <button
+                                    onClick={() => {
+                                        setTempScore(0);
+                                        onTeacherScore(question.id, 0);
+                                    }}
+                                    className="text-[10px] font-bold text-red-500 uppercase opacity-0 transition-opacity group-hover:opacity-100 hover:underline"
+                                >
+                                    Reset
+                                </button>
                             </div>
-                            <button
-                                onClick={() => {
-                                    setTempScore(0);
-                                    onTeacherScore(question.id, 0);
-                                }}
-                                className="rounded-md px-2 py-1 text-[10px] font-bold text-muted-foreground uppercase transition-colors hover:bg-red-50 hover:text-red-500"
-                            >
-                                Reset
-                            </button>
+                            <div className="relative flex items-center">
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max={question.point}
+                                    step="0.5"
+                                    value={tempScore}
+                                    onChange={(e) => {
+                                        const val = parseFloat(e.target.value);
+                                        setTempScore(val);
+                                        onTeacherScore(question.id, val);
+                                    }}
+                                    style={{
+                                        background: `linear-gradient(to right, hsl(var(--primary)) ${(tempScore / question.point) * 100}%, hsl(var(--muted)) ${(tempScore / question.point) * 100}%)`,
+                                    }}
+                                    className="h-2 w-full cursor-pointer rounded-full accent-primary"
+                                />
+                            </div>
                         </div>
 
-                        {/* Slider with Dynamic Gradient */}
-                        <div className="relative">
-                            <input
-                                type="range"
-                                min="0"
-                                max={question.point}
-                                step="0.5"
-                                value={tempScore}
-                                onChange={(e) => {
-                                    const val = parseFloat(e.target.value);
-                                    setTempScore(val);
-                                    onTeacherScore(question.id, val);
-                                }}
-                                style={{
-                                    background: `linear-gradient(to right, hsl(var(--primary)) ${(tempScore / question.point) * 100}%, hsl(var(--primary) / 0.1) ${(tempScore / question.point) * 100}%)`,
-                                }}
-                                className="h-2.5 w-full cursor-pointer appearance-none rounded-full accent-primary transition-all"
-                            />
-                        </div>
-
-                        {/* Quick Action Bar */}
-                        <div className="flex items-center justify-between gap-3">
-                            <div className="flex gap-1.5">
+                        {/* ACTION GROUPS */}
+                        <div className="flex items-center gap-2">
+                            {/* Precision Controls */}
+                            <div className="flex overflow-hidden rounded-xl border border-border shadow-sm">
                                 <button
                                     onClick={() => {
                                         const val = Math.max(
@@ -210,10 +197,11 @@ export default function FileQuestion({ question, answers, onTeacherScore }) {
                                         setTempScore(val);
                                         onTeacherScore(question.id, val);
                                     }}
-                                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-primary/10 bg-background text-lg font-bold text-primary shadow-sm transition-all hover:bg-primary hover:text-white active:scale-90"
+                                    className="flex h-9 w-9 items-center justify-center bg-background font-bold transition-colors hover:bg-muted active:bg-primary/10"
                                 >
-                                    -
+                                    −
                                 </button>
+                                <div className="w-[1px] bg-border" />
                                 <button
                                     onClick={() => {
                                         const val = Math.min(
@@ -223,28 +211,31 @@ export default function FileQuestion({ question, answers, onTeacherScore }) {
                                         setTempScore(val);
                                         onTeacherScore(question.id, val);
                                     }}
-                                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-primary/10 bg-background text-lg font-bold text-primary shadow-sm transition-all hover:bg-primary hover:text-white active:scale-90"
+                                    className="flex h-9 w-9 items-center justify-center bg-background font-bold transition-colors hover:bg-muted active:bg-primary/10"
                                 >
                                     +
                                 </button>
                             </div>
 
-                            <div className="flex flex-1 items-center justify-end gap-2">
-                                {[0.5, 1].map((percent) => (
+                            {/* Smart Presets */}
+                            {/* <div className="flex gap-1.5">
+                                {[
+                                    { label: '50%', val: 0.5 },
+                                    { label: 'Full', val: 1 },
+                                ].map((p) => (
                                     <button
-                                        key={percent}
+                                        key={p.label}
                                         onClick={() => {
-                                            const val =
-                                                question.point * percent;
+                                            const val = question.point * p.val;
                                             setTempScore(val);
                                             onTeacherScore(question.id, val);
                                         }}
-                                        className="rounded-xl border border-primary/10 bg-muted/30 px-4 py-2 text-[10px] font-black tracking-tight text-muted-foreground uppercase transition-all hover:bg-primary hover:text-primary-foreground"
+                                        className="h-9 rounded-xl border border-primary/10 bg-primary/5 px-4 text-[10px] font-black tracking-tight text-primary uppercase transition-all hover:bg-primary hover:text-white active:scale-95"
                                     >
-                                        {percent === 1 ? 'Full Mark' : '50%'}
+                                        {p.label}
                                     </button>
                                 ))}
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>
