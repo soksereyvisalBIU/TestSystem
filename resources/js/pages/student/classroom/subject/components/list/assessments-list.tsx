@@ -71,7 +71,7 @@ export function AssessmentsList({
     }, [assessments, searchQuery]);
 
     return (
-        <Card className="overflow-hidden rounded-3xl xs:rounded-[2.5rem] border border-border bg-card/50 py-0 shadow-2xl shadow-black/5 backdrop-blur-sm">
+        <Card className="gap-0 overflow-hidden rounded-3xl xs:rounded-[2.5rem] border border-border bg-card/50 py-0 shadow-2xl shadow-black/5 backdrop-blur-sm">
             <CardHeader className="space-y-4 border-b border-border/50 p-5 py-6 xs:p-8">
                 <div className="flex items-center justify-between gap-2 sm:gap-4">
                     <div className="space-y-1">
