@@ -181,7 +181,7 @@ export default function AssessmentAttempt({
                         <AssessmentTitleCard title={assessment.title} questionCount={questions.data.length} />
                     )}
 
-                    <div className="space-y-6">
+                    <div className="space-y-12">
                         {questions.data.map((q, index) => {
                             if (viewMode === 'single' && index !== currentQuestionIndex) return null;
                             return (
