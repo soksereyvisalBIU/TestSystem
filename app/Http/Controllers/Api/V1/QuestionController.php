@@ -24,7 +24,7 @@ class QuestionController extends Controller
         // return response()->json('vi');
 
         // $questions = QuestionResource::collection(Question::with('options', 'media', 'submissionSetting')->where('assessment_id', $assessmentId)->orderBy('order')->get());
-        $questions = QuestionResource::collection(Question::with(['options', 'media' , 'submissionSetting'])->where('assessment_id', $assessmentId)->orderBy('order')->get());
+        $questions = QuestionResource::collection(Question::with(['options', 'media', 'submissionSetting'])->where('assessment_id', $assessmentId)->orderBy('order')->get());
 
         return response()->json(['data' => $questions]);
     }
@@ -112,7 +112,11 @@ class QuestionController extends Controller
 
                         // Extract image data
                         [$meta, $content] = explode(',', $base64Image);
-                        $extension = explode('/', mime_content_type($base64Image))[1] ?? 'png';
+                        if (! preg_match('/^data:image\/(\w+);base64,/', $base64Image, $matches)) {
+                            continue;
+                        }
+
+                        $extension = $matches[1]; // jpeg, png, webp, etc
 
                         $fileName = uniqid('question_', true) . '.' . $extension;
                         $path = "questions/{$question->id}/{$fileName}";
@@ -244,7 +248,11 @@ class QuestionController extends Controller
 
                         // Extract image data
                         [$meta, $content] = explode(',', $base64Image);
-                        $extension = explode('/', mime_content_type($base64Image))[1] ?? 'png';
+                        if (! preg_match('/^data:image\/(\w+);base64,/', $base64Image, $matches)) {
+                            continue;
+                        }
+
+                        $extension = $matches[1]; // jpeg, png, webp, etc
 
                         $fileName = uniqid('question_', true) . '.' . $extension;
                         $path = "questions/{$question->id}/{$fileName}";
