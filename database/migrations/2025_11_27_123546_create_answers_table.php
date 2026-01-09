@@ -30,8 +30,8 @@ return new class extends Migration
         Schema::create('answer_files', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('answer_id')->nullable();
-            $table->string('file_path');
-            $table->string('file_name');
+            $table->string('file_path')->nullable();
+            $table->string('file_name')->nullable();
             $table->bigInteger('file_size')->nullable();
             $table->timestamps();
         });
