@@ -1,4 +1,4 @@
-import AutoBreadcrumb from '@/components/breadcrumb/auto-bread-crumb';
+// import AutoBreadcrumb from '@/components/breadcrumb/auto-bread-crumb';
 import FlashMessage from '@/components/notifications/FlashMessage';
 // import GlobalAlert from '@/components/notifications/GlobalAlert';
 import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout';

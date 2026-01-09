@@ -21,6 +21,9 @@ class Answer extends Model
     ];
 
     // ========== Relation ===========
+    public function answerFiles(){
+        return $this->hasMany(AnswerFile::class, 'answer_id' , 'id');
+    }
 
     public function studentAssessmentAttempt(){
         

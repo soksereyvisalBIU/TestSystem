@@ -73,6 +73,9 @@ export const useCreateQuestion = (assessment_id: number) => {
                 `api/v1/assessments/${assessment_id}/questions`,
                 payload,
             );
+
+
+            
             console.log(data);
             console.log(data.data);
             return data.data;
@@ -111,7 +114,6 @@ export const useUpdateQuestion = (assessment_id: number) => {
         // 🔹 Accepts either a single question or an array of questions
         mutationFn: async (payload: Question | Question[]) => {
             const questions = Array.isArray(payload) ? payload : [payload];
-
             try {
                 const results = await Promise.all(
                     questions.map(async (q) => {

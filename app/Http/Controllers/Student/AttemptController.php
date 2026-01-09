@@ -73,13 +73,47 @@ class AttemptController extends Controller
         // Increment attempt count
         $assessmentAttempt->studentAssessment->increment('attempted_amount');
         $assessmentAttempt->studentAssessment()->update([
-            'status'       => 'submitted',
+            'status' => 'submitted',
         ]);
 
-        // Save answers
+        // ===============================
+        // Save Answers (Text / MCQ / File)
+        // ===============================
         foreach ($request->answers as $questionId => $answer) {
 
-            // MATCHING
+            /*
+        |--------------------------------------------------------------------------
+        | FILE ANSWER
+        |--------------------------------------------------------------------------
+        */
+            if ($answer instanceof \Illuminate\Http\UploadedFile) {
+
+                // Create empty answer first
+                $answerModel = Answer::create([
+                    'student_assessment_attempt_id' => $assessmentAttempt->id,
+                    'question_id' => $questionId,
+                ]);
+
+                // Store file
+                $path = $answer->store(
+                    'answers/' . $assessmentAttempt->id,
+                    'public'
+                );
+
+                // Save file record
+                $answerModel->answerFiles()->create([
+                    'file_path'  => $path,
+                    // 'uploaded_at' => now(),
+                ]);
+
+                continue;
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | MATCHING QUESTION
+        |--------------------------------------------------------------------------
+        */
             if (is_array($answer) && !array_is_list($answer) && !isset($answer['text'])) {
                 foreach ($answer as $optionId => $text) {
                     Answer::create([
@@ -92,7 +126,11 @@ class AttemptController extends Controller
                 continue;
             }
 
-            // SHORT ANSWER
+            /*
+        |--------------------------------------------------------------------------
+        | SHORT ANSWER
+        |--------------------------------------------------------------------------
+        */
             if (is_array($answer) && isset($answer['text'])) {
                 Answer::create([
                     'student_assessment_attempt_id' => $assessmentAttempt->id,
@@ -102,7 +140,11 @@ class AttemptController extends Controller
                 continue;
             }
 
-            // MCQ / TRUE-FALSE
+            /*
+        |--------------------------------------------------------------------------
+        | MCQ / TRUE-FALSE
+        |--------------------------------------------------------------------------
+        */
             Answer::create([
                 'student_assessment_attempt_id' => $assessmentAttempt->id,
                 'question_id' => $questionId,
@@ -119,6 +161,7 @@ class AttemptController extends Controller
             ])
             ->with('success', 'Assessment submitted successfully!');
     }
+
 
     /**
      * Review submitted attempt

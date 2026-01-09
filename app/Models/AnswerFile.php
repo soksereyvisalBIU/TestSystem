@@ -11,6 +11,8 @@ class AnswerFile extends Model
         'answer_id',
         'file_path',
         'uploaded_at',
+        'uploaded_at',
+        'created_at',
     ];
 
     // ========== Relation ===========

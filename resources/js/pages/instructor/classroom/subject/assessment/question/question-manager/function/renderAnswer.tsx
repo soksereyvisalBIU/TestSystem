@@ -110,6 +110,8 @@ export const renderAnswers = (q: any) => {
             // Map the media array from your API to the expected refImages
             const refImages = q?.media || [];
 
+            console.log(q);
+
             return (
                 <div className="mt-2 space-y-3">
                     {/* Constraints Header */}

@@ -1,4 +1,4 @@
-import { Check, X, CheckCircle2 } from 'lucide-react';
+import { Check, X, CheckCircle2, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 
@@ -6,8 +6,8 @@ export default function ChoiceQuestion({ question, answers }) {
     const studentSelection = answers[0]?.answer_text;
 
     return (
-        <div className="mt-4 space-y-3">
-            {question.options?.map((option) => {
+        <div className=" grid grid-cols-1 gap-3">
+            {question.options?.map((option, idx) => {
                 const isSelected = studentSelection === option.option_text;
                 const isCorrect = option.is_correct === 1;
                 
@@ -15,66 +15,83 @@ export default function ChoiceQuestion({ question, answers }) {
                 const isFalsePositive = isSelected && !isCorrect;  // Wrong answer selected
                 const isFalseNegative = !isSelected && isCorrect;  // Correct answer missed
 
+                // Generate A, B, C, D labels
+                const label = String.fromCharCode(65 + idx);
+
                 return (
                     <div
                         key={option.id}
                         className={cn(
-                            'relative flex items-center gap-4 rounded-xl border p-4 transition-all duration-200',
-                            // Base State: Card background with standard borders
-                            'border-border bg-card shadow-sm hover:border-description/30',
-                            // Success State: Using semantic success with alpha
-                            isTruePositive && 'border-success bg-success/10 ring-1 ring-success shadow-sm',
-                            // Error State: Using semantic destructive with alpha
-                            isFalsePositive && 'border-destructive bg-destructive/10 ring-1 ring-destructive/50',
-                            // Correct-but-missed: Dashed border to indicate it "should" have been picked
-                            isFalseNegative && 'border-success/50 bg-success/5 border-dashed'
+                            'group relative flex items-center gap-4 rounded-2xl border p-4 transition-all duration-300',
+                            // Base State
+                            'border-border bg-card/50 hover:bg-muted/30 hover:shadow-md',
+                            // Success State (Glassy Green)
+                            isTruePositive && 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20 ring-1 ring-emerald-500/50 shadow-emerald-100',
+                            // Error State (Glassy Red)
+                            isFalsePositive && 'border-rose-500 bg-rose-50/50 dark:bg-rose-950/20 ring-1 ring-rose-500/50 shadow-rose-100',
+                            // Correct-but-missed (Indicated via border style)
+                            isFalseNegative && 'border-emerald-500/40 bg-emerald-50/20 border-dashed'
                         )}
                     >
-                        {/* Status Icon Indicator */}
+                        {/* Letter Indicator (A, B, C, D) */}
                         <div className={cn(
-                            'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-transform',
-                            isSelected ? 'scale-110 shadow-sm' : 'scale-100',
-                            
-                            isTruePositive && 'border-success bg-success text-white',
-                            isFalsePositive && 'border-destructive bg-destructive text-white',
-                            isFalseNegative && 'border-success bg-transparent text-success',
-                            !isSelected && !isCorrect && 'border-border bg-muted text-transparent'
+                            "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-black transition-all",
+                            "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary",
+                            isTruePositive && "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30",
+                            isFalsePositive && "bg-rose-500 text-white shadow-lg shadow-rose-500/30",
+                            isFalseNegative && "bg-emerald-100 text-emerald-600 border border-emerald-500/30"
                         )}>
-                            {isTruePositive && <Check className="h-4 w-4 stroke-[3px]" />}
-                            {isFalsePositive && <X className="h-4 w-4 stroke-[3px]" />}
-                            {isFalseNegative && <CheckCircle2 className="h-4 w-4" />}
-                            {!isSelected && !isCorrect && <div className="h-1.5 w-1.5 rounded-full bg-border" />}
+                            {label}
                         </div>
 
-                        {/* Option Text */}
+                        {/* Option Text Content */}
                         <div className="flex flex-1 items-center justify-between gap-4">
                             <span className={cn(
-                                'text-sm transition-colors',
-                                isSelected ? 'font-bold text-title' : 'font-medium text-body',
-                                isFalseNegative && 'text-success font-semibold'
+                                'text-sm transition-all',
+                                isSelected ? 'font-bold text-foreground' : 'font-medium text-muted-foreground',
+                                isFalseNegative && 'text-emerald-600 dark:text-emerald-400 font-semibold italic'
                             )}>
                                 {option.option_text}
                             </span>
 
-                            {/* Contextual Badges */}
-                            <div className="flex shrink-0 gap-2">
-                                {isFalsePositive && (
-                                    <Badge variant="outline" className="border-destructive/20 bg-card text-destructive text-[10px] font-bold uppercase tracking-tight">
-                                        Incorrect Choice
-                                    </Badge>
-                                )}
-                                {isFalseNegative && (
-                                    <Badge variant="outline" className="border-success/20 bg-success/10 text-success text-[10px] font-bold uppercase tracking-tight">
-                                        The Right Answer
-                                    </Badge>
-                                )}
+                            {/* Status Icons & Badges */}
+                            <div className="flex items-center shrink-0 gap-3">
                                 {isTruePositive && (
-                                    <Badge variant="secondary" className="bg-success text-white border-none text-[10px] font-bold uppercase tracking-tight">
-                                        Perfect
-                                    </Badge>
+                                    <div className="flex items-center gap-2">
+                                        <Badge className="bg-emerald-500 hover:bg-emerald-600 text-[10px] font-black uppercase tracking-tighter py-0 h-5">
+                                            <Sparkles className="mr-1 h-3 w-3" /> Correct
+                                        </Badge>
+                                        <Check className="h-5 w-5 text-emerald-500 stroke-[3px]" />
+                                    </div>
+                                )}
+
+                                {isFalsePositive && (
+                                    <div className="flex items-center gap-2">
+                                        <Badge variant="destructive" className="text-[10px] font-black uppercase tracking-tighter py-0 h-5">
+                                            Incorrect
+                                        </Badge>
+                                        <X className="h-5 w-5 text-rose-500 stroke-[3px]" />
+                                    </div>
+                                )}
+
+                                {isFalseNegative && (
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[10px] font-black text-emerald-600 uppercase tracking-tight opacity-70">
+                                            Should have picked this
+                                        </span>
+                                        <CheckCircle2 className="h-5 w-5 text-emerald-500/60" />
+                                    </div>
                                 )}
                             </div>
                         </div>
+
+                        {/* Visual Highlighting for Selection */}
+                        {isSelected && (
+                            <div className={cn(
+                                "absolute left-0 top-1/4 h-1/2 w-1 rounded-r-full",
+                                isTruePositive ? "bg-emerald-500" : "bg-rose-500"
+                            )} />
+                        )}
                     </div>
                 );
             })}

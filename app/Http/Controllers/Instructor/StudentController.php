@@ -105,7 +105,7 @@ class StudentController extends Controller
 
         // Get the latest attempt
         $attempt = $studentAssessment->attempts()
-            ->with('answers')
+            ->with('answers.answerFiles')
             ->whereIn('status', ['submitted', 'scored'])
             ->latest()
             ->first();

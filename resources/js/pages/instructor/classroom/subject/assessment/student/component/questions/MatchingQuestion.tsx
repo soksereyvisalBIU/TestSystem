@@ -3,7 +3,7 @@ import { Check, X, ArrowRight, CornerDownRight } from 'lucide-react';
 
 export default function MatchingQuestion({ question, answers }) {
     return (
-        <div className="mt-4 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
             {/* Table Header: Using bg-muted/80 and text-description */}
             <div className="grid grid-cols-12 bg-muted/80 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-description border-b border-border">
                 <div className="col-span-5">Term / Prompt</div>
@@ -71,7 +71,8 @@ export default function MatchingQuestion({ question, answers }) {
                                 {!isCorrect && (
                                     <div className="mt-1 flex items-center gap-1.5 text-[11px] font-bold text-success">
                                         <CornerDownRight className="h-3 w-3" />
-                                        <span>Correct Key: {option.match_key}</span>
+                                        <span>Correct Key: {option.option_text}</span>
+                                        {/* <span>Correct Key: {option.match_key}</span> */}
                                     </div>
                                 )}
                             </div>

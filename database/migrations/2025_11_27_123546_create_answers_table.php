@@ -33,7 +33,7 @@ return new class extends Migration
             $table->string('file_path');
             $table->string('file_name');
             $table->bigInteger('file_size')->nullable();
-            $table->timestamp('uploaded_at')->useCurrent();
+            $table->timestamps();
         });
 
         // ASSESSMENT ANSWER HISTORY
@@ -48,6 +48,7 @@ return new class extends Migration
             $table->integer('version_number')->default(1);
             $table->string('status')->default('draft'); // autosaved, draft, submitted
             $table->timestamp('saved_at')->useCurrent();
+            $table->timestamps();
         });
     }
 

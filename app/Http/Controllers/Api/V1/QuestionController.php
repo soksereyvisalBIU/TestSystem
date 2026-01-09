@@ -102,9 +102,9 @@ class QuestionController extends Controller
                 /**
                  * 1️⃣ Save reference images (base64 → file → DB)
                  */
-                if ($request->filled('referenceImages') && is_array($request->referenceImages)) {
+                if ($request->filled('media') && is_array($request->media)) {
 
-                    foreach ($request->referenceImages as $base64Image) {
+                    foreach ($request->media as $base64Image) {
 
                         if (! str_starts_with($base64Image, 'data:image')) {
                             continue;
@@ -234,9 +234,9 @@ class QuestionController extends Controller
                 /**
                  * 1️⃣ Save reference images (base64 → file → DB)
                  */
-                if ($request->filled('referenceImages') && is_array($request->referenceImages)) {
+                if ($request->filled('media') && is_array($request->media)) {
 
-                    foreach ($request->referenceImages as $base64Image) {
+                    foreach ($request->media as $base64Image) {
 
                         if (! str_starts_with($base64Image, 'data:image')) {
                             continue;
@@ -338,7 +338,8 @@ class QuestionController extends Controller
             case 'fileupload':
                 $rules['accepted_file_types'] = ['required', 'string'];
                 $rules['maxSize']  = ['nullable', 'integer', 'min:1'];
-                $rules['referenceImages'] = ['nullable', 'array'];
+                $rules['media'] = ['nullable', 'array'];
+                // $rules['media'] = ['nullable', 'array'];
                 break;
         }
 
