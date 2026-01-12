@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Models\Classroom;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 
 class ClassroomController extends Controller
 {
@@ -24,21 +26,70 @@ class ClassroomController extends Controller
     //     return Inertia::render('student/classroom/Index', compact('classrooms'));
     // }
 
+    //     public function index(Request $request)
+    // {
+    //     $student = auth()->user();
+
+    //     $classrooms = Classroom::query()
+    //         ->whereIn('visibility', ['public', 'protected'])
+    //         ->when($request->filled('year'), function ($q) use ($request) {
+    //             $q->where('year', $request->year);
+    //         })
+    //         ->withCount([
+    //             // adds joined = 1 if student joined, 0 if not
+    //             'students as joined' => function ($q) use ($student) {
+    //                 $q->where('student_id', $student->id);
+    //             }
+    //         ])
+    //         ->paginate(10)
+    //         ->withQueryString();
+
+    //     return Inertia::render('student/classroom/Index', [
+    //         'classrooms' => $classrooms
+    //     ]);
+    // }
+
     public function index(Request $request)
     {
-        $query = Classroom::query()
-            ->where('visibility', 'public');
+        $student = auth()->user();
 
-        if ($request->filled('year')) {
-            $query->where('year', $request->year);
-        }
+        $classrooms = Classroom::query()
+            ->where(function ($q) use ($student) {
 
-        $classrooms = $query->paginate(10)->withQueryString();
+                // Public & Protected → everyone can see
+                $q->whereIn('visibility', ['public', 'protected'])
+
+                    // OR private but joined by this student
+                    ->orWhere(function ($q) use ($student) {
+                        $q->where('visibility', 'private')
+                            ->whereHas('students', function ($q) use ($student) {
+                                $q->where('student_classroom.user_id', $student->id);
+                            });
+                    });
+            })
+            ->when(
+                $request->filled('year'),
+                fn($q) =>
+                $q->where('year', $request->year)
+            )
+            ->withCount([
+                // attach joined flag
+                'students as joined' => function ($q) use ($student) {
+                    $q->where('student_classroom.user_id', $student->id);
+                }
+            ])
+            ->paginate(10)
+            ->withQueryString();
+
+        // dd($classrooms);
 
         return Inertia::render('student/classroom/Index', [
-            'classrooms' => $classrooms,
+            'classrooms' => $classrooms
         ]);
     }
+
+
+
 
 
     /**
@@ -60,11 +111,42 @@ class ClassroomController extends Controller
     /**
      * Display the specified resource.
      */
+    // public function show(string $id)
+    // {
+    //     $classroom = Classroom::with('subjects')->findOrFail($id);
+    //     return Inertia::render('student/classroom/Show', compact('classroom'));
+    // }
     public function show(string $id)
     {
-        $classroom = Classroom::with('subjects')->findOrFail($id);
-        return Inertia::render('student/classroom/Show', compact('classroom'));
+        $classroom = Classroom::findOrFail($id);
+
+        // Private classroom protection
+        if ($classroom->visibility === 'private') {
+            $isMember = auth()->user()
+                ->classrooms()
+                ->where('classroom_id', $id)
+                ->exists();
+
+            if (!$isMember) {
+                abort(403, 'This classroom is private.');
+            }
+        }
+
+        $classroom->load(['subjects']);
+
+        // Check if user joined
+        $isJoined = $classroom->students()
+            ->where('user_id', auth()->id())
+            ->exists();
+
+        // dd($isJoin);
+
+        return Inertia::render('student/classroom/Show', [
+            'classroom' => $classroom,
+            'isJoined' => $isJoined,
+        ]);
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -89,4 +171,43 @@ class ClassroomController extends Controller
     {
         //
     }
+
+    public function join(Request $request)
+    {
+        // dd($request->code);
+        $request->validate([
+            'code' => 'required|string|size:8',
+        ]);
+
+
+        $classroom = Classroom::where('code', strtoupper($request->code))->first();
+
+        // 1. Check if class exists
+        if (!$classroom) {
+            return back()->withErrors(['code' => 'The provided class code is invalid.']);
+        }
+
+        // 2. Check if user is already in the class
+        if ($classroom->students()->where('user_id', Auth::id())->exists()) {
+            return back()->withErrors(['code' => 'You are already a member of this class.']);
+        }
+
+        // 3. Attach student
+        $classroom->students()->attach(Auth::id());
+
+        return back()->with('success', "Welcome to {$classroom->name}!");
+    }
+
+    // public function join(string $code){
+
+    //     if(Str::length($code) != 8)
+    //         return;
+
+    //     $classroom = Classroom::where('code' , $code)->get();
+
+    //     if($classroom){
+    //         Auth::user()->classrooms()->attach($classroom->id);
+    //         return back();
+    //     }
+    // }
 }

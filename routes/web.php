@@ -72,6 +72,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::resource('classes', App\Http\Controllers\Student\ClassroomController::class)
             ->names('classes');
+        Route::post('join-class', [App\Http\Controllers\Student\ClassroomController::class , 'join'])
+            ->name('class.join');
 
         Route::resource('classes.subjects', App\Http\Controllers\Student\SubjectController::class)
             ->names('classes.subjects');

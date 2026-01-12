@@ -60,17 +60,28 @@ class User extends Authenticatable
 
     public function studentAssessmentAttempt()
     {
-        return $this->belongsToMany(
-            StudentAssessment::class,
-            'student_assessment_attempts',
-            'assessment_id', // pivot FK to assessment
-            'user_id'        // pivot FK to user
-        )
-            ->withPivot(['status', 'started_at' , 'completed_at' ])
-            ->withTimestamps();
+        // return $this->belongsToMany(
+        //     StudentAssessment::class,
+        //     'student_assessment_attempts',
+        //     'assessment_id', // pivot FK to assessment
+        //     'user_id',        // pivot FK to user
+        // )
+        //     ->withPivot(['status', 'started_at', 'completed_at'])
+        //     ->withTimestamps();
     }
 
+
     // ==================
+
+    public function classrooms()
+    {
+        return $this->belongsToMany(
+            Classroom::class,
+            'student_classroom',
+            'user_id',
+            'classroom_id'
+        );
+    }
 
 
 
@@ -85,17 +96,12 @@ class User extends Authenticatable
         return $this->hasMany(Classroom::class, 'creator_id');
     }
 
-    public function instructorClasses()
-    {
-        return $this->hasMany(Classroom::class, 'instructor_id');
-    }
-
     public function studentClassrooms()
     {
         return $this->belongsToMany(
             Classroom::class,
             'student_classroom', // pivot table
-            'student_id',       // foreign key on pivot referring to users
+            'user_id',       // foreign key on pivot referring to users
             'classroom_id'      // foreign key on pivot referring to classrooms
         );
     }
@@ -132,6 +138,7 @@ class User extends Authenticatable
         return $this->hasMany(Assessment::class, 'created_by');
     }
 
+    //
     public function studentCourses()
     {
         return $this->hasMany(StudentCourse::class, 'student_id');

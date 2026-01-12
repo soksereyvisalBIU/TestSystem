@@ -1,13 +1,6 @@
-import ClassModal from '@/components/instructor/modal/class-modal';
-// import ClassCard from '@/components/student/card/class-card';
 import ClassCard from '@/components/cards/classrooms/classroom-card';
+import JoinClassModal from '@/components/student/modal/join-class-modal';
 import { Button } from '@/components/ui/button';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
-import { Head, router, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
-
 import {
     Pagination,
     PaginationContent,
@@ -16,176 +9,150 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
-import { UserPlus } from 'lucide-react';
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem, type ClassroomPagination } from '@/types'; // Assumed type location
+import { Head, router, usePage } from '@inertiajs/react';
+import { BookOpen, UserPlus, Filter, LayoutGrid } from 'lucide-react';
+import { useState, useMemo } from 'react';
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Class', href: '/' }];
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Class', href: '/classrooms' }];
 
-interface ClassroomPagination {
-    data: any[];
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    links: {
-        url: string | null;
-        label: string;
-        active: boolean;
-        page: number | null;
-    }[];
-}
+export default function SubjectIndex({ classrooms }: { classrooms: ClassroomPagination }) {
+    const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+    
+    // Use URL search params for filtering to keep state on refresh
+    const { url } = usePage();
+    const showJoinedOnly = new URLSearchParams(window.location.search).get('filter') === 'joined';
 
-export default function SubjectIndex({
-    classrooms,
-}: {
-    classrooms: ClassroomPagination;
-}) {
-    // const { flash } = usePage().props as {
-    //     flash?: { success?: string; error?: string };
-    // };
-
-    // // Modal State
-    // const [modalData, setModalData] = useState({
-    //     open: false,
-    //     mode: 'create' as 'create' | 'edit',
-    //     classData: null as any,
-    // });
-
-    // const openCreate = () =>
-    //     setModalData({ open: true, mode: 'create', classData: null });
-
-    // const openEdit = (item: any) =>
-    //     setModalData({ open: true, mode: 'edit', classData: item });
-
-    // Flash Toast
-    // useEffect(() => {
-    //     if (flash?.success) toast.success(flash.success);
-    //     if (flash?.error) toast.error(flash.error);
-    // }, [flash]);
-
-    /** ⛔ No Full Page Refresh Pagination */
-    const handlePageChange = (url: string | null) => {
-        if (!url) return;
-
-        router.get(
-            url,
-            {},
-            {
-                preserveScroll: true,
-                preserveState: true,
-                replace: true, // Makes browser history cleaner
-            },
-        );
+    const handleFilterToggle = () => {
+        const nextFilter = showJoinedOnly ? undefined : 'joined';
+        router.get(route('classrooms.index'), { filter: nextFilter }, { 
+            preserveState: true, 
+            preserveScroll: true 
+        });
     };
+
+    const handlePageChange = (url: string | null) => {
+        if (url) router.get(url, {}, { preserveScroll: true, preserveState: true });
+    };
+
+    // Memoize sorted data to prevent unnecessary re-renders
+    const displayedClassrooms = useMemo(() => {
+        let items = [...classrooms.data];
+        if (showJoinedOnly) {
+            items = items.filter((c) => c.joined);
+        }
+        return items.sort((a, b) => Number(b.joined) - Number(a.joined));
+    }, [classrooms.data, showJoinedOnly]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Classes" />
+            <Head title="My Classes" />
 
-            <Head title="Classes" />
-
-            {/* Subtle Background Decoration */}
+            {/* Background Aesthetic */}
             <div className="absolute inset-0 -z-10 bg-[radial-gradient(45%_40%_at_50%_60%,rgba(59,130,246,0.03),transparent)]" />
 
-            <div className="space-y-8 p-6 lg:p-10">
-                {/* Refined Header */}
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <h2 className="text-3xl font-extrabold tracking-tight">
-                            Classrooms
-                        </h2>
-                        <p className="text-sm text-muted-foreground">
-                            Manage your learning environments and student
-                            groups.
+            <div className="container mx-auto space-y-8 p-6 lg:p-10">
+                {/* Header Section */}
+                <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+                    <div className="space-y-1">
+                        <h2 className="text-3xl font-bold tracking-tight text-foreground">Classrooms</h2>
+                        <p className="text-muted-foreground">
+                            {showJoinedOnly 
+                                ? "Viewing your enrolled learning environments." 
+                                : "Explore available classes and manage your groups."}
                         </p>
                     </div>
-                    <div className="flex items-center gap-3">
+
+                    <div className="flex flex-wrap items-center gap-3">
                         <Button
-                            // variant="outline"
-                            size={'lg'}
-                            className="rounded-full shadow-sm"
+                            variant="outline"
+                            onClick={handleFilterToggle}
+                            className="rounded-xl"
+                        >
+                            <Filter className="mr-2 h-4 w-4" />
+                            {showJoinedOnly ? 'Showing Joined' : 'Filter: All'}
+                        </Button>
+                        
+                        <Button
+                            onClick={() => setIsJoinModalOpen(true)}
+                            className="rounded-xl bg-primary shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]"
                         >
                             <UserPlus className="mr-2 h-4 w-4" /> Join Class
                         </Button>
-                        {/* Instructor only button could go here */}
                     </div>
                 </div>
 
-                {/* Grid with better spacing */}
-                <div className="grid gap-5 xs:gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {classrooms.data?.map((classroom) => (
-                        <ClassCard
-                            key={classroom.id}
-                            classroom={classroom}
-                            onEdit={() => openEdit(classroom)}
-                        />
-                    ))}
-                </div>
+                {/* Content Grid */}
+                {displayedClassrooms.length > 0 ? (
+                    <div className="grid gap-6 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        {displayedClassrooms.map((classroom) => (
+                            <ClassCard
+                                key={classroom.id}
+                                classroom={classroom}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <EmptyState isFiltering={showJoinedOnly} />
+                )}
 
-                {/* Elegant Pagination */}
-                <div className="mt-10 flex justify-center border-t pt-8">
-                    <Pagination>
-                        <PaginationContent className="rounded-full border bg-background/50 p-1 backdrop-blur-sm">
-                            <PaginationItem>
-                                <PaginationPrevious
-                                    onClick={() =>
-                                        handlePageChange(
-                                            classrooms.links[0]?.url,
-                                        )
-                                    }
-                                    className={
-                                        !classrooms.links[0]?.url
-                                            ? 'opacity-30'
-                                            : 'cursor-pointer hover:bg-accent'
-                                    }
-                                />
-                            </PaginationItem>
-
-                            {classrooms.links.slice(1, -1).map((link, i) => (
-                                <PaginationItem key={i}>
-                                    <PaginationLink
-                                        onClick={() =>
-                                            handlePageChange(link.url)
-                                        }
-                                        isActive={link.active}
-                                        className="cursor-pointer rounded-full"
-                                        dangerouslySetInnerHTML={{
-                                            __html: link.label,
-                                        }}
+                {/* Refined Pagination */}
+                {!showJoinedOnly && classrooms.last_page > 1 && (
+                    <div className="mt-12 flex flex-col items-center gap-4 border-t pt-8">
+                         <p className="text-xs text-muted-foreground text-center">
+                            Showing page {classrooms.current_page} of {classrooms.last_page}
+                        </p>
+                        <Pagination>
+                            <PaginationContent className="rounded-xl border bg-background/50 p-1 backdrop-blur-sm">
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        onClick={() => handlePageChange(classrooms.links[0]?.url)}
+                                        className={!classrooms.links[0]?.url ? 'pointer-events-none opacity-30' : 'cursor-pointer'}
                                     />
                                 </PaginationItem>
-                            ))}
 
-                            <PaginationItem>
-                                <PaginationNext
-                                    onClick={() =>
-                                        handlePageChange(
-                                            classrooms.links[
-                                                classrooms.links.length - 1
-                                            ]?.url,
-                                        )
-                                    }
-                                    className={
-                                        !classrooms.links[
-                                            classrooms.links.length - 1
-                                        ]?.url
-                                            ? 'opacity-30'
-                                            : 'cursor-pointer hover:bg-accent'
-                                    }
-                                />
-                            </PaginationItem>
-                        </PaginationContent>
-                    </Pagination>
-                </div>
+                                {classrooms.links.slice(1, -1).map((link, i) => (
+                                    <PaginationItem key={i} className="hidden sm:inline-block">
+                                        <PaginationLink
+                                            onClick={() => handlePageChange(link.url)}
+                                            isActive={link.active}
+                                            className="cursor-pointer rounded-lg"
+                                            dangerouslySetInnerHTML={{ __html: link.label }}
+                                        />
+                                    </PaginationItem>
+                                ))}
+
+                                <PaginationItem>
+                                    <PaginationNext
+                                        onClick={() => handlePageChange(classrooms.links[classrooms.links.length - 1]?.url)}
+                                        className={!classrooms.links[classrooms.links.length - 1]?.url ? 'pointer-events-none opacity-30' : 'cursor-pointer'}
+                                    />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
+                    </div>
+                )}
             </div>
 
-            {/* Modal */}
-            {/* <ClassModal
-                isOpen={modalData.open}
-                mode={modalData.mode}
-                classData={modalData.classData}
-                setIsOpen={(open) =>
-                    setModalData((prev) => ({ ...prev, open }))
-                }
-            /> */}
+            <JoinClassModal isOpen={isJoinModalOpen} setIsOpen={setIsJoinModalOpen} />
         </AppLayout>
+    );
+}
+
+// Sub-component for Empty State
+function EmptyState({ isFiltering }: { isFiltering: boolean }) {
+    return (
+        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border border-dashed p-10 text-center">
+            <div className="rounded-full bg-muted p-4">
+                <BookOpen className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <h3 className="mt-4 text-lg font-semibold">No classrooms found</h3>
+            <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
+                {isFiltering 
+                    ? "You haven't joined any classes yet. Try switching to 'All Classes' to see what's available."
+                    : "There are currently no classes available for your account."}
+            </p>
+        </div>
     );
 }

@@ -46,7 +46,7 @@ export default function Modal({
                2. h-fit ensures it doesn't take full height if content is small 
             */}
             <DialogContent 
-                className={`${sizeClasses} w-[95vw] max-h-[90vh] flex flex-col p-0 overflow-hidden gap-0`}
+                className={`${sizeClasses} w-[95vw] max-h-[95vh] flex flex-col p-0 overflow-hidden gap-0`}
             >
                 <DialogHeader className="p-6 pb-2 border-b border-slate-50">
                     <DialogTitle>{title}</DialogTitle>

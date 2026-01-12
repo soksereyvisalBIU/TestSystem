@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
     AlertCircle,
@@ -10,7 +11,6 @@ import {
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import axios from 'axios';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,8 +24,8 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import Modal from './Modal';
 import { route } from 'ziggy-js';
+import Modal from './Modal';
 
 // --- Improved Helper Components ---
 
@@ -82,19 +82,25 @@ export default function ClassModal({
         year: '',
         semester: '',
         shift: '',
+        visibility: '',
         cover: null as File | null,
     });
 
     const isEdit = useMemo(() => !!classData?.id, [classData]);
 
     // 2. TanStack Mutation Setup
-    const { mutate, isPending, error: mutationError, reset: resetMutation } = useMutation({
+    const {
+        mutate,
+        isPending,
+        error: mutationError,
+        reset: resetMutation,
+    } = useMutation({
         mutationFn: async (vars: { id?: number; payload: FormData }) => {
-            const url = vars.id 
-                ? route('instructor.classes.update', vars.id) 
+            const url = vars.id
+                ? route('instructor.classes.update', vars.id)
                 : route('instructor.classes.store');
-            
-            // Note: We use axios.post even for updates because of Laravel's 
+
+            // Note: We use axios.post even for updates because of Laravel's
             // multipart/form-data limitations with PUT
             const response = await axios.post(url, vars.payload, {
                 headers: { 'Content-Type': 'multipart/form-data' },
@@ -104,16 +110,20 @@ export default function ClassModal({
         onSuccess: () => {
             // Invalidate the list query to trigger a refresh
             queryClient.invalidateQueries({ queryKey: ['instructor-classes'] });
-            
-            toast.success(`Success! Class has been ${isEdit ? 'updated' : 'created'}.`, {
-                icon: <CheckCircle2 className="h-4 w-4 text-green-500" />,
-            });
+
+            toast.success(
+                `Success! Class has been ${isEdit ? 'updated' : 'created'}.`,
+                {
+                    icon: <CheckCircle2 className="h-4 w-4 text-green-500" />,
+                },
+            );
             setIsOpen(false);
         },
         onError: (err: any) => {
-            const message = err.response?.data?.message || "Something went wrong";
+            const message =
+                err.response?.data?.message || 'Something went wrong';
             toast.error(message);
-        }
+        },
     });
 
     // Extract validation errors from Axios response
@@ -133,13 +143,22 @@ export default function ClassModal({
                     year: String(classData.year ?? ''),
                     semester: String(classData.semester ?? ''),
                     shift: classData.shift ?? '',
+                    visibility: classData.visibility ?? '',
                     cover: null,
                 });
                 setPreview(classData.cover_url ?? null);
             } else {
                 setFormData({
-                    name: '', description: '', campus: '', major: '', 
-                    batch: '', year: '', semester: '', shift: '', cover: null 
+                    name: '',
+                    description: '',
+                    campus: '',
+                    major: '',
+                    batch: '',
+                    year: '',
+                    semester: '',
+                    shift: '',
+                    visibility: '',
+                    cover: null,
                 });
                 setPreview(null);
             }
@@ -151,14 +170,14 @@ export default function ClassModal({
             toast.error('Image too large. Max 2MB.');
             return;
         }
-        setFormData(prev => ({ ...prev, cover: file }));
+        setFormData((prev) => ({ ...prev, cover: file }));
         if (preview?.startsWith('blob:')) URL.revokeObjectURL(preview);
         setPreview(URL.createObjectURL(file));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         const payload = new FormData();
         // Append all text fields
         Object.entries(formData).forEach(([key, value]) => {
@@ -176,7 +195,7 @@ export default function ClassModal({
     };
 
     const updateField = (field: string, value: any) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
+        setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
     return (
@@ -187,31 +206,43 @@ export default function ClassModal({
             title={isEdit ? 'Edit Class' : 'New Class'}
             className="rounded-l-[2rem] rounded-r-none"
         >
-            <form onSubmit={handleSubmit} className="space-y-6 py-4">
+            <form onSubmit={handleSubmit} className="space-y-6 py-4 pt-0">
                 {/* 1. Image Upload */}
                 <div className="space-y-3">
                     <StyledLabel error={errors.cover}>Cover Image</StyledLabel>
                     <motion.div
-                        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                        onDragOver={(e) => {
+                            e.preventDefault();
+                            setIsDragging(true);
+                        }}
                         onDragLeave={() => setIsDragging(false)}
                         onDrop={(e) => {
                             e.preventDefault();
                             setIsDragging(false);
-                            if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+                            if (e.dataTransfer.files[0])
+                                handleFile(e.dataTransfer.files[0]);
                         }}
                         onClick={() => fileInputRef.current?.click()}
                         className={cn(
                             'group relative h-36 w-full cursor-pointer overflow-hidden rounded-[1.5rem] border-2 border-dashed transition-all duration-300',
-                            isDragging ? 'scale-[0.98] border-primary bg-primary/5' : 'border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/50',
-                            errors.cover && 'border-destructive/50 bg-destructive/5',
+                            isDragging
+                                ? 'scale-[0.98] border-primary bg-primary/5'
+                                : 'border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/50',
+                            errors.cover &&
+                                'border-destructive/50 bg-destructive/5',
                         )}
                     >
                         {preview ? (
                             <div className="relative h-full w-full">
-                                <img src={preview} alt="Preview" className="h-full w-full object-cover" />
+                                <img
+                                    src={preview}
+                                    alt="Preview"
+                                    className="h-full w-full object-cover"
+                                />
                                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 backdrop-blur-[2px] transition-opacity group-hover:opacity-100">
                                     <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold text-black">
-                                        <Upload className="h-3.5 w-3.5" /> Replace Photo
+                                        <Upload className="h-3.5 w-3.5" />{' '}
+                                        Replace Photo
                                     </div>
                                 </div>
                                 <Button
@@ -234,8 +265,12 @@ export default function ClassModal({
                                     <ImageIcon className="h-8 w-8 text-slate-400 transition-colors group-hover:text-primary" />
                                 </div>
                                 <div className="px-4 text-center">
-                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Drop your image here</p>
-                                    <p className="text-xs text-slate-400">or click to browse (Max 2MB)</p>
+                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                                        Drop your image here
+                                    </p>
+                                    <p className="text-xs text-slate-400">
+                                        or click to browse (Max 2MB)
+                                    </p>
                                 </div>
                             </div>
                         )}
@@ -246,57 +281,101 @@ export default function ClassModal({
                 {/* 2. Content */}
                 <div className="grid gap-6">
                     <div className="space-y-1.5">
-                        <StyledLabel required error={errors.name}>Class Title</StyledLabel>
+                        <StyledLabel required error={errors.name}>
+                            Class Title
+                        </StyledLabel>
                         <Input
                             placeholder="e.g. Design Systems 101"
                             value={formData.name}
-                            onChange={(e) => updateField('name', e.target.value)}
+                            onChange={(e) =>
+                                updateField('name', e.target.value)
+                            }
                             className="h-12 rounded-xl border-none bg-slate-50 font-medium ring-1 ring-slate-200 transition-all focus-visible:ring-2 focus-visible:ring-primary dark:bg-slate-900 dark:ring-slate-800"
                         />
                         <ErrorMessage message={errors.name?.[0]} />
                     </div>
 
                     <div className="space-y-1.5">
-                        <StyledLabel error={errors.description}>About this class</StyledLabel>
+                        <StyledLabel error={errors.description}>
+                            About this class
+                        </StyledLabel>
                         <Textarea
                             placeholder="Provide a brief syllabus overview..."
                             value={formData.description}
-                            onChange={(e) => updateField('description', e.target.value)}
-                            className="min-h-[120px] resize-none rounded-xl border-none bg-slate-50 p-4 ring-1 ring-slate-200 transition-all focus-visible:ring-2 focus-visible:ring-primary dark:bg-slate-900 dark:ring-slate-800"
+                            onChange={(e) =>
+                                updateField('description', e.target.value)
+                            }
+                            className="min-h-[80px] resize-none rounded-xl border-none bg-slate-50 p-4 ring-1 ring-slate-200 transition-all focus-visible:ring-2 focus-visible:ring-primary dark:bg-slate-900 dark:ring-slate-800"
                         />
                         <ErrorMessage message={errors.description?.[0]} />
+                    </div>
+                    <div className="space-y-1.5">
+                        <StyledLabel error={errors.visibility}>Visibility</StyledLabel>
+                        <Select
+                            value={formData.visibility}
+                            onValueChange={(v) => updateField('visibility', v)}
+                        >
+                            <SelectTrigger className="h-11 rounded-xl border-none bg-slate-50 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+                                <SelectValue placeholder="Select visibility" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl">
+                                <SelectItem value="public">Public</SelectItem>
+                                <SelectItem value="private">Private</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <ErrorMessage message={errors.visibility?.[0]} />
                     </div>
 
                     {/* 3. Categorization */}
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div className="space-y-1.5">
-                            <StyledLabel error={errors.campus}>Campus</StyledLabel>
-                            <Select value={formData.campus} onValueChange={(v) => updateField('campus', v)}>
+                            <StyledLabel error={errors.campus}>
+                                Campus
+                            </StyledLabel>
+                            <Select
+                                value={formData.campus}
+                                onValueChange={(v) => updateField('campus', v)}
+                            >
                                 <SelectTrigger className="h-11 rounded-xl border-none bg-slate-50 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
                                     <SelectValue placeholder="Select Campus" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl">
-                                    <SelectItem value="1">Main Campus</SelectItem>
-                                    <SelectItem value="2">City Branch</SelectItem>
+                                    <SelectItem value="1">
+                                        Main Campus
+                                    </SelectItem>
+                                    <SelectItem value="2">
+                                        City Branch
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
                             <ErrorMessage message={errors.campus?.[0]} />
                         </div>
 
                         <div className="space-y-1.5">
-                            <StyledLabel error={errors.major}>Major</StyledLabel>
-                            <Select value={formData.major} onValueChange={(v) => updateField('major', v)}>
+                            <StyledLabel error={errors.major}>
+                                Major
+                            </StyledLabel>
+                            <Select
+                                value={formData.major}
+                                onValueChange={(v) => updateField('major', v)}
+                            >
                                 <SelectTrigger className="h-11 rounded-xl border-none bg-slate-50 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
                                     <SelectValue placeholder="Select Major" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl">
-                                            {/* $majorMap = [
+                                    {/* $majorMap = [
                                                 "Software Engineering" => 1,
                                                 "Computer Networking"  => 2,
                                                 "Multimedia Design"    => 3,
                                             ]; */}
-                                    {['Software Engineering', 'Computer Networking', 'Multimedia Design'].map((m) => (
-                                        <SelectItem key={m} value={m}>{m}</SelectItem>
+                                    {[
+                                        'Software Engineering',
+                                        'Computer Networking',
+                                        'Multimedia Design',
+                                    ].map((m) => (
+                                        <SelectItem key={m} value={m}>
+                                            {m}
+                                        </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
@@ -307,27 +386,49 @@ export default function ClassModal({
                     {/* 4. Metadata */}
                     <div className="grid grid-cols-4 gap-4 rounded-[1.5rem] bg-slate-50 p-5 ring-1 ring-slate-200 dark:bg-slate-900/50 dark:ring-slate-800">
                         <div className="col-span-1">
-                            <StyledLabel error={errors.batch}>Batch</StyledLabel>
+                            <StyledLabel error={errors.batch}>
+                                Batch
+                            </StyledLabel>
                             <Input
                                 type="number"
                                 value={formData.batch}
-                                onChange={(e) => updateField('batch', e.target.value)}
+                                onChange={(e) =>
+                                    updateField('batch', e.target.value)
+                                }
                                 className="h-10 rounded-lg"
                             />
                         </div>
                         <div className="col-span-1">
                             <StyledLabel error={errors.year}>Year</StyledLabel>
-                            <Select value={formData.year} onValueChange={(v) => updateField('year', v)}>
-                                <SelectTrigger className="h-10 rounded-lg"><SelectValue placeholder="Y" /></SelectTrigger>
+                            <Select
+                                value={formData.year}
+                                onValueChange={(v) => updateField('year', v)}
+                            >
+                                <SelectTrigger className="h-10 rounded-lg">
+                                    <SelectValue placeholder="Y" />
+                                </SelectTrigger>
                                 <SelectContent className="rounded-lg">
-                                    {[1, 2, 3, 4].map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
+                                    {[1, 2, 3, 4].map((y) => (
+                                        <SelectItem key={y} value={String(y)}>
+                                            {y}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>
                         <div className="col-span-1">
-                            <StyledLabel error={errors.semester}>Sem.</StyledLabel>
-                            <Select value={formData.semester} onValueChange={(v) => updateField('semester', v)}>
-                                <SelectTrigger className="h-10 rounded-lg"><SelectValue placeholder="S" /></SelectTrigger>
+                            <StyledLabel error={errors.semester}>
+                                Sem.
+                            </StyledLabel>
+                            <Select
+                                value={formData.semester}
+                                onValueChange={(v) =>
+                                    updateField('semester', v)
+                                }
+                            >
+                                <SelectTrigger className="h-10 rounded-lg">
+                                    <SelectValue placeholder="S" />
+                                </SelectTrigger>
                                 <SelectContent className="rounded-lg">
                                     <SelectItem value="1">S1</SelectItem>
                                     <SelectItem value="2">S2</SelectItem>
@@ -335,9 +436,16 @@ export default function ClassModal({
                             </Select>
                         </div>
                         <div className="col-span-1">
-                            <StyledLabel error={errors.shift}>Shift</StyledLabel>
-                            <Select value={formData.shift} onValueChange={(v) => updateField('shift', v)}>
-                                <SelectTrigger className="h-10 rounded-lg capitalize"><SelectValue placeholder="Shift" /></SelectTrigger>
+                            <StyledLabel error={errors.shift}>
+                                Shift
+                            </StyledLabel>
+                            <Select
+                                value={formData.shift}
+                                onValueChange={(v) => updateField('shift', v)}
+                            >
+                                <SelectTrigger className="h-10 rounded-lg capitalize">
+                                    <SelectValue placeholder="Shift" />
+                                </SelectTrigger>
                                 <SelectContent className="rounded-lg">
                                     {/* $shiftMap = [
                                         "Morning"   => 1,
@@ -345,8 +453,19 @@ export default function ClassModal({
                                         "Evening"   => 3,
                                         "Weekend"   => 4,
                                     ]; */}
-                                    {['Morning', 'Afternoon', 'Evening', 'Weekend'].map((s) => (
-                                        <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>
+                                    {[
+                                        'Morning',
+                                        'Afternoon',
+                                        'Evening',
+                                        'Weekend',
+                                    ].map((s) => (
+                                        <SelectItem
+                                            key={s}
+                                            value={s}
+                                            className="capitalize"
+                                        >
+                                            {s}
+                                        </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
@@ -371,7 +490,11 @@ export default function ClassModal({
                     >
                         {isPending ? (
                             <Loader2 className="h-5 w-5 animate-spin" />
-                        ) : isEdit ? 'Update Details' : 'Launch Class'}
+                        ) : isEdit ? (
+                            'Update Details'
+                        ) : (
+                            'Launch Class'
+                        )}
                     </Button>
                 </div>
             </form>
@@ -380,7 +503,9 @@ export default function ClassModal({
                 ref={fileInputRef}
                 className="hidden"
                 accept="image/*"
-                onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
+                onChange={(e) =>
+                    e.target.files?.[0] && handleFile(e.target.files[0])
+                }
             />
         </Modal>
     );

@@ -123,7 +123,7 @@ export function ClassroomHeader({ classroom }: any) {
                         </div>
 
                         {/* Heading - Explicitly white for image contrast */}
-                        <h1 className="text-lg sm:text-4xl font-[1000] tracking-tighter text-white uppercase md:text-6xl drop-shadow-2xl">
+                        <h1 className="text-3xl sm:text-4xl font-[1000] tracking-tighter text-white uppercase md:text-6xl drop-shadow-2xl">
                             {classroom.name}
                         </h1>
 

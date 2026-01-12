@@ -16,12 +16,30 @@ class Classroom extends Model
         'batch',
         'year',
         'semester',
+        'visibility',
         'shift',
         'cover',
         'creator_id',
+        'code', // for private classroom
     ];
 
-    public function subjects(){
-        return $this->hasMany(Subject::class, 'class_id' , 'id');
+    public function subjects()
+    {
+        return $this->hasMany(Subject::class, 'class_id', 'id');
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'creator_id', 'id');
+    }
+
+    public function students()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'student_classroom',
+            'classroom_id',
+            'user_id'
+        );
     }
 }

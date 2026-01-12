@@ -19,6 +19,10 @@ class Assessment extends Model
         'created_by',
     ];
 
+    public function classroom(){
+        // return $this->hasOneThrough('subject_assessments' , );
+        
+    }
     public function studentAssessment()
     {
         return $this->hasOne(StudentAssessment::class, 'assessment_id')

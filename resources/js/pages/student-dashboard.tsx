@@ -1,310 +1,635 @@
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link } from '@inertiajs/react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
-    Activity,
     AlertCircle,
+    ArrowRight,
     ArrowUpRight,
-    BookOpen,
     CheckCircle2,
+    ChevronRight,
     Clock,
+    Compass,
     GraduationCap,
-    MapPin,
-    MoreHorizontal,
+    Plus,
+    Rocket,
+    Target,
+    Timer,
     TrendingUp,
-    Video,
+    Zap,
 } from 'lucide-react';
+import { useMemo, useState } from 'react';
 
-const stats = [
-    {
-        label: 'Current GPA',
-        value: '3.8',
-        trend: '+0.2',
-        icon: TrendingUp,
-        color: 'text-success',
-        bg: 'bg-success/10',
-    },
-    {
-        label: 'Attendance',
-        value: '94%',
-        trend: 'Good',
-        icon: CheckCircle2,
-        color: 'text-primary',
-        bg: 'bg-primary/10',
-    },
-    {
-        label: 'Pending Tasks',
-        value: '4',
-        trend: 'Urgent',
-        icon: AlertCircle,
-        color: 'text-destructive',
-        bg: 'bg-destructive/10',
-    },
-];
+export default function StudentDashboard({ student }) {
+    // --- 1. CORE DATA INITIALIZATION ---
+    const classrooms = student?.student_classrooms || [];
+    const submissions = student?.student_assessment || [];
+    const isNewUser = classrooms.length === 0;
 
-const nextClass = {
-    title: 'Advanced Database Systems',
-    code: 'CS-402',
-    time: '14:00 - 16:00',
-    location: 'Lab 402 (Building B)',
-    instructor: 'Mr. Sok Sereyvisal',
-    status: 'Starting in 15m',
-};
+    // UI State
+    const [activeClassIndex, setActiveClassIndex] = useState(0);
+    const activeClass = classrooms[activeClassIndex];
 
-const timeline = [
-    {
-        id: 1,
-        title: 'Database Design Quiz',
-        course: 'CS-402',
-        time: 'Today, 11:59 PM',
-        type: 'deadline',
-    },
-    {
-        id: 2,
-        title: 'Network Security Lab',
-        course: 'IT-301',
-        time: 'Tomorrow, 08:00 AM',
-        type: 'class',
-    },
-    {
-        id: 3,
-        title: 'Midterm Project Submission',
-        course: 'SE-202',
-        time: 'Fri, 12 Oct',
-        type: 'exam',
-    },
-];
+    // --- 2. INTELLIGENT DATA CALCULATIONS ---
+    const { globalStats, liveMissions } = useMemo(() => {
+        const now = new Date();
+        const missions = [];
+        const scored = submissions.filter((s) => s.status === 'scored');
 
-const courses = [
-    {
-        name: 'Data Structures',
-        code: 'CS-201',
-        progress: 75,
-        color: 'bg-chart-1',
-    },
-    {
-        name: 'Web Development',
-        code: 'WD-102',
-        progress: 45,
-        color: 'bg-chart-3',
-    },
-    { 
-        name: 'Calculus II', 
-        code: 'MA-202', 
-        progress: 90, 
-        color: 'bg-chart-4' 
-    },
-];
+        // Calculate Global GPA
+        const avg =
+            scored.length > 0
+                ? scored.reduce(
+                      (acc, curr) => acc + parseFloat(curr.score),
+                      0,
+                  ) / scored.length
+                : 0;
 
-export default function StudentDashboard() {
+        // Scan all classrooms for time-sensitive "Live" assessments
+        classrooms.forEach((cls) => {
+            cls.subjects.forEach((sub) => {
+                sub.assessments.forEach((assess) => {
+                    const start = new Date(assess.start_time);
+                    const end = new Date(assess.end_time);
+                    const submission = submissions.find(
+                        (s) => s.assessment_id === assess.id,
+                    );
+
+                    if (
+                        now >= start &&
+                        now <= end &&
+                        (!submission || submission.status !== 'scored')
+                    ) {
+                        missions.push({
+                            ...assess,
+                            subjectName: sub.name,
+                            classId: cls.id,
+                            subjectId: sub.id,
+                            submission: submission,
+                        });
+                    }
+                });
+            });
+        });
+
+        return {
+            globalStats: {
+                avg: avg.toFixed(1),
+                completed: scored.length,
+                peak:
+                    scored.length > 0
+                        ? Math.max(...scored.map((s) => parseFloat(s.score)))
+                        : 0,
+            },
+            liveMissions: missions,
+        };
+    }, [classrooms, submissions]);
+
     return (
         <AppLayout>
-            <Head title="Mission Control" />
+            <Head title="Scholar Dashboard | Mission Control" />
 
-            <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 p-4 md:p-8">
-                {/* --- 1. WELCOME HEADER --- */}
-                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-                    <div>
-                        <h1 className="text-3xl font-[1000] tracking-tight text-title">
-                            Mission Control
-                        </h1>
-                        <p className="mt-1 font-medium text-description">
-                            Welcome back,{' '}
-                            <span className="font-bold text-primary">
-                                Student
+            <div className="relative container mx-auto space-y-10 p-4 md:p-8 lg:p-12">
+                {/* --- HEADER: IDENTITY & GLOBAL STATS --- */}
+                <header className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                            <span className="relative flex h-2 w-2">
+                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
+                                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary"></span>
                             </span>
-                            . System is optimal.
-                        </p>
+                            <p className="text-[10px] font-black tracking-[0.2em] text-muted-foreground uppercase">
+                                {isNewUser
+                                    ? 'System Standby'
+                                    : 'Academic Session Active'}
+                            </p>
+                        </div>
+                        <h1 className="text-5xl leading-none font-[1000] tracking-tighter text-title md:text-7xl">
+                            {isNewUser ? 'Begin,' : 'Hello,'}{' '}
+                            <span className="relative text-primary italic">
+                                {student.name.split(' ')[0]}
+                                <svg
+                                    className="absolute -bottom-2 left-0 w-full"
+                                    viewBox="0 0 100 10"
+                                    preserveAspectRatio="none"
+                                >
+                                    <path
+                                        d="M0 5 Q 25 0, 50 5 T 100 5"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        fill="none"
+                                        className="opacity-30"
+                                    />
+                                </svg>
+                            </span>
+                        </h1>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <span className="hidden rounded-full bg-muted px-3 py-1 font-mono text-xs font-bold text-muted-foreground md:inline-flex">
-                            SEM_1_2025
-                        </span>
-                        <button className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:opacity-90 active:scale-95">
-                            <BookOpen size={16} />
-                            <span>My Schedule</span>
-                        </button>
-                    </div>
-                </div>
 
-                {/* --- 2. STATS GRID --- */}
-                <div className="grid gap-4 md:grid-cols-3">
-                    {stats.map((stat, i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.1 }}
-                            className="relative overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-sm"
-                        >
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm font-bold tracking-wide text-description uppercase">
-                                        {stat.label}
-                                    </p>
-                                    <h3 className="mt-2 text-3xl font-[900] text-title">
-                                        {stat.value}
+                    {!isNewUser && (
+                        <div className="flex items-center gap-4 rounded-3xl border border-border bg-card/50 p-2 shadow-xl backdrop-blur-xl">
+                            <div className="border-r border-border px-6 py-2 text-center">
+                                <p className="text-[10px] font-black text-muted-foreground uppercase">
+                                    Global GPA
+                                </p>
+                                <p className="text-2xl font-black text-primary">
+                                    {globalStats.avg}%
+                                </p>
+                            </div>
+                            <div className="px-6 py-2 text-center">
+                                <p className="text-[10px] font-black text-muted-foreground uppercase">
+                                    Peak Score
+                                </p>
+                                <p className="text-2xl font-black text-emerald-500">
+                                    {globalStats.peak}%
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                </header>
+
+                {isNewUser ? (
+                    /* --- SCENARIO A: THE ONBOARDING EXPERIENCE --- */
+                    <EmptyStateView />
+                ) : (
+                    /* --- SCENARIO B: THE FULL POWER DASHBOARD --- */
+                    <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+                        {/* LEFT COLUMN: LIVE TASKS & CLASSROOM EXPLORER */}
+                        <div className="space-y-12 lg:col-span-8">
+                            {/* 1. LIVE MISSIONS (URGENT) */}
+                            {liveMissions.length > 0 && (
+                                <section className="space-y-4">
+                                    <div className="flex items-center gap-2 px-1">
+                                        <AlertCircle
+                                            size={16}
+                                            className="animate-pulse text-rose-500"
+                                        />
+                                        <h3 className="text-sm font-black tracking-widest text-rose-500 uppercase">
+                                            Live Missions Due Soon
+                                        </h3>
+                                    </div>
+                                    <div className="grid grid-cols-1 gap-4">
+                                        {liveMissions.map((task) => (
+                                            <Link
+                                                key={task.id}
+                                                href={`/student/classes/${task.classId}/subjects/${task.subjectId}/assessment/${task.id}`}
+                                                className="group relative flex flex-col items-center justify-between rounded-[2rem] border-2 border-rose-100 bg-rose-50 p-6 transition-all duration-300 hover:border-rose-300 hover:bg-rose-100 md:flex-row"
+                                            >
+                                                <div className="space-y-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="rounded bg-rose-500 px-2 py-0.5 text-[9px] font-black text-white uppercase">
+                                                            {task.type}
+                                                        </span>
+                                                        <span className="text-xs font-bold text-rose-700 underline decoration-rose-200">
+                                                            {task.subjectName}
+                                                        </span>
+                                                    </div>
+                                                    <h4 className="text-xl font-black text-rose-950">
+                                                        {task.title}
+                                                    </h4>
+                                                    <p className="flex items-center gap-1 text-[10px] font-bold text-rose-600 uppercase">
+                                                        <Timer size={12} />{' '}
+                                                        Deadline:{' '}
+                                                        {new Date(
+                                                            task.end_time,
+                                                        ).toLocaleString()}
+                                                    </p>
+                                                </div>
+                                                <div className="flex items-center gap-2 rounded-2xl bg-rose-500 px-8 py-3 text-sm font-black text-white transition-all group-hover:bg-rose-600">
+                                                    {task.submission?.status ===
+                                                    'draft'
+                                                        ? 'RESUME'
+                                                        : 'START NOW'}{' '}
+                                                    <ArrowRight size={18} />
+                                                </div>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </section>
+                            )}
+
+                            {/* 2. CLASSROOM NAVIGATOR */}
+                            <section className="space-y-6">
+                                <div className="flex items-center justify-between px-1">
+                                    <h3 className="text-sm font-black tracking-widest text-muted-foreground uppercase">
+                                        Classroom Navigator
                                     </h3>
+                                    <Link
+                                        href="/student/classes"
+                                        className="text-xs font-bold text-primary hover:underline"
+                                    >
+                                        View All Classes
+                                    </Link>
                                 </div>
-                                <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${stat.bg} ${stat.color}`}>
-                                    <stat.icon size={24} />
-                                </div>
-                            </div>
-                            <div className="mt-4 flex items-center gap-2 text-xs font-bold">
-                                <span className={`${stat.color} rounded-md bg-background px-2 py-0.5`}>
-                                    {stat.trend}
-                                </span>
-                                <span className="text-description">
-                                    vs last semester
-                                </span>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
-
-                {/* --- 3. MAIN CONTENT GRID (Bento Style) --- */}
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
-                    {/* LEFT COL: Next Class & Courses */}
-                    <div className="flex flex-col gap-6 md:col-span-8">
-                        {/* FEATURED: NEXT CLASS CARD */}
-                        <div className="relative overflow-hidden rounded-[2.5rem] bg-primary p-8 text-primary-foreground shadow-2xl shadow-primary/30">
-                            {/* Decorative Background Pattern */}
-                            <div className="absolute top-0 right-0 -mt-10 -mr-10 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
-                            
-                            <div className="relative z-10 flex flex-col justify-between gap-6 md:flex-row md:items-center">
-                                <div>
-                                    <div className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/20 px-3 py-1 text-[10px] font-black tracking-widest uppercase backdrop-blur-md">
-                                        <Activity size={12} className="animate-pulse" />
-                                        Up Next
-                                    </div>
-                                    <h2 className="mt-4 text-3xl leading-tight font-[900] md:text-4xl text-primary-foreground">
-                                        {nextClass.title}
-                                    </h2>
-                                    <div className="mt-2 text-lg font-medium opacity-90">
-                                        {nextClass.code} • {nextClass.instructor}
-                                    </div>
-
-                                    <div className="mt-8 flex flex-wrap gap-4">
-                                        <div className="flex items-center gap-2 rounded-lg border border-primary-foreground/20 bg-primary-foreground/10 px-3 py-1.5 text-sm font-bold">
-                                            <Clock size={16} />
-                                            {nextClass.time}
-                                        </div>
-                                        <div className="flex items-center gap-2 rounded-lg border border-primary-foreground/20 bg-primary-foreground/10 px-3 py-1.5 text-sm font-bold">
-                                            <MapPin size={16} />
-                                            {nextClass.location}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex min-w-[140px] flex-col gap-3">
-                                    <button className="flex w-full items-center justify-center gap-2 rounded-2xl bg-white py-4 text-sm font-black text-primary shadow-xl transition-all hover:bg-opacity-90 active:scale-95">
-                                        <ArrowUpRight size={18} />
-                                        Check In
-                                    </button>
-                                    <button className="flex w-full items-center justify-center gap-2 rounded-2xl border border-primary-foreground/20 bg-primary-foreground/10 py-3 text-sm font-bold text-primary-foreground transition-all hover:bg-primary-foreground/20">
-                                        <Video size={16} />
-                                        Join Online
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* ACTIVE COURSES GRID */}
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            {courses.map((course, i) => (
-                                <div key={i} className="group flex flex-col justify-between rounded-3xl border border-border bg-card p-6 transition-all hover:border-primary/50 hover:shadow-lg">
-                                    <div className="flex items-start justify-between">
-                                        <div className={`h-10 w-10 rounded-xl ${course.color} bg-opacity-10 flex items-center justify-center`}>
-                                            <GraduationCap className={`size-5 ${course.color.replace('bg-', 'text-')}`} />
-                                        </div>
-                                        <button className="text-muted-foreground hover:text-primary">
-                                            <MoreHorizontal size={20} />
+                                <div className="no-scrollbar flex items-center gap-4 overflow-x-auto p-3">
+                                    {classrooms.map((cls, idx) => (
+                                        <button
+                                            key={cls.id}
+                                            onClick={() =>
+                                                setActiveClassIndex(idx)
+                                            }
+                                            className={`flex flex-shrink-0 flex-col items-start rounded-[2.5rem] border-2 px-8 py-5 transition-all duration-300 ${
+                                                activeClassIndex === idx
+                                                    ? 'scale-105 border-primary bg-primary text-white shadow-2xl shadow-primary/30'
+                                                    : 'border-border bg-card text-title hover:border-primary/50'
+                                            }`}
+                                        >
+                                            <span className="text-[10px] font-black uppercase opacity-60">
+                                                Year {cls.year} • Sem{' '}
+                                                {cls.semester}
+                                            </span>
+                                            <span className="text-xl font-black whitespace-nowrap">
+                                                {cls.name}
+                                            </span>
                                         </button>
-                                    </div>
-                                    <div className="mt-6">
-                                        <h4 className="text-lg font-bold text-title">{course.name}</h4>
-                                        <p className="text-xs font-bold text-description">{course.code}</p>
-                                    </div>
-                                    <div className="mt-6">
-                                        <div className="mb-2 flex justify-between text-xs font-bold">
-                                            <span className="text-description">Progress</span>
-                                            <span className="text-title">{course.progress}%</span>
-                                        </div>
-                                        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-                                            <div 
-                                                className={`h-full rounded-full ${course.color} transition-all duration-1000`}
-                                                style={{ width: `${course.progress}%` }}
-                                            />
-                                        </div>
-                                    </div>
+                                    ))}
+                                    <Link
+                                        href="/student/classes"
+                                        className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full border-2 border-dashed border-border text-muted-foreground transition-all hover:border-primary hover:text-primary"
+                                    >
+                                        <Plus size={24} />
+                                    </Link>
                                 </div>
-                            ))}
-                            <button className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-border bg-muted/50 p-6 text-description transition-all hover:border-primary hover:text-primary">
-                                <div className="rounded-full bg-card p-3 shadow-sm">
-                                    <ArrowUpRight size={24} />
-                                </div>
-                                <span className="mt-3 text-xs font-black tracking-widest uppercase">
-                                    Register Course
-                                </span>
-                            </button>
-                        </div>
-                    </div>
+                            </section>
 
-                    {/* RIGHT COL: Timeline & Tasks */}
-                    <div className="flex flex-col gap-6 md:col-span-4">
-                        <div className="rounded-3xl border border-border bg-card p-6">
-                            <div className="mb-6 flex items-center justify-between">
-                                <h3 className="text-lg font-[900] text-title">Timeline</h3>
-                                <Link href="#" className="text-xs font-bold text-link hover:underline">
-                                    View All
-                                </Link>
+                            {/* 3. SUBJECTS GRID */}
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={activeClass.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                    className="grid grid-cols-1 gap-6 md:grid-cols-2"
+                                >
+                                    {activeClass.subjects.length > 0 ? (
+                                        activeClass.subjects.map((subject) => (
+                                            <SubjectCard
+                                                key={subject.id}
+                                                subject={subject}
+                                                classId={activeClass.id}
+                                                submissions={submissions}
+                                            />
+                                        ))
+                                    ) : (
+                                        <div className="col-span-full">
+                                            <motion.div
+                                                initial={{
+                                                    scale: 0.95,
+                                                    opacity: 0,
+                                                }}
+                                                animate={{
+                                                    scale: 1,
+                                                    opacity: 1,
+                                                }}
+                                                className="w-full rounded-3xl border border-dashed border-border bg-card p-12 text-center shadow-sm"
+                                            >
+                                                <div className="flex flex-col items-center gap-4">
+                                                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                                        📚
+                                                    </div>
+
+                                                    <h3 className="text-xl font-black text-title">
+                                                        No subjects yet
+                                                    </h3>
+
+                                                    <p className="max-w-md text-sm text-muted-foreground">
+                                                        This classroom doesn’t
+                                                        have any subjects
+                                                        assigned yet. Once your
+                                                        teacher adds them, they
+                                                        will appear here.
+                                                    </p>
+                                                </div>
+                                            </motion.div>
+                                        </div>
+                                    )}
+                                </motion.div>
+                            </AnimatePresence>
+                        </div>
+
+                        {/* RIGHT COLUMN: IDENTITY & ANALYTICS */}
+                        <div className="space-y-8 lg:col-span-4">
+                            {/* DIGITAL SCHOLAR ID */}
+                            <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-indigo-600 to-violet-800 p-8 text-white shadow-2xl">
+                                <div className="absolute top-0 right-0 p-4 opacity-10">
+                                    <GraduationCap size={120} />
+                                </div>
+                                <div className="relative z-10 space-y-12">
+                                    <div className="flex justify-between">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 font-black backdrop-blur-md">
+                                            {student.name.charAt(0)}
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-[10px] font-black tracking-widest uppercase opacity-50">
+                                                Scholar ID
+                                            </p>
+                                            <p className="font-mono text-sm">
+                                                #{student.id}992026
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase opacity-50">
+                                            Student Name
+                                        </p>
+                                        <h3 className="text-3xl font-black tracking-tight">
+                                            {student.name}
+                                        </h3>
+                                        <p className="mt-1 text-xs font-bold tracking-tighter uppercase opacity-60">
+                                            {student.email}
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center justify-between border-t border-white/10 pt-6">
+                                        <div>
+                                            <p className="text-[10px] font-bold opacity-50">
+                                                COMPLETED
+                                            </p>
+                                            {/* <p className="text-xl font-black">{stats.completed} Tasks</p> */}
+                                        </div>
+                                        <div>
+                                            <p className="text-right text-[10px] font-bold opacity-50">
+                                                PEAK SCORE
+                                            </p>
+                                            {/* <p className="text-xl font-black text-emerald-400">{stats.highest}%</p> */}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div className="space-y-6">
-                                {timeline.map((item) => (
-                                    <div key={item.id} className="relative border-l-2 border-border pl-6 last:border-0">
-                                        <div className={`absolute top-1 -left-[5px] h-2.5 w-2.5 rounded-full ring-4 ring-card ${item.type === 'deadline' ? 'bg-destructive' : item.type === 'exam' ? 'bg-chart-3' : 'bg-primary'}`} />
-                                        <div className="flex flex-col">
-                                            <span className="text-[10px] font-black tracking-widest text-description uppercase">
-                                                {item.type}
-                                            </span>
-                                            <span className="mt-0.5 leading-tight font-bold text-title">
-                                                {item.title}
-                                            </span>
-                                            <div className="mt-1.5 flex items-center gap-2">
-                                                <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground">
-                                                    {item.course}
-                                                </span>
-                                                <span className="text-xs text-description">{item.time}</span>
+                            {/* PROGRESS PULSE */}
+                            <div className="space-y-6 rounded-[3rem] border border-border bg-card p-8">
+                                <div className="flex items-center justify-between">
+                                    <h4 className="text-sm font-black tracking-widest text-muted-foreground uppercase">
+                                        Quick Stats
+                                    </h4>
+                                    <TrendingUp
+                                        size={18}
+                                        className="text-primary"
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="rounded-3xl bg-muted/40 p-4">
+                                        <p className="text-[10px] font-black text-muted-foreground uppercase">
+                                            Subjects
+                                        </p>
+                                        <p className="text-2xl font-black text-title">
+                                            {activeClass.subjects.length}
+                                        </p>
+                                    </div>
+                                    <div className="rounded-3xl bg-muted/40 p-4">
+                                        <p className="text-[10px] font-black text-muted-foreground uppercase">
+                                            Tasks Done
+                                        </p>
+                                        <p className="text-2xl font-black text-title">
+                                            {globalStats.completed}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="space-y-8 rounded-[2.5rem] border border-border bg-card p-8 shadow-sm">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-xl font-black text-title italic">
+                                        Up Comming
+                                    </h3>
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-black">
+                                        {
+                                            activeClass.subjects.flatMap(
+                                                (s) => s.assessments,
+                                            ).length
+                                        }
+                                    </div>
+                                </div>
+                                <div className="space-y-6">
+                                    {activeClass.subjects.flatMap(
+                                        (s) => s.assessments,
+                                    ).length > 0 ? (
+                                        activeClass.subjects
+                                            .flatMap((s) => s.assessments)
+                                            .slice(0, 4)
+                                            .map((task, i) => {
+                                                const sub = submissions.find(
+                                                    (s) =>
+                                                        s.assessment_id ===
+                                                        task.id,
+                                                );
+
+                                                return (
+                                                    <div
+                                                        key={i}
+                                                        className="group flex gap-4"
+                                                    >
+                                                        <div className="flex flex-col items-center">
+                                                            <div
+                                                                className={`h-3 w-3 rounded-full border-2 ${
+                                                                    sub
+                                                                        ? 'border-emerald-500 bg-emerald-500'
+                                                                        : 'border-primary'
+                                                                }`}
+                                                            />
+                                                            <div className="mt-2 h-full w-px bg-border" />
+                                                        </div>
+
+                                                        <div className="pb-4">
+                                                            <p className="text-[10px] font-black text-muted-foreground uppercase">
+                                                                {new Date(
+                                                                    task.end_time,
+                                                                ).toLocaleDateString()}
+                                                            </p>
+                                                            <h4 className="text-sm font-bold text-title transition-colors group-hover:text-primary">
+                                                                {task.title}
+                                                            </h4>
+                                                            <span className="text-[9px] font-black text-primary/60 uppercase">
+                                                                {task.type}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })
+                                    ) : (
+                                        <div className="rounded-2xl border border-dashed border-border bg-card p-8 text-center">
+                                            <div className="flex flex-col items-center gap-3">
+                                                <div className="text-4xl">
+                                                    📝
+                                                </div>
+                                                <h4 className="text-sm font-black text-title">
+                                                    No tasks yet
+                                                </h4>
+                                                <p className="max-w-xs text-xs text-muted-foreground">
+                                                    This classroom doesn’t have
+                                                    any assignments, quizzes, or
+                                                    exams yet. They will appear
+                                                    here once your teacher adds
+                                                    them.
+                                                </p>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* STUDENT ID MINIATURE */}
-                        <div className="relative overflow-hidden rounded-3xl bg-primary p-6 text-primary-foreground">
-                            <div className="flex items-start justify-between">
-                                <div className="flex h-8 w-8 items-center justify-center rounded bg-white/10">
-                                    <GraduationCap size={16} />
+                                    )}
                                 </div>
-                                <span className="font-mono text-[10px] font-bold opacity-50">ID: B2025-4092</span>
                             </div>
-                            <div className="mt-8">
-                                <div className="text-[10px] font-black tracking-widest uppercase opacity-60">Computer Science</div>
-                                <div className="mt-1 text-xl font-bold">Sokha Vatanak</div>
-                            </div>
-                            <div className="mt-6 flex gap-1">
-                                {[...Array(12)].map((_, i) => (
-                                    <div key={i} className={`h-1 flex-1 rounded-full ${i < 8 ? 'bg-white' : 'bg-white/20'}`} />
-                                ))}
-                            </div>
-                            <div className="mt-2 text-right text-[10px] font-bold opacity-60">Level 4 Scholar</div>
                         </div>
                     </div>
-                </div>
+                )}
             </div>
         </AppLayout>
+    );
+}
+
+// --- SUB-COMPONENTS ---
+
+function SubjectCard({ subject, classId, submissions }) {
+    return (
+        <div className="group flex flex-col justify-between rounded-[2.5rem] border border-border bg-card p-7 transition-all hover:border-primary/50 hover:shadow-2xl">
+            <div>
+                <div className="mb-6 flex items-start justify-between">
+                    <div className="h-16 w-16 overflow-hidden rounded-[1.25rem] border-2 border-border shadow-inner">
+                        <img
+                            src={`/storage/${subject.cover}`}
+                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            onError={(e) =>
+                                (e.target.src = `https://ui-avatars.com/api/?name=${subject.name}&background=6366f1&color=fff&bold=true`)
+                            }
+                        />
+                    </div>
+                    <Link
+                        href={`/student/classes/${classId}/subjects/${subject.id}`}
+                        className="rounded-2xl bg-muted p-3 text-muted-foreground shadow-sm transition-all hover:bg-primary hover:text-white"
+                    >
+                        <ChevronRight size={20} />
+                    </Link>
+                </div>
+                <h4 className="mb-2 text-2xl leading-none font-black tracking-tight text-title">
+                    {subject.name}
+                </h4>
+                <p className="line-clamp-2 text-sm leading-relaxed font-medium text-muted-foreground">
+                    {subject.description}
+                </p>
+            </div>
+
+            <div className="mt-8 space-y-3">
+                {subject.assessments.slice(0, 2).map((assess) => {
+                    const sub = submissions.find(
+                        (s) => s.assessment_id === assess.id,
+                    );
+                    return (
+                        <Link
+                            key={assess.id}
+                            href={`/student/classes/${classId}/subjects/${subject.id}/assessment/${assess.id}`}
+                            className="group/task flex items-center justify-between rounded-2xl bg-muted/30 p-4 transition-all hover:bg-muted"
+                        >
+                            <div className="flex items-center gap-3">
+                                {sub?.status === 'scored' ? (
+                                    <CheckCircle2
+                                        size={16}
+                                        className="text-emerald-500"
+                                    />
+                                ) : (
+                                    <Clock
+                                        size={16}
+                                        className="text-amber-500"
+                                    />
+                                )}
+                                <div className="flex flex-col">
+                                    <span className="text-xs font-bold text-title">
+                                        {assess.title}
+                                    </span>
+                                    <span className="text-[9px] font-black uppercase opacity-40">
+                                        {assess.type}
+                                    </span>
+                                </div>
+                            </div>
+                            {sub?.status === 'scored' ? (
+                                <span className="text-xs font-black text-emerald-600">
+                                    {sub.score}%
+                                </span>
+                            ) : (
+                                <ArrowUpRight
+                                    size={14}
+                                    className="opacity-0 transition-all group-hover/task:opacity-100"
+                                />
+                            )}
+                        </Link>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
+function EmptyStateView() {
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="grid grid-cols-1 gap-8 py-10 md:grid-cols-2"
+        >
+            <div className="relative flex min-h-[500px] flex-col items-start justify-between overflow-hidden rounded-[4rem] bg-slate-950 p-12 text-white md:p-16">
+                <Rocket className="absolute -right-10 -bottom-10 h-80 w-80 -rotate-12 text-primary/10" />
+                <div className="relative z-10 space-y-8">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-[2rem] bg-primary shadow-2xl shadow-primary/40">
+                        <Plus size={40} strokeWidth={3} />
+                    </div>
+                    <h2 className="text-6xl leading-[0.9] font-[1000] tracking-tighter text-primary">
+                        Ready to <br /> Launch?
+                    </h2>
+                    <p className="max-w-xs text-lg leading-relaxed font-medium text-slate-400">
+                        Join your first classroom to access personalized
+                        subjects, track your GPA, and unlock your scholar
+                        roadmap.
+                    </p>
+                    <Link
+                        href="/student/classes"
+                        className="group inline-flex items-center gap-4 rounded-[2rem] bg-white px-10 py-5 font-black text-slate-950 transition-all hover:bg-primary hover:text-white"
+                    >
+                        Browse Classrooms{' '}
+                        <ArrowRight
+                            size={22}
+                            className="transition-transform group-hover:translate-x-2"
+                        />
+                    </Link>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6">
+                <OnboardingCard
+                    icon={Compass}
+                    title="Explore Curriculum"
+                    desc="Join classes to sync your subjects with the latest 2026 semester requirements."
+                    color="text-indigo-500"
+                    bg="bg-indigo-500/10"
+                />
+                <OnboardingCard
+                    icon={Target}
+                    title="Track Performance"
+                    desc="Real-time analytics will appear here as you complete assessments and quizzes."
+                    color="text-emerald-500"
+                    bg="bg-emerald-500/10"
+                />
+                <OnboardingCard
+                    icon={Zap}
+                    title="Live Missions"
+                    desc="Get instant notifications for time-sensitive exams and homework assignments."
+                    color="text-amber-500"
+                    bg="bg-amber-500/10"
+                />
+            </div>
+        </motion.div>
+    );
+}
+
+function OnboardingCard({ icon: Icon, title, desc, color, bg }) {
+    return (
+        <div className="flex items-center gap-8 rounded-[3rem] border border-border bg-card p-8 transition-all hover:border-primary/30">
+            <div
+                className={`h-20 w-20 flex-shrink-0 rounded-[2rem] ${bg} flex items-center justify-center ${color}`}
+            >
+                <Icon size={32} />
+            </div>
+            <div>
+                <h4 className="text-2xl font-black tracking-tight text-title">
+                    {title}
+                </h4>
+                <p className="mt-1 text-sm leading-relaxed font-medium text-muted-foreground">
+                    {desc}
+                </p>
+            </div>
+        </div>
     );
 }

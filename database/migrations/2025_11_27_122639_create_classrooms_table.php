@@ -15,14 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
-            // $table->integer('batch');
-            // $table->integer('year');
-            // $table->integer('semester');
-            // $table->string('shift');
             $table->string('visibility')->default('public');
+            $table->string('code')->nullable()->unique();
             $table->text('cover')->nullable();
             $table->integer('creator_id')->nullable();
-
 
             // $table->tinyInteger('campus')->default(0)->comment('0=Main, 1=BT, 2=ToulKork, 3=TP');
             $table->tinyInteger('campus')->default(1)->comment('1=Campus1, 2=Campus2, 3=Campus3');
