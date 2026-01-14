@@ -4,20 +4,14 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
     AlertCircle,
     ArrowRight,
-    ArrowUpRight,
-    CheckCircle2,
-    ChevronRight,
-    Clock,
-    Compass,
     GraduationCap,
     Plus,
-    Rocket,
-    Target,
     Timer,
     TrendingUp,
-    Zap,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import EmptyStateView from './dashboard/student/EmptyStateView';
+import SubjectCard from './dashboard/student/subject-card';
 
 export default function StudentDashboard({ student }) {
     // --- 1. CORE DATA INITIALIZATION ---
@@ -469,167 +463,5 @@ export default function StudentDashboard({ student }) {
                 )}
             </div>
         </AppLayout>
-    );
-}
-
-// --- SUB-COMPONENTS ---
-
-function SubjectCard({ subject, classId, submissions }) {
-    return (
-        <div className="group flex flex-col justify-between rounded-[2.5rem] border border-border bg-card p-7 transition-all hover:border-primary/50 hover:shadow-2xl">
-            <div>
-                <div className="mb-6 flex items-start justify-between">
-                    <div className="h-16 w-16 overflow-hidden rounded-[1.25rem] border-2 border-border shadow-inner">
-                        <img
-                            src={`/storage/${subject.cover}`}
-                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                            onError={(e) =>
-                                (e.target.src = `https://ui-avatars.com/api/?name=${subject.name}&background=6366f1&color=fff&bold=true`)
-                            }
-                        />
-                    </div>
-                    <Link
-                        href={`/student/classes/${classId}/subjects/${subject.id}`}
-                        className="rounded-2xl bg-muted p-3 text-muted-foreground shadow-sm transition-all hover:bg-primary hover:text-white"
-                    >
-                        <ChevronRight size={20} />
-                    </Link>
-                </div>
-                <h4 className="mb-2 text-2xl leading-none font-black tracking-tight text-title">
-                    {subject.name}
-                </h4>
-                <p className="line-clamp-2 text-sm leading-relaxed font-medium text-muted-foreground">
-                    {subject.description}
-                </p>
-            </div>
-
-            <div className="mt-8 space-y-3">
-                {subject.assessments.slice(0, 2).map((assess) => {
-                    const sub = submissions.find(
-                        (s) => s.assessment_id === assess.id,
-                    );
-                    return (
-                        <Link
-                            key={assess.id}
-                            href={`/student/classes/${classId}/subjects/${subject.id}/assessment/${assess.id}`}
-                            className="group/task flex items-center justify-between rounded-2xl bg-muted/30 p-4 transition-all hover:bg-muted"
-                        >
-                            <div className="flex items-center gap-3">
-                                {sub?.status === 'scored' ? (
-                                    <CheckCircle2
-                                        size={16}
-                                        className="text-emerald-500"
-                                    />
-                                ) : (
-                                    <Clock
-                                        size={16}
-                                        className="text-amber-500"
-                                    />
-                                )}
-                                <div className="flex flex-col">
-                                    <span className="text-xs font-bold text-title">
-                                        {assess.title}
-                                    </span>
-                                    <span className="text-[9px] font-black uppercase opacity-40">
-                                        {assess.type}
-                                    </span>
-                                </div>
-                            </div>
-                            {sub?.status === 'scored' ? (
-                                <span className="text-xs font-black text-emerald-600">
-                                    {sub.score}%
-                                </span>
-                            ) : (
-                                <ArrowUpRight
-                                    size={14}
-                                    className="opacity-0 transition-all group-hover/task:opacity-100"
-                                />
-                            )}
-                        </Link>
-                    );
-                })}
-            </div>
-        </div>
-    );
-}
-
-function EmptyStateView() {
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="grid grid-cols-1 gap-8 py-10 md:grid-cols-2"
-        >
-            <div className="relative flex min-h-[500px] flex-col items-start justify-between overflow-hidden rounded-[4rem] bg-slate-950 p-12 text-white md:p-16">
-                <Rocket className="absolute -right-10 -bottom-10 h-80 w-80 -rotate-12 text-primary/10" />
-                <div className="relative z-10 space-y-8">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-[2rem] bg-primary shadow-2xl shadow-primary/40">
-                        <Plus size={40} strokeWidth={3} />
-                    </div>
-                    <h2 className="text-6xl leading-[0.9] font-[1000] tracking-tighter text-primary">
-                        Ready to <br /> Launch?
-                    </h2>
-                    <p className="max-w-xs text-lg leading-relaxed font-medium text-slate-400">
-                        Join your first classroom to access personalized
-                        subjects, track your GPA, and unlock your scholar
-                        roadmap.
-                    </p>
-                    <Link
-                        href="/student/classes"
-                        className="group inline-flex items-center gap-4 rounded-[2rem] bg-white px-10 py-5 font-black text-slate-950 transition-all hover:bg-primary hover:text-white"
-                    >
-                        Browse Classrooms{' '}
-                        <ArrowRight
-                            size={22}
-                            className="transition-transform group-hover:translate-x-2"
-                        />
-                    </Link>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-6">
-                <OnboardingCard
-                    icon={Compass}
-                    title="Explore Curriculum"
-                    desc="Join classes to sync your subjects with the latest 2026 semester requirements."
-                    color="text-indigo-500"
-                    bg="bg-indigo-500/10"
-                />
-                <OnboardingCard
-                    icon={Target}
-                    title="Track Performance"
-                    desc="Real-time analytics will appear here as you complete assessments and quizzes."
-                    color="text-emerald-500"
-                    bg="bg-emerald-500/10"
-                />
-                <OnboardingCard
-                    icon={Zap}
-                    title="Live Missions"
-                    desc="Get instant notifications for time-sensitive exams and homework assignments."
-                    color="text-amber-500"
-                    bg="bg-amber-500/10"
-                />
-            </div>
-        </motion.div>
-    );
-}
-
-function OnboardingCard({ icon: Icon, title, desc, color, bg }) {
-    return (
-        <div className="flex items-center gap-8 rounded-[3rem] border border-border bg-card p-8 transition-all hover:border-primary/30">
-            <div
-                className={`h-20 w-20 flex-shrink-0 rounded-[2rem] ${bg} flex items-center justify-center ${color}`}
-            >
-                <Icon size={32} />
-            </div>
-            <div>
-                <h4 className="text-2xl font-black tracking-tight text-title">
-                    {title}
-                </h4>
-                <p className="mt-1 text-sm leading-relaxed font-medium text-muted-foreground">
-                    {desc}
-                </p>
-            </div>
-        </div>
     );
 }

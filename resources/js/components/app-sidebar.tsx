@@ -100,7 +100,7 @@ export function AppSidebar() {
                         title: 'My Classrooms',
                         icon: BookOpen,
                         items: [
-                            { title: 'All Classes', href: route('student.classes.index') },
+                            // { title: 'All Classes', href: route('student.classes.index') },
                             { title: 'Year I', href: route('student.classes.index', { year: 1 }) },
                             { title: 'Year II', href: route('student.classes.index', { year: 2 }) },
                             { title: 'Year III', href: route('student.classes.index', { year: 3 }) },

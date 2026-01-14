@@ -49,13 +49,14 @@ export default function ConfirmJoinClassModal({
                     
                     <div className="p-6">
                         <DialogHeader className="flex flex-col items-center text-center">
-                            <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20">
-                                <ShieldCheck className="size-6" />
+                            <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20">
+                                <ShieldCheck className="size-8" />
                             </div>
-                            <DialogTitle className="text-xl font-bold">
+                            <DialogTitle className="text-2xl font-bold">
                                 Join Classroom?
                             </DialogTitle>
-                            <DialogDescription className="text-balance pt-2">
+                            {/* <DialogDescription className="text-balance pt-2"> */}
+                            <DialogDescription className="pt-2">
                                 You are about to enroll in <span className="font-semibold text-slate-900 dark:text-white">{classroomName}</span>. 
                                 This will give you access to all course materials and assignments.
                             </DialogDescription>
@@ -64,7 +65,7 @@ export default function ConfirmJoinClassModal({
                         <DialogFooter className="mt-8 flex-col gap-2 sm:flex-col">
                             <Button 
                                 type="submit" 
-                                className="w-full bg-blue-600 hover:bg-blue-700" 
+                                className="w-full bg-blue-600 hover:bg-blue-700 py-6" 
                                 disabled={processing}
                             >
                                 {processing ? (
