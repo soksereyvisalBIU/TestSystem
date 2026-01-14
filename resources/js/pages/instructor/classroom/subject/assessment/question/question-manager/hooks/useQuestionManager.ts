@@ -491,3 +491,4 @@ export const useQuestionManager = (assessmentId: number) => {
         recalculatePoints,
     };
 };
+

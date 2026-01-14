@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\GoogleController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -12,11 +13,13 @@ Route::get('/', function () {
 
 
 
+Route::get('/auth/google', [GoogleController::class, 'redirect']);
+Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class , 'index'])->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     // Route::get('dashboard', function () {
     //     return Inertia::render('dashboard');
     // })->name('dashboard');
@@ -42,7 +45,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('classes/{class}/subjects/{subject}/copy', [App\Http\Controllers\Instructor\SubjectController::class, 'copy'])->name('classes.subjects.copy');
             Route::resource('classes.subjects.assessment', App\Http\Controllers\Instructor\AssessmentController::class)->names('classes.subjects.assessments');
             Route::post('classes/subjects/assessment/{assessment}/copy', [App\Http\Controllers\Instructor\AssessmentController::class, 'copy'])->name('classes.subjects.assessments.copy');
-            Route::resource('classes.subjects.assessment.question', App\Http\Controllers\Instructor\QuestionController::class)->names('classes.subjects.assessments.questions');
+            Route::get('classes/{class}/subjects/{subject}/assessment/{assessment}/question', [App\Http\Controllers\Instructor\QuestionController::class, 'show'])->name('classes.subjects.assessments.questions.index');
+            // Route::resource('classes.subjects.assessment.question', App\Http\Controllers\Instructor\QuestionController::class)->names('classes.subjects.assessments.questions');
             Route::resource('classes.subjects.assessment.student', App\Http\Controllers\Instructor\StudentController::class)->names('classes.subjects.assessments.students');
 
 
@@ -53,6 +57,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             )->name('classes.subjects.assessments.students.check');
 
 
+            Route::resource('assessments.questions', App\Http\Controllers\Instructor\QuestionController::class)->names('classes.subjects.assessments.questions');
             // Route::resource('classes', ClassroomController::class);
             // Route::resource('classes.subjects', SubjectController::class)->shallow();
             // Route::resource('subjects.assessments', AssessmentController::class)->shallow();
@@ -72,7 +77,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::resource('classes', App\Http\Controllers\Student\ClassroomController::class)
             ->names('classes');
-        Route::post('join-class', [App\Http\Controllers\Student\ClassroomController::class , 'join'])
+        Route::post('join-class', [App\Http\Controllers\Student\ClassroomController::class, 'join'])
             ->name('class.join');
 
         Route::resource('classes.subjects', App\Http\Controllers\Student\SubjectController::class)

@@ -96,8 +96,11 @@ export default function StudentDashboard({ student }) {
                                     ? 'System Standby'
                                     : 'Academic Session Active'}
                             </p>
+
+                            
                         </div>
-                        <h1 className="text-5xl leading-none font-[1000] tracking-tighter text-title md:text-7xl">
+                        <h1 className="text-5xl leading-none font-[1000] tracking-tighter text-title md:text-7xl flex items-center gap-4">
+                            
                             {isNewUser ? 'Begin,' : 'Hello,'}{' '}
                             <span className="relative text-primary italic">
                                 {student.name.split(' ')[0]}
@@ -220,7 +223,7 @@ export default function StudentDashboard({ student }) {
                                             onClick={() =>
                                                 setActiveClassIndex(idx)
                                             }
-                                            className={`flex flex-shrink-0 flex-col items-start rounded-[2.5rem] border-2 px-8 py-5 transition-all duration-300 ${
+                                            className={`flex flex-shrink-0 flex-col items-start rounded-[2.5rem] border-2 px-8 py-3 transition-all duration-300 ${
                                                 activeClassIndex === idx
                                                     ? 'scale-105 border-primary bg-primary text-white shadow-2xl shadow-primary/30'
                                                     : 'border-border bg-card text-title hover:border-primary/50'
@@ -230,7 +233,7 @@ export default function StudentDashboard({ student }) {
                                                 Year {cls.year} • Sem{' '}
                                                 {cls.semester}
                                             </span>
-                                            <span className="text-xl font-black whitespace-nowrap">
+                                            <span className="text-lg font-black whitespace-nowrap">
                                                 {cls.name}
                                             </span>
                                         </button>
@@ -349,35 +352,7 @@ export default function StudentDashboard({ student }) {
                             </div>
 
                             {/* PROGRESS PULSE */}
-                            <div className="space-y-6 rounded-[3rem] border border-border bg-card p-8">
-                                <div className="flex items-center justify-between">
-                                    <h4 className="text-sm font-black tracking-widest text-muted-foreground uppercase">
-                                        Quick Stats
-                                    </h4>
-                                    <TrendingUp
-                                        size={18}
-                                        className="text-primary"
-                                    />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="rounded-3xl bg-muted/40 p-4">
-                                        <p className="text-[10px] font-black text-muted-foreground uppercase">
-                                            Subjects
-                                        </p>
-                                        <p className="text-2xl font-black text-title">
-                                            {activeClass.subjects.length}
-                                        </p>
-                                    </div>
-                                    <div className="rounded-3xl bg-muted/40 p-4">
-                                        <p className="text-[10px] font-black text-muted-foreground uppercase">
-                                            Tasks Done
-                                        </p>
-                                        <p className="text-2xl font-black text-title">
-                                            {globalStats.completed}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
+
                             <div className="space-y-8 rounded-[2.5rem] border border-border bg-card p-8 shadow-sm">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-xl font-black text-title italic">

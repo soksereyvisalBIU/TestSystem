@@ -55,20 +55,6 @@ export const useCreateQuestion = (assessment_id: number) => {
         mutationFn: async (payload: Question) => {
 
             console.log(payload);
-            // {
-            //     "point": 36,
-            //     "maxSize": "5",
-            //     "question": "Ex sed corporis sunt",
-            //     "referenceImages": [
-            //         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAE...
-            //     ],
-            //     "fileType": "image",
-            //     "type": "fileupload",
-            //     "assessment_id": "1",
-            //     "isNew": true,
-            //     "tempId": 1766652337797,
-            //     "order": 6
-            // }
             const { data } = await api.post(
                 `api/v1/assessments/${assessment_id}/questions`,
                 payload,
