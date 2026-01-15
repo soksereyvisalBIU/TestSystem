@@ -31,7 +31,7 @@ class QuestionController extends Controller
     //         compact('class_id', 'subject_id', 'assessment_id')
     //     );
     // }
-    public function show(Request $request)
+    public function index(Request $request)
     {
         $class_id      = $request->route('class');
         $subject_id    = $request->route('subject');
@@ -54,7 +54,7 @@ class QuestionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index($assessmentId)
+    public function indexa($assessmentId)
     {
         $questions = Question::with(['options', 'media', 'submissionSetting'])
             ->where('assessment_id', $assessmentId)

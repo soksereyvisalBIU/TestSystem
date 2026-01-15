@@ -16,7 +16,7 @@ export default function Register() {
     return (
         <AuthLayout 
             title="Get started" 
-            description={<>Join 10k+ users and start your <span className="text-primary font-bold">14-day free trial</span>.</>}
+            description={<>Join us to measure your   <span className="text-primary font-bold">learning </span>   step by step..</>}
         >
             <Head title="Register" />
 

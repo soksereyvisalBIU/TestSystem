@@ -59,7 +59,7 @@ export default function QuestionRenderer({
                     {question.question}
                 </h2> */}
                 <div className="khmerfont text-base xs:text-lg sm:text-xl leading-relaxed font-bold tracking-tight text-title" dangerouslySetInnerHTML={{ __html: question.question }} />
-                {console.log(question.question)}
+                {/* {console.log(question.question)} */}
             </div>
 
             {/* Answer Input Area */}

@@ -86,7 +86,6 @@ export default function SubjectShow({
                         </div>
 
                         {/* --- JOIN OVERLAY --- */}
-                        {console.log(isJoined)}
                         {!isJoined && (
                             <div className="absolute top-0 inset-0 z-10 flex flex-col items-center justify-center rounded-[2.5rem] bg-white/30 text-center backdrop-blur-[2px] dark:bg-slate-950/30">
                                 <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-blue-600 text-white shadow-xl shadow-blue-500/20">

@@ -19,47 +19,33 @@ import {
 // Sub-components
 import { InstructorCard } from './components/card/instructor-card';
 import { LogisticsCard } from './components/card/logistics-card';
-// do not remove this comment - for quick actions card
-// import { QuickActionsCard } from './components/card/quick-actions-card';
 import { StatCard } from './components/card/stat-card';
 import { PerformanceChart } from './components/chart/performance-chart';
 import { AssessmentsList } from './components/list/assessments-list';
 import { StudentList } from './components/list/students-list';
 import { SubjectHero } from './components/subject-hero';
-// import StudentsList from './components/list/students-list';
 
 export default function SubjectDetail({
     subject,
     classmates,
 }: {
     subject: SubjectData;
-    classmates: any;
+    classmates: any[];
 }) {
     const [activeTab, setActiveTab] = React.useState('assessments');
 
-    const performanceData = [40, 65, 55, 80, 72, 90, 83];
-
-    const quickActions = [
-        {
-            icon: Download,
-            label: 'Syllabus PDF',
-            onClick: () => console.log('Syllabus'),
-        },
-        {
-            icon: ShieldCheck,
-            label: 'Course Progress',
-            onClick: () => console.log('Progress'),
-        },
-    ];
-
-    console.log('Classmates:', classmates);
+    // Dynamically calculate performance (using average score of assessments if available)
+    // Fallback to placeholder if no scores exist yet
+    const performanceData = subject.assessments?.map(a => a.score || 0).length > 0 
+        ? subject.assessments.map(a => a.score || 0) 
+        : [0, 0, 0, 0];
 
     return (
         <AppLayout>
-            <Head title={`${subject?.name} | Student Portal`} />
+            <Head title={`${subject?.name || 'Subject'} | Student Portal`} />
 
             <div className="mx-auto min-h-screen max-w-7xl space-y-6 bg-background p-4 pb-20 text-body transition-colors duration-300 md:space-y-8 md:p-8">
-                {/* 1. Hero Section */}
+                {/* 1. Hero Section - Dynamic */}
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -75,23 +61,21 @@ export default function SubjectDetail({
                     {/* Left Column: Interactive Content */}
                     <div className="space-y-6 lg:col-span-8">
                         <Tabs
-                            defaultValue="assessments"
                             value={activeTab}
                             onValueChange={setActiveTab}
                             className="w-full"
                         >
-                            {/* Improved sticky header with horizontal scroll for xs screens */}
                             <div className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur-md">
                                 <TabsList className="no-scrollbar scrollbar-hide h-auto w-full flex-nowrap justify-start gap-1 overflow-x-auto bg-transparent p-0">
                                     <CustomTabTrigger
                                         value="assessments"
                                         label="Assessments"
-                                        count={subject.assessments.length}
+                                        count={subject.assessments?.length || 0}
                                     />
                                     <CustomTabTrigger
                                         value="students"
                                         label="Classmates"
-                                        count={classmates.length}
+                                        count={classmates?.length || 0}
                                     />
                                     <CustomTabTrigger
                                         value="overview"
@@ -113,21 +97,14 @@ export default function SubjectDetail({
                                     transition={{ duration: 0.2 }}
                                     className="mt-4 md:mt-6"
                                 >
-                                    <TabsContent
-                                        value="assessments"
-                                        className="m-0 focus-visible:outline-none"
-                                    >
+                                    <TabsContent value="assessments" className="m-0 focus-visible:outline-none">
                                         <AssessmentsList
                                             assessments={subject.assessments}
                                             classId={subject.class_id}
                                         />
                                     </TabsContent>
 
-                                    <TabsContent
-                                        value="overview"
-                                        className="m-0 space-y-6 focus-visible:outline-none"
-                                    >
-                                        {/* Adjusted grid to stack on very small screens (xs) */}
+                                    <TabsContent value="overview" className="m-0 space-y-6 focus-visible:outline-none">
                                         <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-4">
                                             <StatCard
                                                 icon={Users}
@@ -139,45 +116,36 @@ export default function SubjectDetail({
                                             <StatCard
                                                 icon={BookOpen}
                                                 label="Total Assessments"
-                                                value={
-                                                    subject.assessments.length
-                                                }
+                                                value={subject.assessments.length}
                                                 color="text-chart-3"
                                                 bg="bg-chart-3/10"
                                             />
                                             <StatCard
                                                 icon={Clock}
                                                 label="Credit Hours"
-                                                value="48h"
+                                                value={`${subject.credit_hours || '0'}h`}
                                                 color="text-chart-2"
                                                 bg="bg-chart-2/10"
                                             />
                                             <StatCard
                                                 icon={BarChart3}
-                                                label="Current GPA"
-                                                value="3.8"
+                                                label="Grade"
+                                                value={subject.grade || 'N/A'}
                                                 color="text-success"
                                                 bg="bg-success/10"
                                             />
                                         </div>
-                                        <PerformanceChart
-                                            data={performanceData}
-                                        />
+                                        <PerformanceChart data={performanceData} />
                                     </TabsContent>
 
-                                    <TabsContent
-                                        value="students"
-                                        className="m-0 focus-visible:outline-none"
-                                    >
+                                    <TabsContent value="students" className="m-0 focus-visible:outline-none">
                                         <StudentList students={classmates} />
                                     </TabsContent>
-                                    <TabsContent
-                                        value="resources"
-                                        className="m-0 focus-visible:outline-none"
-                                    >
+
+                                    <TabsContent value="resources" className="m-0 focus-visible:outline-none">
                                         <div className="rounded-lg border border-border p-6 text-center text-sm text-slate-500">
                                             <BookOpen className="mx-auto mb-4 size-12 text-slate-400" />
-                                            Classmates feature is coming soon!
+                                            Library resources for {subject.name} are coming soon!
                                         </div>
                                     </TabsContent>
                                 </motion.div>
@@ -185,7 +153,7 @@ export default function SubjectDetail({
                         </Tabs>
                     </div>
 
-                    {/* Right Column: Sidebar */}
+                    {/* Right Column: Sidebar - Dynamic */}
                     <aside className="space-y-6 lg:sticky lg:top-8 lg:col-span-4">
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
@@ -194,30 +162,29 @@ export default function SubjectDetail({
                             className="space-y-6"
                         >
                             <InstructorCard
-                                name="Mr. RIN CHETRA"
-                                title="Lecturer"
-                                avatar="/assets/img/profile/rinchetra.jpg"
+                                name={subject.teacher?.name || "Unassigned"}
+                                title={subject.teacher?.title || "Lecturer"}
+                                avatar={subject.teacher?.avatar || "/assets/img/profile/default.jpg"}
                             />
 
                             <LogisticsCard
-                                schedule="Mon & Wed • 08:00 - 10:00"
-                                location="Main Campus, Lab 4"
-                                credits="3.0 Credits"
+                                schedule={subject.schedule || "Schedule TBD"}
+                                location={subject.room || "Room TBD"}
+                                credits={`${subject.credit || '0.0'} Credits`}
                             />
 
-                            {/* Do Not remove this comment - for quick actions card */}
-                            {/* <QuickActionsCard actions={quickActions} /> */}
-
-                            <div className="flex gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
-                                <Info className="h-5 w-5 shrink-0 text-primary" />
-                                <p className="text-xs leading-relaxed text-body">
-                                    <span className="font-semibold text-title">
-                                        Upcoming:
-                                    </span>{' '}
-                                    Final Exam starts in 12 days. Ensure all
-                                    assignments are submitted.
-                                </p>
-                            </div>
+                            {/* Dynamic Alert for next due date */}
+                            {subject.upcoming_assessment && (
+                                <div className="flex gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
+                                    <Info className="h-5 w-5 shrink-0 text-primary" />
+                                    <p className="text-xs leading-relaxed text-body">
+                                        <span className="font-semibold text-title">
+                                            Upcoming:
+                                        </span>{' '}
+                                        {subject.upcoming_assessment.name} is due on {subject.upcoming_assessment.due_date}.
+                                    </p>
+                                </div>
+                            )}
                         </motion.div>
                     </aside>
                 </div>
@@ -225,6 +192,8 @@ export default function SubjectDetail({
         </AppLayout>
     );
 }
+
+// ... CustomTabTrigger and TabsTriggerIndicator remain the same
 
 function CustomTabTrigger({
     value,

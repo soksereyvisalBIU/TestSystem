@@ -24,8 +24,9 @@ import { StatCard } from '@/pages/student/classroom/subject/components/card/stat
 import { PerformanceChart } from '@/pages/student/classroom/subject/components/chart/performance-chart';
 import { AssessmentsList } from '@/pages/student/classroom/subject/components/list/assessments-list';
 import { SubjectHero } from '@/pages/student/classroom/subject/components/subject-hero';
+import { StudentList } from '@/pages/student/classroom/subject/components/list/students-list';
 
-export default function SubjectDetail({ subject }: { subject: SubjectData }) {
+export default function SubjectDetail({ subject , students }: { subject: SubjectData , students: any }) {
     const [activeTab, setActiveTab] = React.useState('assessments');
 
     const performanceData = [40, 65, 55, 80, 72, 90, 83];
@@ -77,12 +78,13 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                         count={subject.assessments.length}
                                     />
                                     <CustomTabTrigger
-                                        value="overview"
-                                        label="Overview"
+                                        value="students"
+                                        label="Students"
+                                        count={students.length}
                                     />
                                     <CustomTabTrigger
-                                        value="students"
-                                        label="Classmates"
+                                        value="overview"
+                                        label="Overview"
                                     />
                                     <CustomTabTrigger
                                         value="resources"
@@ -112,6 +114,22 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                     </TabsContent>
 
                                     <TabsContent
+                                        value="students"
+                                        className="m-0 focus-visible:outline-none"
+                                    >
+                                        <StudentList students={students} />
+                                    </TabsContent>
+                                    <TabsContent
+                                        value="resources"
+                                        className="m-0 focus-visible:outline-none"
+                                    >
+                                        <div className="rounded-lg border border-border p-6 text-center text-sm text-slate-500">
+                                            <BookOpen className="mx-auto mb-4 size-12 text-slate-400" />
+                                            Classmates feature is coming soon!
+                                        </div>
+                                    </TabsContent>
+
+                                    <TabsContent
                                         value="overview"
                                         className="m-0 space-y-6 focus-visible:outline-none"
                                     >
@@ -126,7 +144,9 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                             <StatCard
                                                 icon={BookOpen}
                                                 label="Total Work"
-                                                value={subject.assessments.length}
+                                                value={
+                                                    subject.assessments.length
+                                                }
                                                 color="text-chart-3"
                                                 bg="bg-chart-3/10"
                                             />
@@ -145,7 +165,9 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                                                 bg="bg-success/10"
                                             />
                                         </div>
-                                        <PerformanceChart data={performanceData} />
+                                        <PerformanceChart
+                                            data={performanceData}
+                                        />
                                     </TabsContent>
                                 </motion.div>
                             </AnimatePresence>
@@ -177,8 +199,12 @@ export default function SubjectDetail({ subject }: { subject: SubjectData }) {
                             <div className="flex gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
                                 <Info className="h-5 w-5 shrink-0 text-primary" />
                                 <p className="text-xs leading-relaxed text-body">
-                                    Upcoming: <span className="font-semibold text-title">Final Exam</span> starts in 12 days.
-                                    Ensure all assignments are submitted.
+                                    Upcoming:{' '}
+                                    <span className="font-semibold text-title">
+                                        Final Exam
+                                    </span>{' '}
+                                    starts in 12 days. Ensure all assignments
+                                    are submitted.
                                 </p>
                             </div>
                         </motion.div>

@@ -9,6 +9,7 @@ use App\Models\Answer;
 use App\Models\Assessment;
 use App\Models\Question;
 use App\Models\StudentAssessmentAttempt;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests; // ✅ ADD THIS
@@ -21,11 +22,17 @@ class AttemptController extends Controller
      */
     public function attempt(Request $request, $class_id, $subject_id, $assessment_id)
     {
-        $studentAssessmentAttempt = StudentAssessmentAttempt::with('studentAssessment')
-            ->findOrFail($request->student_assessment_attempt_id);
+        try {
+            $studentAssessmentAttempt = StudentAssessmentAttempt::with('studentAssessment')
+                ->findOrFail($request->student_assessment_attempt_id);
 
-        // 🔐 POLICY CHECK
-        $this->authorize('attempt', $studentAssessmentAttempt);
+            // 🔐 POLICY CHECK
+            $this->authorize('attempt', $studentAssessmentAttempt);
+        } catch (AuthorizationException $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'You are not allowed to access this assessment.');
+        }
 
         $assessment = Assessment::with('subjects')->findOrFail($assessment_id);
 
@@ -35,8 +42,6 @@ class AttemptController extends Controller
                 ->orderBy('order')
                 ->get()
         );
-
-
 
         return Inertia::render(
             'student/classroom/subject/assessment/attempt/Index',
@@ -52,15 +57,21 @@ class AttemptController extends Controller
     /**
      * Submit attempt
      */
+
+
     public function store(Request $request, $class_id, $subject_id, $assessment_id)
     {
-        
-        
-        $assessmentAttempt = StudentAssessmentAttempt::with('studentAssessment')
-            ->findOrFail($request->student_assessment_attempt_id);
+        try {
+            $assessmentAttempt = StudentAssessmentAttempt::with('studentAssessment')
+                ->findOrFail($request->student_assessment_attempt_id);
 
-        // 🔐 POLICY CHECK
-        $this->authorize('attempt', $assessmentAttempt);
+            // 🔐 POLICY CHECK
+            $this->authorize('attempt', $assessmentAttempt);
+        } catch (AuthorizationException $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'You are not allowed to submit this assessment.');
+        }
 
         if ($assessmentAttempt->status === 'submitted') {
             return back()->with('error', 'This attempt has already been submitted.');
@@ -72,50 +83,33 @@ class AttemptController extends Controller
             'status'       => 'submitted',
         ]);
 
-        // Increment attempt count
         $assessmentAttempt->studentAssessment->increment('attempted_amount');
         $assessmentAttempt->studentAssessment()->update([
             'status' => 'submitted',
         ]);
 
         // ===============================
-        // Save Answers (Text / MCQ / File)
+        // Save Answers
         // ===============================
         foreach ($request->answers as $questionId => $answer) {
 
-            /*
-        |--------------------------------------------------------------------------
-        | FILE ANSWER
-        |--------------------------------------------------------------------------
-        */
+            // FILE
             if ($answer instanceof \Illuminate\Http\UploadedFile) {
-
-                // Create empty answer first
                 $answerModel = Answer::create([
                     'student_assessment_attempt_id' => $assessmentAttempt->id,
                     'question_id' => $questionId,
                 ]);
 
-                // Store file
-                $path = $answer->store(
-                    'answers/' . $assessmentAttempt->id,
-                    'public'
-                );
+                $path = $answer->store('answers/' . $assessmentAttempt->id, 'public');
 
-                // Save file record
                 $answerModel->answerFiles()->create([
-                    'file_path'  => $path,
-                    // 'uploaded_at' => now(),
+                    'file_path' => $path,
                 ]);
 
                 continue;
             }
 
-            /*
-        |--------------------------------------------------------------------------
-        | MATCHING QUESTION
-        |--------------------------------------------------------------------------
-        */
+            // MATCHING
             if (is_array($answer) && !array_is_list($answer) && !isset($answer['text'])) {
                 foreach ($answer as $optionId => $text) {
                     Answer::create([
@@ -128,11 +122,7 @@ class AttemptController extends Controller
                 continue;
             }
 
-            /*
-        |--------------------------------------------------------------------------
-        | SHORT ANSWER
-        |--------------------------------------------------------------------------
-        */
+            // SHORT ANSWER
             if (is_array($answer) && isset($answer['text'])) {
                 Answer::create([
                     'student_assessment_attempt_id' => $assessmentAttempt->id,
@@ -142,11 +132,7 @@ class AttemptController extends Controller
                 continue;
             }
 
-            /*
-        |--------------------------------------------------------------------------
-        | MCQ / TRUE-FALSE
-        |--------------------------------------------------------------------------
-        */
+            // MCQ / TRUE-FALSE
             Answer::create([
                 'student_assessment_attempt_id' => $assessmentAttempt->id,
                 'question_id' => $questionId,
@@ -165,21 +151,28 @@ class AttemptController extends Controller
     }
 
 
+
     /**
      * Review submitted attempt
      */
     public function review(Request $request)
     {
-        $attempt = StudentAssessmentAttempt::with([
-            'studentAssessment',
-            'assessment.questions.options',
-            'assessment.questions.submissionSetting',
-            'assessment.questions.media',
-            'answers',
-        ])->findOrFail($request->student_assessment_attempt_id);
+        try {
+            $attempt = StudentAssessmentAttempt::with([
+                'studentAssessment',
+                'assessment.questions.options',
+                'assessment.questions.submissionSetting',
+                'assessment.questions.media',
+                'answers',
+            ])->findOrFail($request->student_assessment_attempt_id);
 
-        // 🔐 POLICY CHECK
-        $this->authorize('review', $attempt);
+            // 🔐 POLICY CHECK
+            $this->authorize('review', $attempt);
+        } catch (AuthorizationException $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'You are not allowed to view this assessment.');
+        }
 
         $assessmentAttemptResource = new StudentAssessmentAttemptResource($attempt);
 

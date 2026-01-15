@@ -19,7 +19,7 @@ export function DetailItem({ icon: Icon, label, value, description }: DetailItem
                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-blue-500 transition-colors">
                     {label}
                 </span>
-                <p className="text-sm font-bold leading-tight text-slate-900">
+                <p className="text-sm font-bold leading-tight text-subtitle group-hover:text-primary">
                     {value}
                 </p>
                 {description && (

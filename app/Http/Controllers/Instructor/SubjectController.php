@@ -19,6 +19,9 @@ class SubjectController extends Controller
     public function index(Request $request, $subjectId)
     {
         $subject = Subject::with('assessments')->findOrFail($subjectId);
+        $students = $subject->classroom->students;
+
+        return response()->json($students);
         return Inertia::render('instructor/classroom/subject/Index', compact('subject'));
     }
 
@@ -79,8 +82,8 @@ class SubjectController extends Controller
         // dd('show subject', $subjectId);
 
         $subject = Subject::with('assessments')->findOrFail($subjectId);
-        // return Inertia::render('instructor/classroom/subject/Show', compact('subject'));
-        return Inertia::render('instructor/classroom/subject/Index', compact('subject'));
+        $students = $subject->classroom->students;
+        return Inertia::render('instructor/classroom/subject/Index', compact('subject', 'students'));
     }
 
     /**

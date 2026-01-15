@@ -51,42 +51,72 @@ class ClassroomController extends Controller
 
     public function index(Request $request)
     {
-        $student = auth()->user();
+        $request->validate([
+            'year' => ['nullable', 'integer', 'between:1,5'],
+        ]);
+
+        $studentId = auth()->id();
 
         $classrooms = Classroom::query()
-            ->where(function ($q) use ($student) {
-
-                // Public & Protected → everyone can see
-                $q->whereIn('visibility', ['public', 'protected'])
-
-                    // OR private but joined by this student
-                    ->orWhere(function ($q) use ($student) {
-                        $q->where('visibility', 'private')
-                            ->whereHas('students', function ($q) use ($student) {
-                                $q->where('student_classroom.user_id', $student->id);
-                            });
-                    });
+            // Include public/protected or private classrooms the student joined
+            ->whereIn('visibility', ['public', 'protected'])
+            ->orWhereHas('students', function ($q) use ($studentId) {
+                $q->where('student_classroom.user_id', $studentId);
             })
-            ->when(
-                $request->filled('year'),
-                fn($q) =>
-                $q->where('year', $request->year)
-            )
+            // Optional year filter
+            ->when($request->filled('year'), fn($q) => $q->where('year', (int) $request->year))
+            // Count if student has joined
             ->withCount([
-                // attach joined flag
-                'students as joined' => function ($q) use ($student) {
-                    $q->where('student_classroom.user_id', $student->id);
-                }
+                'students as joined' => fn($q) => $q->where('student_classroom.user_id', $studentId)
             ])
             ->paginate(10)
             ->withQueryString();
-
-        // dd($classrooms);
 
         return Inertia::render('student/classroom/Index', [
             'classrooms' => $classrooms
         ]);
     }
+
+
+    // public function index(Request $request)
+    // {
+    //     $request->validate([
+    //         'year' => ['nullable', 'integer', 'between:1,5'],
+    //     ]);
+
+    //     $student = auth()->user();
+
+    //     $classrooms = Classroom::query()
+    //         ->where(function ($q) use ($student) {
+
+    //             $q->whereIn('visibility', ['public', 'protected'])
+
+    //                 ->orWhere(function ($q) use ($student) {
+    //                     $q->where('visibility', 'private')
+    //                         ->whereHas('students', function ($q) use ($student) {
+    //                             $q->where('student_classroom.user_id', $student->id);
+    //                         });
+    //                 });
+    //         })
+    //         ->when(
+    //             $request->filled('year'),
+    //             fn($q) => $q->where('year', (int) $request->year)
+    //         )
+    //         ->withCount([
+    //             'students as joined' => function ($q) use ($student) {
+    //                 $q->where('student_classroom.user_id', $student->id);
+    //             }
+    //         ])
+    //         ->paginate(10)
+    //         ->withQueryString();
+
+    //     // return response()->json($classrooms);
+
+    //     return Inertia::render('student/classroom/Index', [
+    //         'classrooms' => $classrooms
+    //     ]);
+    // }
+
 
 
 
