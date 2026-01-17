@@ -24,9 +24,7 @@
     <meta name="robots" content="index, follow">
 
     {{-- Google Search Console Verification --}}
-    @if (config('services.google.site_verification'))
-        <meta name="google-site-verification" content="{{ config('services.google.site_verification') }}">
-    @endif
+    <meta name="google-site-verification" content="{{ config('services.google.site_verification') }}">
 
 
     {{-- Canonical --}}
