@@ -72,6 +72,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 }
             });
             // link folder
+            Route::get('/storage-link-to-root', function () {
+                $targetFolder = storage_path('app/public');
+                $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/storage';
+                symlink($targetFolder, $linkFolder);
+            });
             Route::get('/storage-link', function () {
                 $targetFolder = storage_path('app/public');
                 $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/storage';
@@ -191,5 +196,3 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 require __DIR__ . '/settings.php';
-
-
