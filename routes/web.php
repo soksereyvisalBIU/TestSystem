@@ -75,9 +75,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/storage-link', function () {
                 $targetFolder = storage_path('app/public');
                 $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/storage';
-                echo 'Target Folder: ' . $targetFolder . '<br>';
-                echo 'Link Folder: ' . $linkFolder . '<br>';
-                // symlink($targetFolder, $linkFolder);
+                // echo 'Target Folder: ' . $targetFolder . '<br>';
+                // echo 'Link Folder: ' . $linkFolder . '<br>';
+                symlink($targetFolder, $linkFolder);
             });
 
             Route::get('/asset-link', function () {
