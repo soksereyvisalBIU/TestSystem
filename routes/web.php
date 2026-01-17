@@ -46,6 +46,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     case 'optimize':
                         Illuminate\Support\Facades\Artisan::call('optimize');
                         return 'Optimized!';
+                    case 'optimize-clear':
+                        Illuminate\Support\Facades\Artisan::call('optimize:clear');
+                        return 'Optimized!';
 
                     case 'cache-clear':
                         Illuminate\Support\Facades\Artisan::call('cache:clear');
