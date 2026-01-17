@@ -105,33 +105,6 @@
     {{-- =========================
         Structured Data (JSON-LD)
     ========================== --}}
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "{{ config('app.name') }}",
-      "url": "{{ config('app.url') }}",
-      "logo": "{{ asset('assets/meta/og-image.png') }}",
-      "sameAs": [
-        "https://www.facebook.com/",
-        "https://www.linkedin.com/"
-      ]
-    }
-    </script>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "{{ config('app.name') }}",
-      "url": "{{ config('app.url') }}",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "{{ config('app.url') }}/search?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script>
 </body>
 
 </html>
