@@ -33,6 +33,88 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //              Admin
     // ========================================================
 
+    Route::prefix('admin')
+        ->as('admin.')
+        ->middleware(['can:access-admin-page'])
+        ->group(function () {
+            Route::get('/run-artisan/{command}', function ($command) {
+                switch ($command) {
+                    // case 'migrate':
+                    //     Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]); // avoid confirmation
+                    //     return 'Migration done!';
+
+                    case 'optimize':
+                        Illuminate\Support\Facades\Artisan::call('optimize');
+                        return 'Optimized!';
+
+                    case 'cache-clear':
+                        Illuminate\Support\Facades\Artisan::call('cache:clear');
+                        return 'Cache cleared!';
+
+                    case 'config-clear':
+                        Illuminate\Support\Facades\Artisan::call('config:clear');
+                        return 'Config cleared!';
+
+                    case 'config-cache':
+                        Illuminate\Support\Facades\Artisan::call('config:cache');
+                        return 'Config cached!';
+
+                    case 'route-cache':
+                        Illuminate\Support\Facades\Artisan::call('route:cache');
+                        return 'Routes cached!';
+
+                    case 'view-clear':
+                        Illuminate\Support\Facades\Artisan::call('view:clear');
+                        return 'Views cleared!';
+
+                    default:
+                        return 'Unknown command.';
+                }
+            });
+            // link folder
+            Route::get('/storage-link', function () {
+                $targetFolder = storage_path('app/public');
+                $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/storage';
+                symlink($targetFolder, $linkFolder);
+            });
+
+            Route::get('/asset-link', function () {
+                $targetFolder = public_path('asset');
+                $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/asset';
+
+                try {
+                    // Check if the symlink already exists
+                    if (!file_exists($linkFolder)) {
+                        // Create the symbolic link
+                        symlink($targetFolder, $linkFolder);
+                        return 'Symbolic link created successfully.';
+                    } else {
+                        return 'Symbolic link already exists.';
+                    }
+                } catch (\Throwable $e) {
+                    return 'Error creating symbolic link: ' . $e->getMessage();
+                }
+            });
+
+            Route::get('/uploaded-link', function () {
+                $targetFolder = public_path('uploaded');
+                $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/uploaded';
+
+                try {
+                    // Check if the symlink already exists
+                    if (!file_exists($linkFolder)) {
+                        // Create the symbolic link
+                        symlink($targetFolder, $linkFolder);
+                        return 'Symbolic link created successfully.';
+                    } else {
+                        return 'Symbolic link already exists.';
+                    }
+                } catch (\Throwable $e) {
+                    return 'Error creating symbolic link: ' . $e->getMessage();
+                }
+            });
+        });
+
     // ========================================================
     //              Instructor
     // ========================================================

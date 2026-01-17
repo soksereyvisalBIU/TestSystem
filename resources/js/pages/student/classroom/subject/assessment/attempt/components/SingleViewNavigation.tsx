@@ -52,8 +52,8 @@ export function SingleViewNavigation({
 
             {/* Central Counter: Progress Indicator */}
             <div className="flex flex-col items-center gap-2">
-                <div className="rounded-full bg-muted px-4 py-1.5 text-[10px] font-black tracking-widest text-description uppercase">
-                    <span className='hidden sm:block'>Question</span> {currentIndex + 1} of {totalQuestions}
+                <div className="rounded-full bg-muted px-4 py-1.5 text-[10px] font-black tracking-widest text-description uppercase flex gap-2">
+                    <span className='hidden sm:block'>Question</span> <span>{currentIndex + 1} of {totalQuestions}</span>
                 </div>
                 <div className="flex gap-1">
                     <div className="h-1.5 w-24 overflow-hidden rounded-full bg-primary/10">

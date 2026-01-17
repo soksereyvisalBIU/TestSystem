@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Instructor;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Instructor\AssessmentResource;
 use App\Http\Resources\Student\StudentAssessmentAttemptResource;
 use App\Models\Assessment;
 use App\Models\StudentAssessment;
@@ -19,9 +20,15 @@ class StudentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($classId, $subjectId, $assessment_id)
     {
-        return Inertia::render('instructor.classroom.subject.assessment.student.Index');
+        $assessment = (new AssessmentResource(
+            Assessment::with('students')->findOrFail($assessment_id)
+        ))->resolve();
+
+        // return response()->json($assessment);
+
+        return Inertia::render('instructor/classroom/subject/assessment/student/Index' , compact('assessment', ));
     }
 
     /**

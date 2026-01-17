@@ -6,7 +6,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {{-- Inline script to detect system dark mode preference and apply it immediately --}}
+    <title inertia>{{ config('app.name', 'Assessment Platform') }}</title>
+    <meta name="description" content="{{ $pageDescription ?? 'Professional assessment tools for skill evaluation and performance tracking.' }}">
+    <meta name="keywords" content="assessment, skill test, evaluation, recruitment, online testing">
+    <meta name="author" content="{{ config('app.name') }}">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="{{ $pageTitle ?? config('app.name') }}">
+    <meta property="og:description" content="{{ $pageDescription ?? 'Evaluate skills effectively with our professional assessment platform.' }}">
+    <meta property="og:image" content="{{ asset('og-image.png') }}"> {{-- Ensure this file exists in /public --}}
+    <meta property="og:site_name" content="{{ config('app.name') }}">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ url()->current() }}">
+    <meta name="twitter:title" content="{{ $pageTitle ?? config('app.name') }}">
+    <meta name="twitter:description" content="{{ $pageDescription ?? 'Evaluate skills effectively with our professional assessment platform.' }}">
+    <meta name="twitter:image" content="{{ asset('og-image.png') }}">
+
+
+    <!-- Primary Meta Tags -->
+    {{-- <title>Assessment Platform</title>
+    <meta name="title" content="Assessment Platform" />
+    <meta name="description" content="Professional assessment tools for skill evaluation and performance tracking." />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="" />
+    <meta property="og:title" content="Assessment Platform" />
+    <meta property="og:description" content="Professional assessment tools for skill evaluation and performance tracking." />
+    <meta property="og:image" content="https://metatags.io/images/meta-tags.png" />
+
+    <!-- X (Twitter) -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="" />
+    <meta property="twitter:title" content="Assessment Platform" />
+    <meta property="twitter:description" content="Professional assessment tools for skill evaluation and performance tracking." />
+    <meta property="twitter:image" content="https://metatags.io/images/meta-tags.png" /> --}}
+
+<!-- Meta Tags Generated with https://metatags.io -->
+    
+    {{-- Inline script to detect system dark mode preference --}}
     <script>
         (function() {
             const appearance = '{{ $appearance ?? 'system' }}';
@@ -21,7 +63,7 @@
         })();
     </script>
 
-    {{-- Inline style to set the HTML background color based on our theme in app.css --}}
+    {{-- Inline style to set the HTML background color --}}
     <style>
         html {
             background-color: oklch(1 0 0);
@@ -31,8 +73,6 @@
             background-color: oklch(0.145 0 0);
         }
     </style>
-
-    <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">

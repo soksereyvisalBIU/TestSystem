@@ -1,5 +1,5 @@
 import AppLayout from '@/layouts/app-layout';
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
     AlertCircle,
     ArrowLeft,
@@ -278,22 +278,36 @@ export default function StudentAssessmentAttemptScoring({
                                             size="sm"
                                             className="mb-2 -ml-2 h-8 text-muted-foreground hover:text-foreground"
                                             onClick={() =>
-                                                router.get(
-                                                    route(
-                                                        'instructor.classes.subjects.assessments.students.index',
-                                                        {
-                                                            class: 1,
-                                                            subject: 1,
-                                                            assessment:
-                                                                assessment.id,
-                                                        },
-                                                    ),
+                                                // router.get(
+                                                route(
+                                                    'instructor.classes.subjects.assessments.students.index',
+                                                    {
+                                                        class: 1,
+                                                        subject: 1,
+                                                        assessment:
+                                                            assessment.id,
+                                                    },
+                                                    // ),
                                                 )
                                             }
                                         >
                                             <ChevronLeft className="mr-1 h-4 w-4" />{' '}
                                             Back to Students
                                         </Button>
+
+                                        <Link
+                                            href={route(
+                                                'instructor.classes.subjects.assessments.students.index',
+                                                {
+                                                    class: 1,
+                                                    subject: 1,
+                                                    assessment: assessment.id,
+                                                },
+                                            )}
+                                        >
+                                            <ChevronLeft className="mr-1 h-4 w-4" />{' '}
+                                            Back to Students
+                                        </Link>
 
                                         <div className="space-y-3">
                                             <div className="flex items-center justify-between">
