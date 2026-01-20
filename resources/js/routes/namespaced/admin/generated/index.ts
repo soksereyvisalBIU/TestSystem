@@ -3,12 +3,12 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
  * @see [serialized-closure]:2
  * @route '/admin/maintenance/on'
  */
-export const lkEt30ruKghQqBAS = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: lkEt30ruKghQqBAS.url(options),
+export const zVJ6W3bYDah9jsbz = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: zVJ6W3bYDah9jsbz.url(options),
     method: 'get',
 })
 
-lkEt30ruKghQqBAS.definition = {
+zVJ6W3bYDah9jsbz.definition = {
     methods: ["get","head"],
     url: '/admin/maintenance/on',
 } satisfies RouteDefinition<["get","head"]>
@@ -17,24 +17,24 @@ lkEt30ruKghQqBAS.definition = {
  * @see [serialized-closure]:2
  * @route '/admin/maintenance/on'
  */
-lkEt30ruKghQqBAS.url = (options?: RouteQueryOptions) => {
-    return lkEt30ruKghQqBAS.definition.url + queryParams(options)
+zVJ6W3bYDah9jsbz.url = (options?: RouteQueryOptions) => {
+    return zVJ6W3bYDah9jsbz.definition.url + queryParams(options)
 }
 
 /**
  * @see [serialized-closure]:2
  * @route '/admin/maintenance/on'
  */
-lkEt30ruKghQqBAS.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: lkEt30ruKghQqBAS.url(options),
+zVJ6W3bYDah9jsbz.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: zVJ6W3bYDah9jsbz.url(options),
     method: 'get',
 })
 /**
  * @see [serialized-closure]:2
  * @route '/admin/maintenance/on'
  */
-lkEt30ruKghQqBAS.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: lkEt30ruKghQqBAS.url(options),
+zVJ6W3bYDah9jsbz.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: zVJ6W3bYDah9jsbz.url(options),
     method: 'head',
 })
 
@@ -42,8 +42,8 @@ lkEt30ruKghQqBAS.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/maintenance/on'
  */
-    const lkEt30ruKghQqBASForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: lkEt30ruKghQqBAS.url(options),
+    const zVJ6W3bYDah9jsbzForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: zVJ6W3bYDah9jsbz.url(options),
         method: 'get',
     })
 
@@ -51,16 +51,16 @@ lkEt30ruKghQqBAS.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/maintenance/on'
  */
-        lkEt30ruKghQqBASForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: lkEt30ruKghQqBAS.url(options),
+        zVJ6W3bYDah9jsbzForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: zVJ6W3bYDah9jsbz.url(options),
             method: 'get',
         })
             /**
  * @see [serialized-closure]:2
  * @route '/admin/maintenance/on'
  */
-        lkEt30ruKghQqBASForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: lkEt30ruKghQqBAS.url({
+        zVJ6W3bYDah9jsbzForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: zVJ6W3bYDah9jsbz.url({
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -69,17 +69,17 @@ lkEt30ruKghQqBAS.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
             method: 'get',
         })
     
-    lkEt30ruKghQqBAS.form = lkEt30ruKghQqBASForm
+    zVJ6W3bYDah9jsbz.form = zVJ6W3bYDah9jsbzForm
 /**
  * @see [serialized-closure]:2
  * @route '/admin/maintenance/off'
  */
-export const zkWKe92ArrYJSdpL = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: zkWKe92ArrYJSdpL.url(options),
+export const ImqJe9nrRHp3s9JO = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ImqJe9nrRHp3s9JO.url(options),
     method: 'get',
 })
 
-zkWKe92ArrYJSdpL.definition = {
+ImqJe9nrRHp3s9JO.definition = {
     methods: ["get","head"],
     url: '/admin/maintenance/off',
 } satisfies RouteDefinition<["get","head"]>
@@ -88,24 +88,24 @@ zkWKe92ArrYJSdpL.definition = {
  * @see [serialized-closure]:2
  * @route '/admin/maintenance/off'
  */
-zkWKe92ArrYJSdpL.url = (options?: RouteQueryOptions) => {
-    return zkWKe92ArrYJSdpL.definition.url + queryParams(options)
+ImqJe9nrRHp3s9JO.url = (options?: RouteQueryOptions) => {
+    return ImqJe9nrRHp3s9JO.definition.url + queryParams(options)
 }
 
 /**
  * @see [serialized-closure]:2
  * @route '/admin/maintenance/off'
  */
-zkWKe92ArrYJSdpL.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: zkWKe92ArrYJSdpL.url(options),
+ImqJe9nrRHp3s9JO.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ImqJe9nrRHp3s9JO.url(options),
     method: 'get',
 })
 /**
  * @see [serialized-closure]:2
  * @route '/admin/maintenance/off'
  */
-zkWKe92ArrYJSdpL.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: zkWKe92ArrYJSdpL.url(options),
+ImqJe9nrRHp3s9JO.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: ImqJe9nrRHp3s9JO.url(options),
     method: 'head',
 })
 
@@ -113,8 +113,8 @@ zkWKe92ArrYJSdpL.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/maintenance/off'
  */
-    const zkWKe92ArrYJSdpLForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: zkWKe92ArrYJSdpL.url(options),
+    const ImqJe9nrRHp3s9JOForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: ImqJe9nrRHp3s9JO.url(options),
         method: 'get',
     })
 
@@ -122,16 +122,16 @@ zkWKe92ArrYJSdpL.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/maintenance/off'
  */
-        zkWKe92ArrYJSdpLForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: zkWKe92ArrYJSdpL.url(options),
+        ImqJe9nrRHp3s9JOForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ImqJe9nrRHp3s9JO.url(options),
             method: 'get',
         })
             /**
  * @see [serialized-closure]:2
  * @route '/admin/maintenance/off'
  */
-        zkWKe92ArrYJSdpLForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: zkWKe92ArrYJSdpL.url({
+        ImqJe9nrRHp3s9JOForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: ImqJe9nrRHp3s9JO.url({
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -140,17 +140,17 @@ zkWKe92ArrYJSdpL.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
             method: 'get',
         })
     
-    zkWKe92ArrYJSdpL.form = zkWKe92ArrYJSdpLForm
+    ImqJe9nrRHp3s9JO.form = ImqJe9nrRHp3s9JOForm
 /**
  * @see [serialized-closure]:2
  * @route '/admin/link/storage'
  */
-export const qE5nHb6allQkUjaU = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: qE5nHb6allQkUjaU.url(options),
+export const n4QGsok1Oi01YPfa = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: n4QGsok1Oi01YPfa.url(options),
     method: 'get',
 })
 
-qE5nHb6allQkUjaU.definition = {
+n4QGsok1Oi01YPfa.definition = {
     methods: ["get","head"],
     url: '/admin/link/storage',
 } satisfies RouteDefinition<["get","head"]>
@@ -159,24 +159,24 @@ qE5nHb6allQkUjaU.definition = {
  * @see [serialized-closure]:2
  * @route '/admin/link/storage'
  */
-qE5nHb6allQkUjaU.url = (options?: RouteQueryOptions) => {
-    return qE5nHb6allQkUjaU.definition.url + queryParams(options)
+n4QGsok1Oi01YPfa.url = (options?: RouteQueryOptions) => {
+    return n4QGsok1Oi01YPfa.definition.url + queryParams(options)
 }
 
 /**
  * @see [serialized-closure]:2
  * @route '/admin/link/storage'
  */
-qE5nHb6allQkUjaU.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: qE5nHb6allQkUjaU.url(options),
+n4QGsok1Oi01YPfa.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: n4QGsok1Oi01YPfa.url(options),
     method: 'get',
 })
 /**
  * @see [serialized-closure]:2
  * @route '/admin/link/storage'
  */
-qE5nHb6allQkUjaU.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: qE5nHb6allQkUjaU.url(options),
+n4QGsok1Oi01YPfa.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: n4QGsok1Oi01YPfa.url(options),
     method: 'head',
 })
 
@@ -184,8 +184,8 @@ qE5nHb6allQkUjaU.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/link/storage'
  */
-    const qE5nHb6allQkUjaUForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: qE5nHb6allQkUjaU.url(options),
+    const n4QGsok1Oi01YPfaForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: n4QGsok1Oi01YPfa.url(options),
         method: 'get',
     })
 
@@ -193,16 +193,16 @@ qE5nHb6allQkUjaU.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/link/storage'
  */
-        qE5nHb6allQkUjaUForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: qE5nHb6allQkUjaU.url(options),
+        n4QGsok1Oi01YPfaForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: n4QGsok1Oi01YPfa.url(options),
             method: 'get',
         })
             /**
  * @see [serialized-closure]:2
  * @route '/admin/link/storage'
  */
-        qE5nHb6allQkUjaUForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: qE5nHb6allQkUjaU.url({
+        n4QGsok1Oi01YPfaForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: n4QGsok1Oi01YPfa.url({
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -211,17 +211,17 @@ qE5nHb6allQkUjaU.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
             method: 'get',
         })
     
-    qE5nHb6allQkUjaU.form = qE5nHb6allQkUjaUForm
+    n4QGsok1Oi01YPfa.form = n4QGsok1Oi01YPfaForm
 /**
  * @see [serialized-closure]:2
  * @route '/admin/link/asset'
  */
-export const kzsKKDORXsZ3BRjI = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: kzsKKDORXsZ3BRjI.url(options),
+export const method6H5u8ZD73YEmzGaM = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: method6H5u8ZD73YEmzGaM.url(options),
     method: 'get',
 })
 
-kzsKKDORXsZ3BRjI.definition = {
+method6H5u8ZD73YEmzGaM.definition = {
     methods: ["get","head"],
     url: '/admin/link/asset',
 } satisfies RouteDefinition<["get","head"]>
@@ -230,24 +230,24 @@ kzsKKDORXsZ3BRjI.definition = {
  * @see [serialized-closure]:2
  * @route '/admin/link/asset'
  */
-kzsKKDORXsZ3BRjI.url = (options?: RouteQueryOptions) => {
-    return kzsKKDORXsZ3BRjI.definition.url + queryParams(options)
+method6H5u8ZD73YEmzGaM.url = (options?: RouteQueryOptions) => {
+    return method6H5u8ZD73YEmzGaM.definition.url + queryParams(options)
 }
 
 /**
  * @see [serialized-closure]:2
  * @route '/admin/link/asset'
  */
-kzsKKDORXsZ3BRjI.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: kzsKKDORXsZ3BRjI.url(options),
+method6H5u8ZD73YEmzGaM.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: method6H5u8ZD73YEmzGaM.url(options),
     method: 'get',
 })
 /**
  * @see [serialized-closure]:2
  * @route '/admin/link/asset'
  */
-kzsKKDORXsZ3BRjI.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: kzsKKDORXsZ3BRjI.url(options),
+method6H5u8ZD73YEmzGaM.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: method6H5u8ZD73YEmzGaM.url(options),
     method: 'head',
 })
 
@@ -255,8 +255,8 @@ kzsKKDORXsZ3BRjI.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/link/asset'
  */
-    const kzsKKDORXsZ3BRjIForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: kzsKKDORXsZ3BRjI.url(options),
+    const method6H5u8ZD73YEmzGaMForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: method6H5u8ZD73YEmzGaM.url(options),
         method: 'get',
     })
 
@@ -264,16 +264,16 @@ kzsKKDORXsZ3BRjI.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/link/asset'
  */
-        kzsKKDORXsZ3BRjIForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: kzsKKDORXsZ3BRjI.url(options),
+        method6H5u8ZD73YEmzGaMForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: method6H5u8ZD73YEmzGaM.url(options),
             method: 'get',
         })
             /**
  * @see [serialized-closure]:2
  * @route '/admin/link/asset'
  */
-        kzsKKDORXsZ3BRjIForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: kzsKKDORXsZ3BRjI.url({
+        method6H5u8ZD73YEmzGaMForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: method6H5u8ZD73YEmzGaM.url({
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -282,17 +282,17 @@ kzsKKDORXsZ3BRjI.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
             method: 'get',
         })
     
-    kzsKKDORXsZ3BRjI.form = kzsKKDORXsZ3BRjIForm
+    method6H5u8ZD73YEmzGaM.form = method6H5u8ZD73YEmzGaMForm
 /**
  * @see [serialized-closure]:2
  * @route '/admin/link/uploaded'
  */
-export const method8L4X9bjIkmAxNOQv = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: method8L4X9bjIkmAxNOQv.url(options),
+export const XHZafGGxoLlwTSPW = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: XHZafGGxoLlwTSPW.url(options),
     method: 'get',
 })
 
-method8L4X9bjIkmAxNOQv.definition = {
+XHZafGGxoLlwTSPW.definition = {
     methods: ["get","head"],
     url: '/admin/link/uploaded',
 } satisfies RouteDefinition<["get","head"]>
@@ -301,24 +301,24 @@ method8L4X9bjIkmAxNOQv.definition = {
  * @see [serialized-closure]:2
  * @route '/admin/link/uploaded'
  */
-method8L4X9bjIkmAxNOQv.url = (options?: RouteQueryOptions) => {
-    return method8L4X9bjIkmAxNOQv.definition.url + queryParams(options)
+XHZafGGxoLlwTSPW.url = (options?: RouteQueryOptions) => {
+    return XHZafGGxoLlwTSPW.definition.url + queryParams(options)
 }
 
 /**
  * @see [serialized-closure]:2
  * @route '/admin/link/uploaded'
  */
-method8L4X9bjIkmAxNOQv.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: method8L4X9bjIkmAxNOQv.url(options),
+XHZafGGxoLlwTSPW.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: XHZafGGxoLlwTSPW.url(options),
     method: 'get',
 })
 /**
  * @see [serialized-closure]:2
  * @route '/admin/link/uploaded'
  */
-method8L4X9bjIkmAxNOQv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: method8L4X9bjIkmAxNOQv.url(options),
+XHZafGGxoLlwTSPW.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: XHZafGGxoLlwTSPW.url(options),
     method: 'head',
 })
 
@@ -326,8 +326,8 @@ method8L4X9bjIkmAxNOQv.head = (options?: RouteQueryOptions): RouteDefinition<'he
  * @see [serialized-closure]:2
  * @route '/admin/link/uploaded'
  */
-    const method8L4X9bjIkmAxNOQvForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: method8L4X9bjIkmAxNOQv.url(options),
+    const XHZafGGxoLlwTSPWForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: XHZafGGxoLlwTSPW.url(options),
         method: 'get',
     })
 
@@ -335,16 +335,16 @@ method8L4X9bjIkmAxNOQv.head = (options?: RouteQueryOptions): RouteDefinition<'he
  * @see [serialized-closure]:2
  * @route '/admin/link/uploaded'
  */
-        method8L4X9bjIkmAxNOQvForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: method8L4X9bjIkmAxNOQv.url(options),
+        XHZafGGxoLlwTSPWForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: XHZafGGxoLlwTSPW.url(options),
             method: 'get',
         })
             /**
  * @see [serialized-closure]:2
  * @route '/admin/link/uploaded'
  */
-        method8L4X9bjIkmAxNOQvForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: method8L4X9bjIkmAxNOQv.url({
+        XHZafGGxoLlwTSPWForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: XHZafGGxoLlwTSPW.url({
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -353,17 +353,17 @@ method8L4X9bjIkmAxNOQv.head = (options?: RouteQueryOptions): RouteDefinition<'he
             method: 'get',
         })
     
-    method8L4X9bjIkmAxNOQv.form = method8L4X9bjIkmAxNOQvForm
+    XHZafGGxoLlwTSPW.form = XHZafGGxoLlwTSPWForm
 /**
  * @see [serialized-closure]:2
  * @route '/admin/system-info'
  */
-export const lbEWKitKNN6Xdg2V = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: lbEWKitKNN6Xdg2V.url(options),
+export const Y9gkgJKS7jBlNk7X = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: Y9gkgJKS7jBlNk7X.url(options),
     method: 'get',
 })
 
-lbEWKitKNN6Xdg2V.definition = {
+Y9gkgJKS7jBlNk7X.definition = {
     methods: ["get","head"],
     url: '/admin/system-info',
 } satisfies RouteDefinition<["get","head"]>
@@ -372,24 +372,24 @@ lbEWKitKNN6Xdg2V.definition = {
  * @see [serialized-closure]:2
  * @route '/admin/system-info'
  */
-lbEWKitKNN6Xdg2V.url = (options?: RouteQueryOptions) => {
-    return lbEWKitKNN6Xdg2V.definition.url + queryParams(options)
+Y9gkgJKS7jBlNk7X.url = (options?: RouteQueryOptions) => {
+    return Y9gkgJKS7jBlNk7X.definition.url + queryParams(options)
 }
 
 /**
  * @see [serialized-closure]:2
  * @route '/admin/system-info'
  */
-lbEWKitKNN6Xdg2V.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: lbEWKitKNN6Xdg2V.url(options),
+Y9gkgJKS7jBlNk7X.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: Y9gkgJKS7jBlNk7X.url(options),
     method: 'get',
 })
 /**
  * @see [serialized-closure]:2
  * @route '/admin/system-info'
  */
-lbEWKitKNN6Xdg2V.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: lbEWKitKNN6Xdg2V.url(options),
+Y9gkgJKS7jBlNk7X.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: Y9gkgJKS7jBlNk7X.url(options),
     method: 'head',
 })
 
@@ -397,8 +397,8 @@ lbEWKitKNN6Xdg2V.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/system-info'
  */
-    const lbEWKitKNN6Xdg2VForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: lbEWKitKNN6Xdg2V.url(options),
+    const Y9gkgJKS7jBlNk7XForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: Y9gkgJKS7jBlNk7X.url(options),
         method: 'get',
     })
 
@@ -406,16 +406,16 @@ lbEWKitKNN6Xdg2V.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/system-info'
  */
-        lbEWKitKNN6Xdg2VForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: lbEWKitKNN6Xdg2V.url(options),
+        Y9gkgJKS7jBlNk7XForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: Y9gkgJKS7jBlNk7X.url(options),
             method: 'get',
         })
             /**
  * @see [serialized-closure]:2
  * @route '/admin/system-info'
  */
-        lbEWKitKNN6Xdg2VForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: lbEWKitKNN6Xdg2V.url({
+        Y9gkgJKS7jBlNk7XForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: Y9gkgJKS7jBlNk7X.url({
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -424,17 +424,17 @@ lbEWKitKNN6Xdg2V.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
             method: 'get',
         })
     
-    lbEWKitKNN6Xdg2V.form = lbEWKitKNN6Xdg2VForm
+    Y9gkgJKS7jBlNk7X.form = Y9gkgJKS7jBlNk7XForm
 /**
  * @see [serialized-closure]:2
  * @route '/admin/health/storage'
  */
-export const method6B7SlWy8aIBlu7Or = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: method6B7SlWy8aIBlu7Or.url(options),
+export const method9KsRPFOckgXxTSpz = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: method9KsRPFOckgXxTSpz.url(options),
     method: 'get',
 })
 
-method6B7SlWy8aIBlu7Or.definition = {
+method9KsRPFOckgXxTSpz.definition = {
     methods: ["get","head"],
     url: '/admin/health/storage',
 } satisfies RouteDefinition<["get","head"]>
@@ -443,24 +443,24 @@ method6B7SlWy8aIBlu7Or.definition = {
  * @see [serialized-closure]:2
  * @route '/admin/health/storage'
  */
-method6B7SlWy8aIBlu7Or.url = (options?: RouteQueryOptions) => {
-    return method6B7SlWy8aIBlu7Or.definition.url + queryParams(options)
+method9KsRPFOckgXxTSpz.url = (options?: RouteQueryOptions) => {
+    return method9KsRPFOckgXxTSpz.definition.url + queryParams(options)
 }
 
 /**
  * @see [serialized-closure]:2
  * @route '/admin/health/storage'
  */
-method6B7SlWy8aIBlu7Or.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: method6B7SlWy8aIBlu7Or.url(options),
+method9KsRPFOckgXxTSpz.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: method9KsRPFOckgXxTSpz.url(options),
     method: 'get',
 })
 /**
  * @see [serialized-closure]:2
  * @route '/admin/health/storage'
  */
-method6B7SlWy8aIBlu7Or.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: method6B7SlWy8aIBlu7Or.url(options),
+method9KsRPFOckgXxTSpz.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: method9KsRPFOckgXxTSpz.url(options),
     method: 'head',
 })
 
@@ -468,8 +468,8 @@ method6B7SlWy8aIBlu7Or.head = (options?: RouteQueryOptions): RouteDefinition<'he
  * @see [serialized-closure]:2
  * @route '/admin/health/storage'
  */
-    const method6B7SlWy8aIBlu7OrForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: method6B7SlWy8aIBlu7Or.url(options),
+    const method9KsRPFOckgXxTSpzForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: method9KsRPFOckgXxTSpz.url(options),
         method: 'get',
     })
 
@@ -477,16 +477,16 @@ method6B7SlWy8aIBlu7Or.head = (options?: RouteQueryOptions): RouteDefinition<'he
  * @see [serialized-closure]:2
  * @route '/admin/health/storage'
  */
-        method6B7SlWy8aIBlu7OrForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: method6B7SlWy8aIBlu7Or.url(options),
+        method9KsRPFOckgXxTSpzForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: method9KsRPFOckgXxTSpz.url(options),
             method: 'get',
         })
             /**
  * @see [serialized-closure]:2
  * @route '/admin/health/storage'
  */
-        method6B7SlWy8aIBlu7OrForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: method6B7SlWy8aIBlu7Or.url({
+        method9KsRPFOckgXxTSpzForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: method9KsRPFOckgXxTSpz.url({
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -495,17 +495,17 @@ method6B7SlWy8aIBlu7Or.head = (options?: RouteQueryOptions): RouteDefinition<'he
             method: 'get',
         })
     
-    method6B7SlWy8aIBlu7Or.form = method6B7SlWy8aIBlu7OrForm
+    method9KsRPFOckgXxTSpz.form = method9KsRPFOckgXxTSpzForm
 /**
  * @see [serialized-closure]:2
  * @route '/admin/queue/restart'
  */
-export const dmYlQ7Lq5hJU7WpN = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: dmYlQ7Lq5hJU7WpN.url(options),
+export const t9oo5C0PWBBC7J53 = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: t9oo5C0PWBBC7J53.url(options),
     method: 'get',
 })
 
-dmYlQ7Lq5hJU7WpN.definition = {
+t9oo5C0PWBBC7J53.definition = {
     methods: ["get","head"],
     url: '/admin/queue/restart',
 } satisfies RouteDefinition<["get","head"]>
@@ -514,24 +514,24 @@ dmYlQ7Lq5hJU7WpN.definition = {
  * @see [serialized-closure]:2
  * @route '/admin/queue/restart'
  */
-dmYlQ7Lq5hJU7WpN.url = (options?: RouteQueryOptions) => {
-    return dmYlQ7Lq5hJU7WpN.definition.url + queryParams(options)
+t9oo5C0PWBBC7J53.url = (options?: RouteQueryOptions) => {
+    return t9oo5C0PWBBC7J53.definition.url + queryParams(options)
 }
 
 /**
  * @see [serialized-closure]:2
  * @route '/admin/queue/restart'
  */
-dmYlQ7Lq5hJU7WpN.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: dmYlQ7Lq5hJU7WpN.url(options),
+t9oo5C0PWBBC7J53.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: t9oo5C0PWBBC7J53.url(options),
     method: 'get',
 })
 /**
  * @see [serialized-closure]:2
  * @route '/admin/queue/restart'
  */
-dmYlQ7Lq5hJU7WpN.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: dmYlQ7Lq5hJU7WpN.url(options),
+t9oo5C0PWBBC7J53.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: t9oo5C0PWBBC7J53.url(options),
     method: 'head',
 })
 
@@ -539,8 +539,8 @@ dmYlQ7Lq5hJU7WpN.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/queue/restart'
  */
-    const dmYlQ7Lq5hJU7WpNForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: dmYlQ7Lq5hJU7WpN.url(options),
+    const t9oo5C0PWBBC7J53Form = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: t9oo5C0PWBBC7J53.url(options),
         method: 'get',
     })
 
@@ -548,16 +548,16 @@ dmYlQ7Lq5hJU7WpN.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/queue/restart'
  */
-        dmYlQ7Lq5hJU7WpNForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: dmYlQ7Lq5hJU7WpN.url(options),
+        t9oo5C0PWBBC7J53Form.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: t9oo5C0PWBBC7J53.url(options),
             method: 'get',
         })
             /**
  * @see [serialized-closure]:2
  * @route '/admin/queue/restart'
  */
-        dmYlQ7Lq5hJU7WpNForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: dmYlQ7Lq5hJU7WpN.url({
+        t9oo5C0PWBBC7J53Form.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: t9oo5C0PWBBC7J53.url({
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -566,17 +566,17 @@ dmYlQ7Lq5hJU7WpN.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
             method: 'get',
         })
     
-    dmYlQ7Lq5hJU7WpN.form = dmYlQ7Lq5hJU7WpNForm
+    t9oo5C0PWBBC7J53.form = t9oo5C0PWBBC7J53Form
 /**
  * @see [serialized-closure]:2
  * @route '/admin/queue/failed'
  */
-export const oSKRRIfzQxshwSMf = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: oSKRRIfzQxshwSMf.url(options),
+export const auBvz2IgKTqdlR87 = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: auBvz2IgKTqdlR87.url(options),
     method: 'get',
 })
 
-oSKRRIfzQxshwSMf.definition = {
+auBvz2IgKTqdlR87.definition = {
     methods: ["get","head"],
     url: '/admin/queue/failed',
 } satisfies RouteDefinition<["get","head"]>
@@ -585,24 +585,24 @@ oSKRRIfzQxshwSMf.definition = {
  * @see [serialized-closure]:2
  * @route '/admin/queue/failed'
  */
-oSKRRIfzQxshwSMf.url = (options?: RouteQueryOptions) => {
-    return oSKRRIfzQxshwSMf.definition.url + queryParams(options)
+auBvz2IgKTqdlR87.url = (options?: RouteQueryOptions) => {
+    return auBvz2IgKTqdlR87.definition.url + queryParams(options)
 }
 
 /**
  * @see [serialized-closure]:2
  * @route '/admin/queue/failed'
  */
-oSKRRIfzQxshwSMf.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: oSKRRIfzQxshwSMf.url(options),
+auBvz2IgKTqdlR87.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: auBvz2IgKTqdlR87.url(options),
     method: 'get',
 })
 /**
  * @see [serialized-closure]:2
  * @route '/admin/queue/failed'
  */
-oSKRRIfzQxshwSMf.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: oSKRRIfzQxshwSMf.url(options),
+auBvz2IgKTqdlR87.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: auBvz2IgKTqdlR87.url(options),
     method: 'head',
 })
 
@@ -610,8 +610,8 @@ oSKRRIfzQxshwSMf.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/queue/failed'
  */
-    const oSKRRIfzQxshwSMfForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: oSKRRIfzQxshwSMf.url(options),
+    const auBvz2IgKTqdlR87Form = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: auBvz2IgKTqdlR87.url(options),
         method: 'get',
     })
 
@@ -619,16 +619,16 @@ oSKRRIfzQxshwSMf.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/queue/failed'
  */
-        oSKRRIfzQxshwSMfForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: oSKRRIfzQxshwSMf.url(options),
+        auBvz2IgKTqdlR87Form.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: auBvz2IgKTqdlR87.url(options),
             method: 'get',
         })
             /**
  * @see [serialized-closure]:2
  * @route '/admin/queue/failed'
  */
-        oSKRRIfzQxshwSMfForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: oSKRRIfzQxshwSMf.url({
+        auBvz2IgKTqdlR87Form.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: auBvz2IgKTqdlR87.url({
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -637,17 +637,17 @@ oSKRRIfzQxshwSMf.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
             method: 'get',
         })
     
-    oSKRRIfzQxshwSMf.form = oSKRRIfzQxshwSMfForm
+    auBvz2IgKTqdlR87.form = auBvz2IgKTqdlR87Form
 /**
  * @see [serialized-closure]:2
  * @route '/admin/queue/flush'
  */
-export const TnYZDjbq2Nto9nLC = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: TnYZDjbq2Nto9nLC.url(options),
+export const V8CgHyQAeXk5niBH = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: V8CgHyQAeXk5niBH.url(options),
     method: 'get',
 })
 
-TnYZDjbq2Nto9nLC.definition = {
+V8CgHyQAeXk5niBH.definition = {
     methods: ["get","head"],
     url: '/admin/queue/flush',
 } satisfies RouteDefinition<["get","head"]>
@@ -656,24 +656,24 @@ TnYZDjbq2Nto9nLC.definition = {
  * @see [serialized-closure]:2
  * @route '/admin/queue/flush'
  */
-TnYZDjbq2Nto9nLC.url = (options?: RouteQueryOptions) => {
-    return TnYZDjbq2Nto9nLC.definition.url + queryParams(options)
+V8CgHyQAeXk5niBH.url = (options?: RouteQueryOptions) => {
+    return V8CgHyQAeXk5niBH.definition.url + queryParams(options)
 }
 
 /**
  * @see [serialized-closure]:2
  * @route '/admin/queue/flush'
  */
-TnYZDjbq2Nto9nLC.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: TnYZDjbq2Nto9nLC.url(options),
+V8CgHyQAeXk5niBH.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: V8CgHyQAeXk5niBH.url(options),
     method: 'get',
 })
 /**
  * @see [serialized-closure]:2
  * @route '/admin/queue/flush'
  */
-TnYZDjbq2Nto9nLC.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: TnYZDjbq2Nto9nLC.url(options),
+V8CgHyQAeXk5niBH.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: V8CgHyQAeXk5niBH.url(options),
     method: 'head',
 })
 
@@ -681,8 +681,8 @@ TnYZDjbq2Nto9nLC.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/queue/flush'
  */
-    const TnYZDjbq2Nto9nLCForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: TnYZDjbq2Nto9nLC.url(options),
+    const V8CgHyQAeXk5niBHForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: V8CgHyQAeXk5niBH.url(options),
         method: 'get',
     })
 
@@ -690,16 +690,16 @@ TnYZDjbq2Nto9nLC.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/queue/flush'
  */
-        TnYZDjbq2Nto9nLCForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: TnYZDjbq2Nto9nLC.url(options),
+        V8CgHyQAeXk5niBHForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: V8CgHyQAeXk5niBH.url(options),
             method: 'get',
         })
             /**
  * @see [serialized-closure]:2
  * @route '/admin/queue/flush'
  */
-        TnYZDjbq2Nto9nLCForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: TnYZDjbq2Nto9nLC.url({
+        V8CgHyQAeXk5niBHForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: V8CgHyQAeXk5niBH.url({
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -708,17 +708,17 @@ TnYZDjbq2Nto9nLC.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
             method: 'get',
         })
     
-    TnYZDjbq2Nto9nLC.form = TnYZDjbq2Nto9nLCForm
+    V8CgHyQAeXk5niBH.form = V8CgHyQAeXk5niBHForm
 /**
  * @see [serialized-closure]:2
  * @route '/admin/logs/size'
  */
-export const fuqsfqlcLuu9L7dX = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: fuqsfqlcLuu9L7dX.url(options),
+export const zfF1LFnPmllaPHLe = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: zfF1LFnPmllaPHLe.url(options),
     method: 'get',
 })
 
-fuqsfqlcLuu9L7dX.definition = {
+zfF1LFnPmllaPHLe.definition = {
     methods: ["get","head"],
     url: '/admin/logs/size',
 } satisfies RouteDefinition<["get","head"]>
@@ -727,24 +727,24 @@ fuqsfqlcLuu9L7dX.definition = {
  * @see [serialized-closure]:2
  * @route '/admin/logs/size'
  */
-fuqsfqlcLuu9L7dX.url = (options?: RouteQueryOptions) => {
-    return fuqsfqlcLuu9L7dX.definition.url + queryParams(options)
+zfF1LFnPmllaPHLe.url = (options?: RouteQueryOptions) => {
+    return zfF1LFnPmllaPHLe.definition.url + queryParams(options)
 }
 
 /**
  * @see [serialized-closure]:2
  * @route '/admin/logs/size'
  */
-fuqsfqlcLuu9L7dX.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: fuqsfqlcLuu9L7dX.url(options),
+zfF1LFnPmllaPHLe.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: zfF1LFnPmllaPHLe.url(options),
     method: 'get',
 })
 /**
  * @see [serialized-closure]:2
  * @route '/admin/logs/size'
  */
-fuqsfqlcLuu9L7dX.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: fuqsfqlcLuu9L7dX.url(options),
+zfF1LFnPmllaPHLe.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: zfF1LFnPmllaPHLe.url(options),
     method: 'head',
 })
 
@@ -752,8 +752,8 @@ fuqsfqlcLuu9L7dX.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/logs/size'
  */
-    const fuqsfqlcLuu9L7dXForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: fuqsfqlcLuu9L7dX.url(options),
+    const zfF1LFnPmllaPHLeForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: zfF1LFnPmllaPHLe.url(options),
         method: 'get',
     })
 
@@ -761,16 +761,16 @@ fuqsfqlcLuu9L7dX.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/logs/size'
  */
-        fuqsfqlcLuu9L7dXForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: fuqsfqlcLuu9L7dX.url(options),
+        zfF1LFnPmllaPHLeForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: zfF1LFnPmllaPHLe.url(options),
             method: 'get',
         })
             /**
  * @see [serialized-closure]:2
  * @route '/admin/logs/size'
  */
-        fuqsfqlcLuu9L7dXForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: fuqsfqlcLuu9L7dX.url({
+        zfF1LFnPmllaPHLeForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: zfF1LFnPmllaPHLe.url({
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -779,17 +779,17 @@ fuqsfqlcLuu9L7dX.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
             method: 'get',
         })
     
-    fuqsfqlcLuu9L7dX.form = fuqsfqlcLuu9L7dXForm
+    zfF1LFnPmllaPHLe.form = zfF1LFnPmllaPHLeForm
 /**
  * @see [serialized-closure]:2
  * @route '/admin/logs/clear'
  */
-export const EbB4pGHb7zJKTO32 = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: EbB4pGHb7zJKTO32.url(options),
+export const KoPN8x9r9LHR52h4 = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: KoPN8x9r9LHR52h4.url(options),
     method: 'get',
 })
 
-EbB4pGHb7zJKTO32.definition = {
+KoPN8x9r9LHR52h4.definition = {
     methods: ["get","head"],
     url: '/admin/logs/clear',
 } satisfies RouteDefinition<["get","head"]>
@@ -798,24 +798,24 @@ EbB4pGHb7zJKTO32.definition = {
  * @see [serialized-closure]:2
  * @route '/admin/logs/clear'
  */
-EbB4pGHb7zJKTO32.url = (options?: RouteQueryOptions) => {
-    return EbB4pGHb7zJKTO32.definition.url + queryParams(options)
+KoPN8x9r9LHR52h4.url = (options?: RouteQueryOptions) => {
+    return KoPN8x9r9LHR52h4.definition.url + queryParams(options)
 }
 
 /**
  * @see [serialized-closure]:2
  * @route '/admin/logs/clear'
  */
-EbB4pGHb7zJKTO32.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: EbB4pGHb7zJKTO32.url(options),
+KoPN8x9r9LHR52h4.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: KoPN8x9r9LHR52h4.url(options),
     method: 'get',
 })
 /**
  * @see [serialized-closure]:2
  * @route '/admin/logs/clear'
  */
-EbB4pGHb7zJKTO32.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: EbB4pGHb7zJKTO32.url(options),
+KoPN8x9r9LHR52h4.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: KoPN8x9r9LHR52h4.url(options),
     method: 'head',
 })
 
@@ -823,8 +823,8 @@ EbB4pGHb7zJKTO32.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/logs/clear'
  */
-    const EbB4pGHb7zJKTO32Form = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: EbB4pGHb7zJKTO32.url(options),
+    const KoPN8x9r9LHR52h4Form = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: KoPN8x9r9LHR52h4.url(options),
         method: 'get',
     })
 
@@ -832,16 +832,16 @@ EbB4pGHb7zJKTO32.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
  * @see [serialized-closure]:2
  * @route '/admin/logs/clear'
  */
-        EbB4pGHb7zJKTO32Form.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: EbB4pGHb7zJKTO32.url(options),
+        KoPN8x9r9LHR52h4Form.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: KoPN8x9r9LHR52h4.url(options),
             method: 'get',
         })
             /**
  * @see [serialized-closure]:2
  * @route '/admin/logs/clear'
  */
-        EbB4pGHb7zJKTO32Form.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: EbB4pGHb7zJKTO32.url({
+        KoPN8x9r9LHR52h4Form.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: KoPN8x9r9LHR52h4.url({
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -850,20 +850,20 @@ EbB4pGHb7zJKTO32.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
             method: 'get',
         })
     
-    EbB4pGHb7zJKTO32.form = EbB4pGHb7zJKTO32Form
+    KoPN8x9r9LHR52h4.form = KoPN8x9r9LHR52h4Form
 const generated = {
-    lkEt30ruKghQqBAS: Object.assign(lkEt30ruKghQqBAS, lkEt30ruKghQqBAS),
-zkWKe92ArrYJSdpL: Object.assign(zkWKe92ArrYJSdpL, zkWKe92ArrYJSdpL),
-qE5nHb6allQkUjaU: Object.assign(qE5nHb6allQkUjaU, qE5nHb6allQkUjaU),
-kzsKKDORXsZ3BRjI: Object.assign(kzsKKDORXsZ3BRjI, kzsKKDORXsZ3BRjI),
-8L4X9bjIkmAxNOQv: Object.assign(method8L4X9bjIkmAxNOQv, method8L4X9bjIkmAxNOQv),
-lbEWKitKNN6Xdg2V: Object.assign(lbEWKitKNN6Xdg2V, lbEWKitKNN6Xdg2V),
-6B7SlWy8aIBlu7Or: Object.assign(method6B7SlWy8aIBlu7Or, method6B7SlWy8aIBlu7Or),
-dmYlQ7Lq5hJU7WpN: Object.assign(dmYlQ7Lq5hJU7WpN, dmYlQ7Lq5hJU7WpN),
-oSKRRIfzQxshwSMf: Object.assign(oSKRRIfzQxshwSMf, oSKRRIfzQxshwSMf),
-TnYZDjbq2Nto9nLC: Object.assign(TnYZDjbq2Nto9nLC, TnYZDjbq2Nto9nLC),
-fuqsfqlcLuu9L7dX: Object.assign(fuqsfqlcLuu9L7dX, fuqsfqlcLuu9L7dX),
-EbB4pGHb7zJKTO32: Object.assign(EbB4pGHb7zJKTO32, EbB4pGHb7zJKTO32),
+    zVJ6W3bYDah9jsbz: Object.assign(zVJ6W3bYDah9jsbz, zVJ6W3bYDah9jsbz),
+ImqJe9nrRHp3s9JO: Object.assign(ImqJe9nrRHp3s9JO, ImqJe9nrRHp3s9JO),
+n4QGsok1Oi01YPfa: Object.assign(n4QGsok1Oi01YPfa, n4QGsok1Oi01YPfa),
+6H5u8ZD73YEmzGaM: Object.assign(method6H5u8ZD73YEmzGaM, method6H5u8ZD73YEmzGaM),
+XHZafGGxoLlwTSPW: Object.assign(XHZafGGxoLlwTSPW, XHZafGGxoLlwTSPW),
+Y9gkgJKS7jBlNk7X: Object.assign(Y9gkgJKS7jBlNk7X, Y9gkgJKS7jBlNk7X),
+9KsRPFOckgXxTSpz: Object.assign(method9KsRPFOckgXxTSpz, method9KsRPFOckgXxTSpz),
+t9oo5C0PWBBC7J53: Object.assign(t9oo5C0PWBBC7J53, t9oo5C0PWBBC7J53),
+auBvz2IgKTqdlR87: Object.assign(auBvz2IgKTqdlR87, auBvz2IgKTqdlR87),
+V8CgHyQAeXk5niBH: Object.assign(V8CgHyQAeXk5niBH, V8CgHyQAeXk5niBH),
+zfF1LFnPmllaPHLe: Object.assign(zfF1LFnPmllaPHLe, zfF1LFnPmllaPHLe),
+KoPN8x9r9LHR52h4: Object.assign(KoPN8x9r9LHR52h4, KoPN8x9r9LHR52h4),
 }
 
 export default generated

@@ -136,7 +136,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware([
             'auth',
             'verified',              // Email verified
-            'password.confirm',      // Re-enter password
+            // 'password.confirm',      // Re-enter password
             'can:access-admin-page', // Policy / Gate
             // 'throttle:5,1',          // Anti brute-force
         ])
