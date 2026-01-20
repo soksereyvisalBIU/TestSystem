@@ -1,6 +1,7 @@
 'use client';
 
 import AppLogoIcon from '@/components/app-logo-icon';
+import { Link } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ReactNode, useEffect, useState } from 'react';
 
@@ -91,9 +92,9 @@ export default function AuthLayout({
                         transition={{ duration: 0.4 }}
                         className="flex flex-col items-center space-y-2"
                     >
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-zinc-200 transition-shadow group-hover:shadow-md dark:bg-zinc-900 dark:ring-zinc-800">
+                        <Link className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-zinc-200 transition-shadow group-hover:shadow-md dark:bg-zinc-900 dark:ring-zinc-800" href={'/'}>
                             <AppLogoIcon className="h-8 w-8 fill-current text-zinc-900 dark:text-white" />
-                        </div>
+                        </Link>
 
                         <h1 className="text-3xl font-extrabold tracking-tight">
                             {title}

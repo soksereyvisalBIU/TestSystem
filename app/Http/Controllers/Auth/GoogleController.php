@@ -34,16 +34,47 @@ class GoogleController extends Controller
                 ]
             );
 
-            
+
             Auth::login($user, true); // true = remember user
             // Force password change
             if ($user->google_id && !$user->password_changed_at) {
                 return redirect()->route('password.force');
             }
 
-            return view('auth.callback', ['status' => 'success']);
+            return redirect()->intended('/dashboard');
+
+            // return view('auth.callback', ['status' => 'success']);
         } catch (Exception $e) {
-            return view('auth.callback', ['status' => 'error']);
+            return redirect()->route('login')
+                ->withErrors(['email' => 'Google authentication failed.']);
+            // return view('auth.callback', ['status' => 'error']);
+        }
+    }
+
+
+    public function handleCredential(Request $request)
+    {
+        $token = $request->token;
+
+        try {
+            // Verify the JWT and get user details
+            $googleUser = Socialite::driver('google')->userFromToken($token);
+
+            $user = User::updateOrCreate([
+                'email' => $googleUser->getEmail(),
+            ], [
+                'name' => $googleUser->getName(),
+                'google_id' => $googleUser->getId(),
+                'avatar' => $googleUser->getAvatar(),
+                // If new user, set a random password
+                'password' => $user->password ?? bcrypt(str()->random(24)),
+            ]);
+
+            Auth::login($user, true);
+
+            return redirect()->intended('/dashboard');
+        } catch (\Exception $e) {
+            return back()->withErrors(['email' => 'Google authentication failed.']);
         }
     }
 

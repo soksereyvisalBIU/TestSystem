@@ -16,10 +16,11 @@ Route::get('/', function () {
 
 
 
-Route::get('/auth/google', [GoogleController::class, 'redirect']);
+Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.login');
 Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 
-
+Route::post('auth/google/callback', [GoogleController::class, 'handleCredential'])
+    ->name('google.callback');
 Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/force-password', [GoogleController::class, 'showForcePassword'])

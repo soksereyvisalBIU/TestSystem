@@ -1,4 +1,4 @@
-import { Form, Head, router } from '@inertiajs/react';
+import { Form, Head } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Lock, Mail } from 'lucide-react';
 
@@ -13,6 +13,7 @@ import AuthLayout from '@/layouts/auth-layout';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
+import { route } from 'ziggy-js';
 
 export default function Login({
     canResetPassword,
@@ -21,37 +22,46 @@ export default function Login({
     canResetPassword: boolean;
     canRegister: boolean;
 }) {
+    // const [googleLoading, setGoogleLoading] = useState(false);
+    // const [googleError, setGoogleError] = useState('');
+
+    // const handleGoogleLogin = () => {
+    //     setGoogleLoading(true);
+    //     setGoogleError('');
+
+    //     const width = 500;
+    //     const height = 600;
+    //     const left = window.screen.width / 2 - width / 2;
+    //     const top = window.screen.height / 2 - height / 2;
+
+    //     const popup = window.open(
+    //         '/auth/google',
+    //         'google-login',
+    //         `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,status=1`
+    //     );
+
+    //     const messageListener = (event: MessageEvent) => {
+    //         if (event.origin !== window.location.origin) return;
+
+    //         if (event.data?.source === 'google-auth') {
+    //             setGoogleLoading(false);
+
+    //             if (event.data.status === 'success') {
+    //                 router.visit('/dashboard');
+    //             } else {
+    //                 setGoogleError('Google authentication failed. Please try again.');
+    //             }
+
+    //             window.removeEventListener('message', messageListener);
+    //         }
+    //     };
+
+    //     window.addEventListener('message', messageListener);
+    // };
+
+    // Simply redirect the whole page
     const handleGoogleLogin = () => {
-        const width = 500;
-        const height = 600;
-        const left = window.screen.width / 2 - width / 2;
-        const top = window.screen.height / 2 - height / 2;
-
-        // 1. Open the popup
-        const popup = window.open(
-            '/auth/google',
-            'google-login',
-            `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,status=1`,
-        );
-
-        // 2. Define the message listener
-        const messageListener = (event: MessageEvent) => {
-            // Security Check: Only trust messages from our own domain
-            if (event.origin !== window.location.origin) return;
-
-            if (event.data?.source === 'google-auth') {
-                if (event.data.status === 'success') {
-                    // 3. Success! Sync Inertia state or redirect
-                    router.visit('/dashboard');
-                } else {
-                    alert('Google authentication failed. Please try again.');
-                }
-                window.removeEventListener('message', messageListener);
-            }
-        };
-
-        // 3. Listen for the message from the callback view
-        window.addEventListener('message', messageListener);
+        window.location.href = route('google.login');
     };
 
     return (
@@ -61,27 +71,70 @@ export default function Login({
         >
             <Head title="Log in" />
 
-            <div className="grid gap-6">
+            <div className="grid gap-4">
                 {/* Social Login Section */}
-                <div className="grid grid-cols-1 gap-4">
+                {/* <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="grid gap-4"
+                >
                     <Button
-                        // onClick={() => (window.location.href = '/auth/google')}
                         onClick={handleGoogleLogin}
+                        disabled={googleLoading}
                         variant="outline"
-                        className="h-11 font-semibold shadow-sm transition-all hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                        className="
+                            flex items-center justify-center gap-3
+                            h-11 w-full rounded-md border border-zinc-300
+                            bg-white text-sm font-semibold text-zinc-700
+                            shadow-sm transition-all hover:bg-zinc-50
+                            dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700
+                            dark:hover:bg-zinc-800
+                        "
                     >
-                        <img
-                            className="mr-2 h-4 w-4"
-                            src="https://image.similarpng.com/file/similarpng/original-picture/2020/06/Logo-google-icon-PNG.png"
-                            alt=""
-                        />
-                        Continue with Google
+                        {googleLoading ? (
+                            <Spinner className="h-5 w-5 mr-2" />
+                        ) : (
+                            <img
+                                className="h-5 w-5"
+                                src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+                                alt="Google Logo"
+                            />
+                        )}
+                        {googleLoading ? 'Signing in...' : 'Continue with Google'}
                     </Button>
-                </div>
+                    {googleError && (
+                        <p className="text-xs text-red-500 text-center">{googleError}</p>
+                    )}
+                </motion.div> */}
 
+                <Button
+                    onClick={handleGoogleLogin}
+                    variant="outline"
+                    className="flex h-11 w-full items-center justify-center gap-3 rounded-md border border-zinc-300 bg-white text-sm font-semibold text-zinc-700 shadow-sm transition-all hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+                >
+                    <img
+                        className="h-5 w-5"
+                        src="/assets/img/logo/google.png"
+                        alt="Google Logo"
+                    />
+                    Continue with Google
+                    {/* {googleLoading ? (
+                            <Spinner className="h-5 w-5 mr-2" />
+                        ) : (
+                            <img
+                                className="h-5 w-5"
+                                src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+                                alt="Google Logo"
+                            />
+                        )}
+                        {googleLoading ? 'Signing in...' : 'Continue with Google'} */}
+                </Button>
+
+                {/* Divider */}
                 <div className="relative">
                     <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t" />
+                        <span className="w-full border-t dark:border-zinc-700" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
                         <span className="bg-background px-2 text-muted-foreground">
@@ -90,6 +143,7 @@ export default function Login({
                     </div>
                 </div>
 
+                {/* Email Login Form */}
                 <Form
                     {...store.form()}
                     resetOnSuccess={['password']}
@@ -97,9 +151,9 @@ export default function Login({
                 >
                     {({ processing, errors }) => (
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.1 }}
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1, duration: 0.3 }}
                             className="grid gap-4"
                         >
                             <div className="grid gap-2">
