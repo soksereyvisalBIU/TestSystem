@@ -3,78 +3,117 @@
     class="{{ ($appearance ?? 'system') === 'dark' ? 'dark' : '' }}">
 
 <head>
-    {{-- =========================
-        Basic Meta
-    ========================== --}}
+    {{-- ======================================================
+        BASIC META
+    ======================================================= --}}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title inertia>
-        {{ $pageTitle ?? config('app.name', 'Assessment Platform') }}
-    </title>
+    @php
+        $pageTitle = $pageTitle ?? 'BELTEI IU Assessment System';
 
-    <meta name="description"
-        content="{{ $pageDescription ?? 'Professional assessment tools for skill evaluation, testing, and performance tracking.' }}">
+        $pageDescription =
+            $pageDescription ??
+            implode(' ', [
+                'BELTEI IU Assessment System is a secure and professional online assessment platform.',
+                'Designed for universities, schools, and institutions to conduct exams, quizzes,',
+                'skill evaluations, student testing, and performance analysis.',
+                'Supports online exams, automated grading, result tracking, and analytics.',
+            ]);
 
-    <meta name="keywords"
-        content="{{ $pageKeywords ?? 'assessment, online test, skill evaluation, recruitment, examination system' }}">
+        $pageKeywords =
+            $pageKeywords ??
+            implode(', ', [
+                'BELTEI IU',
+                'BELTEI International University',
+                'online assessment system',
+                'assessment platform',
+                'online exam system',
+                'student assessment',
+                'skill evaluation platform',
+                'online testing',
+                'university examination system',
+                'school exam platform',
+                'education technology',
+                'e-learning assessment',
+                'digital examination',
+                'computer-based test',
+                'CBT system',
+                'quiz management system',
+                'student performance tracking',
+                'academic assessment software',
+                'secure online exams',
+                'exam management system',
+                'assessment software Cambodia',
+            ]);
 
-    <meta name="author" content="{{ config('app.name') }}">
+        // ABSOLUTE URL ONLY (crawler-safe)
+        $ogImage = 'https://assessment.beltei.edu.kh/assets/meta/og-img.png';
+        $ogUrl = url()->current();
+    @endphp
+
+
+    <title inertia>{{ $pageTitle }}</title>
+
+    <meta name="description" content="{{ $pageDescription }}">
+    <meta name="keywords" content="{{ $pageKeywords }}">
+    <meta name="author" content="BELTEI IU">
     <meta name="robots" content="index, follow">
 
-    {{-- Google Search Console Verification --}}
+    {{-- Google Search Console --}}
     <meta name="google-site-verification" content="{{ config('services.google.site_verification') }}">
 
-
     {{-- Canonical --}}
-    <link rel="canonical" href="{{ url()->current() }}">
+    <link rel="canonical" href="{{ $ogUrl }}">
 
-    {{-- =========================
-        Open Graph (Facebook, LinkedIn)
-    ========================== --}}
+    {{-- ======================================================
+        OPEN GRAPH (Facebook, Telegram, LinkedIn)
+    ======================================================= --}}
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="{{ config('app.name') }}">
-    <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="{{ $pageTitle ?? config('app.name') }}">
-    <meta property="og:description"
-        content="{{ $pageDescription ?? 'Evaluate skills effectively using our professional assessment platform.' }}">
-    <meta property="og:image" content="{{ asset('assets/meta/og-image.png') }}">
+    <meta property="og:site_name" content="BELTEI IU Assessment System">
+    <meta property="og:url" content="{{ $ogUrl }}">
+    <meta property="og:title" content="{{ $pageTitle }}">
+    <meta property="og:description" content="{{ $pageDescription }}">
+
+    <meta property="og:image" content="{{ $ogImage }}">
+    <meta property="og:image:secure_url" content="{{ $ogImage }}">
+    <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
-    {{-- =========================
-        Twitter Card
-    ========================== --}}
+    {{-- ======================================================
+        TWITTER CARD
+    ======================================================= --}}
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ $pageTitle ?? config('app.name') }}">
-    <meta name="twitter:description"
-        content="{{ $pageDescription ?? 'Evaluate skills effectively using our professional assessment platform.' }}">
-    <meta name="twitter:image" content="{{ asset('assets/meta/og-image.png') }}">
+    <meta name="twitter:title" content="{{ $pageTitle }}">
+    <meta name="twitter:description" content="{{ $pageDescription }}">
+    <meta name="twitter:image" content="{{ $ogImage }}">
 
-    {{-- =========================
-        Icons
-    ========================== --}}
+    {{-- ======================================================
+        ICONS
+    ======================================================= --}}
     <link rel="icon" href="{{ asset('assets/meta/favicon.ico') }}" sizes="any">
     <link rel="icon" href="{{ asset('assets/meta/favicon.svg') }}" type="image/svg+xml">
     <link rel="apple-touch-icon" href="{{ asset('assets/meta/apple-touch-icon.png') }}">
 
-    {{-- =========================
-        Fonts
-    ========================== --}}
+    {{-- ======================================================
+        FONTS
+    ======================================================= --}}
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet">
 
-    {{-- =========================
-        Prevent Dark Mode Flash
-    ========================== --}}
+    {{-- ======================================================
+        DARK MODE FLASH PREVENTION
+    ======================================================= --}}
     <script>
         (function() {
             const appearance = '{{ $appearance ?? 'system' }}';
-
-            if (appearance === 'dark' ||
+            if (
+                appearance === 'dark' ||
                 (appearance === 'system' &&
-                    window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    window.matchMedia('(prefers-color-scheme: dark)').matches)
+            ) {
                 document.documentElement.classList.add('dark');
             }
         })();
@@ -90,9 +129,9 @@
         }
     </style>
 
-    {{-- =========================
-        Inertia / Vite
-    ========================== --}}
+    {{-- ======================================================
+        INERTIA + VITE
+    ======================================================= --}}
     @routes
     @viteReactRefresh
     @vite(['resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
@@ -101,37 +140,6 @@
 
 <body class="font-sans antialiased">
     @inertia
-
-    {{-- =========================
-        Structured Data (JSON-LD)
-    ========================== --}}
-    {{-- <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "{{ config('app.name') }}",
-      "url": "{{ config('app.url') }}",
-      "logo": "{{ asset('assets/meta/og-image.png') }}",
-      "sameAs": [
-        "https://www.facebook.com/",
-        "https://www.linkedin.com/"
-      ]
-    }
-    </script>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "{{ config('app.name') }}",
-      "url": "{{ config('app.url') }}",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "{{ config('app.url') }}/search?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script> --}}
 </body>
 
 </html>

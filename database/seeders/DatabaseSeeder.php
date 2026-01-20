@@ -18,6 +18,15 @@ class DatabaseSeeder extends Seeder
         User::factory(1)->create();
 
         User::factory()->create([
+            'name' => 'superadmin',
+            'email' => 'superadmin@example.com',
+            'password' => 123123123,
+            'role' => 3,
+            'two_factor_secret' => null,
+            'two_factor_recovery_codes' => null,
+            'remember_token' => null,
+        ]);
+        User::factory()->create([
             'name' => 'teacher',
             'email' => 'teacher@example.com',
             'password' => 123123123,
@@ -34,7 +43,6 @@ class DatabaseSeeder extends Seeder
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'remember_token' => null,
-
         ]);
 
         // User::firstOrCreate(

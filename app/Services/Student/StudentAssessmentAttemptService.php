@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Services\Student;
+
 use App\Models\Assessment;
 use App\Models\StudentAssessment;
 use App\Models\User;
