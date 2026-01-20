@@ -7,7 +7,10 @@ use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Exception;
+use Inertia\Inertia;
+
 class GoogleController extends Controller
 {
 
@@ -31,6 +34,11 @@ class GoogleController extends Controller
                 ]
             );
 
+            // Force password change
+            if ($user->google_id && !$user->password_changed_at) {
+                return redirect()->route('password.force');
+            }
+
             Auth::login($user, true); // true = remember user
 
             return view('auth.callback', ['status' => 'success']);
@@ -38,6 +46,31 @@ class GoogleController extends Controller
             return view('auth.callback', ['status' => 'error']);
         }
     }
+
+    public function showForcePassword()
+    {
+        // return view('auth.force-password');
+        // return inertia('Auth/ForcePassword');
+        return Inertia::render('auth/force-password');
+    }
+
+    public function storeForcePassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        $user = auth()->user();
+
+        $user->update([
+            'password' => Hash::make($request->password),
+            'password_changed_at' => now(),
+        ]);
+
+        return redirect('/dashboard')
+            ->with('success', 'Password updated successfully');
+    }
+
 
     // public function redirect()
     // {

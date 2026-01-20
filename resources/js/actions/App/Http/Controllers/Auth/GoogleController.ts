@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::redirect
- * @see app/Http/Controllers/Auth/GoogleController.php:14
+ * @see app/Http/Controllers/Auth/GoogleController.php:17
  * @route '/auth/google'
  */
 export const redirect = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ redirect.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::redirect
- * @see app/Http/Controllers/Auth/GoogleController.php:14
+ * @see app/Http/Controllers/Auth/GoogleController.php:17
  * @route '/auth/google'
  */
 redirect.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ redirect.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::redirect
- * @see app/Http/Controllers/Auth/GoogleController.php:14
+ * @see app/Http/Controllers/Auth/GoogleController.php:17
  * @route '/auth/google'
  */
 redirect.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ redirect.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::redirect
- * @see app/Http/Controllers/Auth/GoogleController.php:14
+ * @see app/Http/Controllers/Auth/GoogleController.php:17
  * @route '/auth/google'
  */
 redirect.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ redirect.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Auth\GoogleController::redirect
- * @see app/Http/Controllers/Auth/GoogleController.php:14
+ * @see app/Http/Controllers/Auth/GoogleController.php:17
  * @route '/auth/google'
  */
     const redirectForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ redirect.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Auth\GoogleController::redirect
- * @see app/Http/Controllers/Auth/GoogleController.php:14
+ * @see app/Http/Controllers/Auth/GoogleController.php:17
  * @route '/auth/google'
  */
         redirectForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ redirect.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Auth\GoogleController::redirect
- * @see app/Http/Controllers/Auth/GoogleController.php:14
+ * @see app/Http/Controllers/Auth/GoogleController.php:17
  * @route '/auth/google'
  */
         redirectForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ redirect.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     redirect.form = redirectForm
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::callback
- * @see app/Http/Controllers/Auth/GoogleController.php:19
+ * @see app/Http/Controllers/Auth/GoogleController.php:22
  * @route '/auth/google/callback'
  */
 export const callback = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +94,7 @@ callback.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::callback
- * @see app/Http/Controllers/Auth/GoogleController.php:19
+ * @see app/Http/Controllers/Auth/GoogleController.php:22
  * @route '/auth/google/callback'
  */
 callback.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ callback.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::callback
- * @see app/Http/Controllers/Auth/GoogleController.php:19
+ * @see app/Http/Controllers/Auth/GoogleController.php:22
  * @route '/auth/google/callback'
  */
 callback.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -112,7 +112,7 @@ callback.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::callback
- * @see app/Http/Controllers/Auth/GoogleController.php:19
+ * @see app/Http/Controllers/Auth/GoogleController.php:22
  * @route '/auth/google/callback'
  */
 callback.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -122,7 +122,7 @@ callback.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Auth\GoogleController::callback
- * @see app/Http/Controllers/Auth/GoogleController.php:19
+ * @see app/Http/Controllers/Auth/GoogleController.php:22
  * @route '/auth/google/callback'
  */
     const callbackForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -132,7 +132,7 @@ callback.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Auth\GoogleController::callback
- * @see app/Http/Controllers/Auth/GoogleController.php:19
+ * @see app/Http/Controllers/Auth/GoogleController.php:22
  * @route '/auth/google/callback'
  */
         callbackForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -141,7 +141,7 @@ callback.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Auth\GoogleController::callback
- * @see app/Http/Controllers/Auth/GoogleController.php:19
+ * @see app/Http/Controllers/Auth/GoogleController.php:22
  * @route '/auth/google/callback'
  */
         callbackForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -155,6 +155,139 @@ callback.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
     
     callback.form = callbackForm
-const GoogleController = { redirect, callback }
+/**
+* @see \App\Http\Controllers\Auth\GoogleController::showForcePassword
+ * @see app/Http/Controllers/Auth/GoogleController.php:50
+ * @route '/force-password'
+ */
+export const showForcePassword = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: showForcePassword.url(options),
+    method: 'get',
+})
+
+showForcePassword.definition = {
+    methods: ["get","head"],
+    url: '/force-password',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\Auth\GoogleController::showForcePassword
+ * @see app/Http/Controllers/Auth/GoogleController.php:50
+ * @route '/force-password'
+ */
+showForcePassword.url = (options?: RouteQueryOptions) => {
+    return showForcePassword.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Auth\GoogleController::showForcePassword
+ * @see app/Http/Controllers/Auth/GoogleController.php:50
+ * @route '/force-password'
+ */
+showForcePassword.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: showForcePassword.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\Auth\GoogleController::showForcePassword
+ * @see app/Http/Controllers/Auth/GoogleController.php:50
+ * @route '/force-password'
+ */
+showForcePassword.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: showForcePassword.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\Auth\GoogleController::showForcePassword
+ * @see app/Http/Controllers/Auth/GoogleController.php:50
+ * @route '/force-password'
+ */
+    const showForcePasswordForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: showForcePassword.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\Auth\GoogleController::showForcePassword
+ * @see app/Http/Controllers/Auth/GoogleController.php:50
+ * @route '/force-password'
+ */
+        showForcePasswordForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: showForcePassword.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\Auth\GoogleController::showForcePassword
+ * @see app/Http/Controllers/Auth/GoogleController.php:50
+ * @route '/force-password'
+ */
+        showForcePasswordForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: showForcePassword.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    showForcePassword.form = showForcePasswordForm
+/**
+* @see \App\Http\Controllers\Auth\GoogleController::storeForcePassword
+ * @see app/Http/Controllers/Auth/GoogleController.php:57
+ * @route '/force-password'
+ */
+export const storeForcePassword = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storeForcePassword.url(options),
+    method: 'post',
+})
+
+storeForcePassword.definition = {
+    methods: ["post"],
+    url: '/force-password',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\Auth\GoogleController::storeForcePassword
+ * @see app/Http/Controllers/Auth/GoogleController.php:57
+ * @route '/force-password'
+ */
+storeForcePassword.url = (options?: RouteQueryOptions) => {
+    return storeForcePassword.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Auth\GoogleController::storeForcePassword
+ * @see app/Http/Controllers/Auth/GoogleController.php:57
+ * @route '/force-password'
+ */
+storeForcePassword.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storeForcePassword.url(options),
+    method: 'post',
+})
+
+    /**
+* @see \App\Http\Controllers\Auth\GoogleController::storeForcePassword
+ * @see app/Http/Controllers/Auth/GoogleController.php:57
+ * @route '/force-password'
+ */
+    const storeForcePasswordForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: storeForcePassword.url(options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Auth\GoogleController::storeForcePassword
+ * @see app/Http/Controllers/Auth/GoogleController.php:57
+ * @route '/force-password'
+ */
+        storeForcePasswordForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: storeForcePassword.url(options),
+            method: 'post',
+        })
+    
+    storeForcePassword.form = storeForcePasswordForm
+const GoogleController = { redirect, callback, showForcePassword, storeForcePassword }
 
 export default GoogleController

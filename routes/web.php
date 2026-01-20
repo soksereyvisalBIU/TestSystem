@@ -22,6 +22,12 @@ Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
+    Route::get('/force-password', [GoogleController::class, 'showForcePassword'])
+        ->name('password.force');
+
+    Route::post('/force-password', [GoogleController::class, 'storeForcePassword']);
+
+
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     // Route::get('dashboard', function () {
     //     return Inertia::render('dashboard');
