@@ -34,12 +34,12 @@ class GoogleController extends Controller
                 ]
             );
 
+            
+            Auth::login($user, true); // true = remember user
             // Force password change
             if ($user->google_id && !$user->password_changed_at) {
                 return redirect()->route('password.force');
             }
-
-            Auth::login($user, true); // true = remember user
 
             return view('auth.callback', ['status' => 'success']);
         } catch (Exception $e) {
