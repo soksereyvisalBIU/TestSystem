@@ -103,6 +103,7 @@ export default function Welcome() {
                         <div className="flex items-center gap-2">
                             <AppearanceTabsHeader />
                             <Link
+                                prefetch
                                 href="/login"
                                 className="rounded-xl bg-indigo-600 px-6 py-2.5 text-xs font-black text-white shadow-lg shadow-indigo-500/30 transition-all hover:bg-indigo-700 active:scale-95"
                             >
@@ -144,6 +145,7 @@ export default function Welcome() {
 
                     <div className="mt-8 flex flex-col items-center justify-center gap-4 pb-24 sm:mt-12 sm:flex-row">
                         <Link
+                            prefetch
                             href="/login"
                             className="group text-md flex h-14 w-full items-center justify-center gap-4 rounded-2xl bg-indigo-600 px-10 font-black text-white shadow-2xl shadow-indigo-500/40 transition-all hover:bg-indigo-700 sm:h-16 sm:w-auto"
                         >

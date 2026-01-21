@@ -230,8 +230,8 @@ class AttemptController extends Controller
 
         /* ---------- MERGE ---------- */
         $finalName = Str::uuid() . '_' . $fileName;
-        $finalPath = "uploads/{$assessmentId}/answers/{$finalName}";
-        Storage::makeDirectory("uploads/{$assessmentId}/answers");
+        $finalPath = "uploads/answers/{$assessmentId}/{$finalName}";
+        Storage::makeDirectory("uploads/answers/{$assessmentId}");
 
         $output = fopen(Storage::path($finalPath), 'ab');
 

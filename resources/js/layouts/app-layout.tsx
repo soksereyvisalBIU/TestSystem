@@ -1,5 +1,5 @@
-import FlashMessage from '@/components/notifications/FlashMessage';
 // import GlobalAlert from '@/components/notifications/GlobalAlert';
+import FlashMessage from '@/components/notifications/FlashMessage';
 import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout';
 import { type BreadcrumbItem } from '@/types';
 import { type ReactNode } from 'react';

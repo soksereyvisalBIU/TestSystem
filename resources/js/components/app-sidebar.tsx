@@ -262,7 +262,7 @@ export function AppSidebar() {
                                                                 : 'text-sidebar-foreground/70 hover:bg-sidebar-accent'
                                                         }`}
                                                     >
-                                                        <Link href={item.href}>
+                                                        <Link prefetch href={item.href}>
                                                             <item.icon
                                                                 className={`size-4 ${isActive ? 'text-primary' : 'opacity-70'}`}
                                                             />
@@ -327,7 +327,7 @@ export function AppSidebar() {
                                                                                 }
                                                                                 className="h-9 px-4"
                                                                             >
-                                                                                <Link
+                                                                                <Link prefetch
                                                                                     href={
                                                                                         subItem.href
                                                                                     }

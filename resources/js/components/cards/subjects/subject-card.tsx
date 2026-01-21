@@ -196,7 +196,7 @@ export default function SubjectCard({
                     </div>
                 )}
 
-                <Link href={showRoute} className="flex flex-col h-full">
+                <Link prefetch href={showRoute} className="flex flex-col h-full">
                     {/* Visual Section */}
                     <div className="relative h-40 sm:h-48 w-full overflow-hidden bg-slate-100 dark:bg-slate-900">
                         <div
