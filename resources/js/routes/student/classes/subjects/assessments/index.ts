@@ -728,7 +728,7 @@ request.post = (args: { class_id: string | number, subject_id: string | number, 
     request.form = requestForm
 /**
 * @see \App\Http\Controllers\Student\AttemptController::attempt
- * @see app/Http/Controllers/Student/AttemptController.php:23
+ * @see app/Http/Controllers/Student/AttemptController.php:25
  * @route '/student/classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/attempt'
  */
 export const attempt = (args: { class_id: string | number, subject_id: string | number, assessment_id: string | number } | [class_id: string | number, subject_id: string | number, assessment_id: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -743,7 +743,7 @@ attempt.definition = {
 
 /**
 * @see \App\Http\Controllers\Student\AttemptController::attempt
- * @see app/Http/Controllers/Student/AttemptController.php:23
+ * @see app/Http/Controllers/Student/AttemptController.php:25
  * @route '/student/classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/attempt'
  */
 attempt.url = (args: { class_id: string | number, subject_id: string | number, assessment_id: string | number } | [class_id: string | number, subject_id: string | number, assessment_id: string | number ], options?: RouteQueryOptions) => {
@@ -772,7 +772,7 @@ attempt.url = (args: { class_id: string | number, subject_id: string | number, a
 
 /**
 * @see \App\Http\Controllers\Student\AttemptController::attempt
- * @see app/Http/Controllers/Student/AttemptController.php:23
+ * @see app/Http/Controllers/Student/AttemptController.php:25
  * @route '/student/classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/attempt'
  */
 attempt.get = (args: { class_id: string | number, subject_id: string | number, assessment_id: string | number } | [class_id: string | number, subject_id: string | number, assessment_id: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -781,7 +781,7 @@ attempt.get = (args: { class_id: string | number, subject_id: string | number, a
 })
 /**
 * @see \App\Http\Controllers\Student\AttemptController::attempt
- * @see app/Http/Controllers/Student/AttemptController.php:23
+ * @see app/Http/Controllers/Student/AttemptController.php:25
  * @route '/student/classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/attempt'
  */
 attempt.head = (args: { class_id: string | number, subject_id: string | number, assessment_id: string | number } | [class_id: string | number, subject_id: string | number, assessment_id: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -791,7 +791,7 @@ attempt.head = (args: { class_id: string | number, subject_id: string | number, 
 
     /**
 * @see \App\Http\Controllers\Student\AttemptController::attempt
- * @see app/Http/Controllers/Student/AttemptController.php:23
+ * @see app/Http/Controllers/Student/AttemptController.php:25
  * @route '/student/classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/attempt'
  */
     const attemptForm = (args: { class_id: string | number, subject_id: string | number, assessment_id: string | number } | [class_id: string | number, subject_id: string | number, assessment_id: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -801,7 +801,7 @@ attempt.head = (args: { class_id: string | number, subject_id: string | number, 
 
             /**
 * @see \App\Http\Controllers\Student\AttemptController::attempt
- * @see app/Http/Controllers/Student/AttemptController.php:23
+ * @see app/Http/Controllers/Student/AttemptController.php:25
  * @route '/student/classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/attempt'
  */
         attemptForm.get = (args: { class_id: string | number, subject_id: string | number, assessment_id: string | number } | [class_id: string | number, subject_id: string | number, assessment_id: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -810,7 +810,7 @@ attempt.head = (args: { class_id: string | number, subject_id: string | number, 
         })
             /**
 * @see \App\Http\Controllers\Student\AttemptController::attempt
- * @see app/Http/Controllers/Student/AttemptController.php:23
+ * @see app/Http/Controllers/Student/AttemptController.php:25
  * @route '/student/classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/attempt'
  */
         attemptForm.head = (args: { class_id: string | number, subject_id: string | number, assessment_id: string | number } | [class_id: string | number, subject_id: string | number, assessment_id: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

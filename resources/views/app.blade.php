@@ -103,6 +103,35 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet">
 
+
+    <!-- HTML Meta Tags -->
+    {{-- <title>BELTEI IU Assessment System</title>
+    <meta name="description"
+        content="BELTEI IU Assessment System is a secure and professional online assessment platform. Designed for universities, schools, and institutions to conduct exams, quiz" /> --}}
+
+    <!-- Google / Search Engine Tags -->
+    <meta itemprop="name" content="BELTEI IU Assessment System" />
+    <meta itemprop="description"
+        content="BELTEI IU Assessment System is a secure and professional online assessment platform. Designed for universities, schools, and institutions to conduct exams, quiz" />
+    <meta itemprop="image" content="https://assessment.beltei.edu.kh/assets/meta/og-img.png" />
+
+    <!-- Facebook Meta Tags -->
+    <meta property="og:url" content="https://assessment.beltei.edu.kh/login" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="BELTEI IU Assessment System" />
+    <meta property="og:description"
+        content="BELTEI IU Assessment System is a secure and professional online assessment platform. Designed for universities, schools, and institutions to conduct exams, quiz" />
+    <meta property="og:image" content="https://assessment.beltei.edu.kh/assets/meta/og-img.png" />
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="BELTEI IU Assessment System" />
+    <meta name="twitter:description"
+        content="BELTEI IU Assessment System is a secure and professional online assessment platform. Designed for universities, schools, and institutions to conduct exams, quiz" />
+    <meta name="twitter:image" content="https://assessment.beltei.edu.kh/assets/meta/og-img.png" />
+
+    <!-- Meta Tags Generated via https://heymeta.com -->
+
     {{-- ======================================================
         DARK MODE FLASH PREVENTION
     ======================================================= --}}

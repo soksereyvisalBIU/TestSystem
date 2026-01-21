@@ -17,39 +17,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 const STORAGE_URL = '/storage/';
 
 export default function FileUploadQuestion({ question, answer, onChange }) {
-    console.log(question);
-    // 'question' : {
-    //     "id": "190",
-    //     "assessment_id": "1",
-    //     "question": "Design using photoshop",
-    //     "type": "fileupload",
-    //     "point": 1,
-    //     "order": 22,
-    //     "options": null,
-    //     "allow_file_upload": true,
-    //     "allow_code_submission": false,
-    //     "accepted_file_types": "image",
-    //     "max_file_size": 10,
-    //     "media": [
-    //         {
-    //             "id": 2,
-    //             "question_id": 190,
-    //             "type": "image",
-    //             "path": "questions/190/question_695f6d15c257b0.78503088.png",
-    //             "created_at": "2026-01-08T08:38:45.000000Z",
-    //             "updated_at": "2026-01-08T08:38:45.000000Z"
-    //         },
-    //         {
-    //             "id": 3,
-    //             "question_id": 190,
-    //             "type": "image",
-    //             "path": "questions/190/question_695f6d15c4bd53.78239311.png",
-    //             "created_at": "2026-01-08T08:38:45.000000Z",
-    //             "updated_at": "2026-01-08T08:38:45.000000Z"
-    //         }
-    //     ]
-    // }
-
     const [isDragging, setIsDragging] = useState(false);
     const [previewUrl, setPreviewUrl] = useState(null);
     const [activeMediaIndex, setActiveMediaIndex] = useState(null);

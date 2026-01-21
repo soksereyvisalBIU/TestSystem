@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Student\ClassroomController::join
- * @see app/Http/Controllers/Student/ClassroomController.php:205
+ * @see app/Http/Controllers/Student/ClassroomController.php:223
  * @route '/student/join-class'
  */
 export const join = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ join.definition = {
 
 /**
 * @see \App\Http\Controllers\Student\ClassroomController::join
- * @see app/Http/Controllers/Student/ClassroomController.php:205
+ * @see app/Http/Controllers/Student/ClassroomController.php:223
  * @route '/student/join-class'
  */
 join.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ join.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Student\ClassroomController::join
- * @see app/Http/Controllers/Student/ClassroomController.php:205
+ * @see app/Http/Controllers/Student/ClassroomController.php:223
  * @route '/student/join-class'
  */
 join.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ join.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\Student\ClassroomController::join
- * @see app/Http/Controllers/Student/ClassroomController.php:205
+ * @see app/Http/Controllers/Student/ClassroomController.php:223
  * @route '/student/join-class'
  */
     const joinForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ join.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\Student\ClassroomController::join
- * @see app/Http/Controllers/Student/ClassroomController.php:205
+ * @see app/Http/Controllers/Student/ClassroomController.php:223
  * @route '/student/join-class'
  */
         joinForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

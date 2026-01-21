@@ -12,16 +12,25 @@ import {
     X,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { route } from 'ziggy-js';
 
-const STORAGE_URL = '/storage/';
+// const STORAGE_URL = '/storage/';
+
 
 export default function FileQuestion({ question, answers, onTeacherScore }) {
     const ans = answers[0] || {};
     // Extracting from answer_files array based on your console log
     const fileData = ans.answer_files?.[0] || {};
+    // const fileUrl = fileData.file_path
+    //     ? `${STORAGE_URL}${fileData.file_path}`
+    //     : null;
     const fileUrl = fileData.file_path
-        ? `${STORAGE_URL}${fileData.file_path}`
-        : null;
+    ? route('files.show', { path: fileData.file_path })
+    : null;
+
+    console.log('File Data:', fileData);
+    console.log('File fileUrl:', fileUrl);
+
     const fileName = fileData.file_name || 'submitted_file';
 
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);

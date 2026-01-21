@@ -1,110 +1,113 @@
 import { Assessment } from "@/types/student/assessment";
-import { AlertTriangle, Calendar, CheckCircle, Hourglass, XOctagon, Clock } from "lucide-react";
+import { AlertTriangle, Calendar, CheckCircle, Hourglass, XOctagon, Clock, LucideIcon } from "lucide-react";
 
 export type AssessmentStatusDetails = {
     badgeVariant: 'default' | 'outline' | 'secondary';
     badgeColorClass: string;
-    icon: React.ReactNode;
+    icon: LucideIcon; // Performance: Pass the component reference, not the rendered JSX
     subtitle: string;
     label: string;
     isUrgent: boolean;
 };
 
 export function getAssessmentStatusDetails(assessment: Assessment): AssessmentStatusDetails {
-    const now = new Date();
-    const start = new Date(assessment.start_time);
-    const end = new Date(assessment.end_time);
+    // 1. PERFORMANCE: Cache current timestamp and parse dates once
+    const nowMs = Date.now();
+    const startMs = new Date(assessment.start_time).getTime();
+    const endMs = new Date(assessment.end_time).getTime();
     
-    const isUpcoming = now < start;
-    const isExpired = now > end;
-    const isOngoing = now >= start && now <= end;
+    const isUpcoming = nowMs < startMs;
+    const isExpired = nowMs > endMs;
+    const isOngoing = !isUpcoming && !isExpired;
 
-    const studentStatus = assessment?.student_assessment?.status; 
-    const studentScore = assessment?.student_assessment?.score;
+    const studentData = assessment?.student_assessment;
+    const studentStatus = studentData?.status; 
+    const studentScore = studentData?.score;
+    const attemptedAmount = studentData?.attempted_amount ?? 0;
 
-    // Default "Unknown" state using your new theme variables
+    // Default configuration (Safe Fallback)
     const defaults: AssessmentStatusDetails = {
         badgeVariant: 'outline',
         badgeColorClass: 'bg-muted text-muted-foreground border-border',
-        icon: <Clock className="h-3 w-3" />,
+        icon: Clock,
         subtitle: 'View Details',
         label: 'STATUS',
         isUrgent: false,
     };
 
-    // 1. COMPLETED / SCORED
+    // 2. HIGH PRIORITY: SCORED (Final State)
     if (studentStatus === 'scored') {
         return {
             ...defaults,
             label: 'COMPLETED',
-            // Using your semantic --success color
             badgeColorClass: 'bg-success text-white border-transparent shadow-sm',
-            icon: <CheckCircle className="h-3 w-3" />,
+            icon: CheckCircle,
             subtitle: `Score: ${studentScore}%`,
         };
     }
 
-    // 2. SUBMITTED / AWAITING GRADE
-    if (studentStatus === 'attempted' || (assessment?.student_assessment?.attempted_amount ?? 0) > 0) {
+    // 3. SUBMITTED / ATTEMPTED
+    if (studentStatus === 'attempted' || attemptedAmount > 0) {
         return {
             ...defaults,
             label: 'SUBMITTED',
-            // Using your primary (BELTEI Navy) but as a subtle outline/soft background
             badgeColorClass: 'bg-primary/10 text-primary border-primary/20',
-            icon: <Hourglass className="h-3 w-3" />,
+            icon: Hourglass,
             subtitle: 'Awaiting Grade',
         };
     }
 
-    // 3. MISSED
+    // 4. MISSED (Expired without submission)
     if (studentStatus === 'missed' || (isExpired && !studentStatus)) {
         return {
             ...defaults,
             label: 'MISSED',
-            // Using your --destructive (Logo Crimson) color
             badgeColorClass: 'bg-destructive/10 text-destructive border-destructive/20',
-            icon: <XOctagon className="h-3 w-3" />,
-            subtitle: `Closed ${end.toLocaleDateString([], { month: 'short', day: 'numeric' })}`,
+            icon: XOctagon,
+            subtitle: `Closed ${new Date(endMs).toLocaleDateString([], { month: 'short', day: 'numeric' })}`,
         };
     }
 
-    // 4. ACTIVE / ONGOING
+    // 5. ACTIVE / ONGOING (Requires time calculation)
     if (isOngoing) {
-        const diffMs = end.getTime() - now.getTime();
-        const diffInHours = Math.floor(diffMs / (1000 * 60 * 60));
-        const diffInMinutes = Math.floor(diffMs / (1000 * 60));
-        const diffInDays = Math.floor(diffInHours / 24);
+        const diffMs = endMs - nowMs;
+        const diffInMinutes = (diffMs / 60000) | 0; // Performance: Bitwise floor
+        const diffInHours = (diffInMinutes / 60) | 0;
+        const diffInDays = (diffInHours / 24) | 0;
 
-        let timeLabel = diffInDays > 0 ? `${diffInDays}d left` : diffInHours > 0 ? `${diffInHours}h left` : `${diffInMinutes}m left`;
+        const timeLabel = diffInDays > 0 
+            ? `${diffInDays}d left` 
+            : diffInHours > 0 
+                ? `${diffInHours}h left` 
+                : `${diffInMinutes}m left`;
 
         return {
             ...defaults,
             label: 'ACTIVE',
-            // Using a custom amber logic or your --accent color
             badgeColorClass: 'bg-amber-500/10 text-amber-600 border-amber-500/30 shadow-sm animate-pulse dark:text-amber-400',
-            icon: <AlertTriangle className="h-3 w-3" />,
+            icon: AlertTriangle,
             subtitle: timeLabel,
-            isUrgent: diffInHours < 24,
+            isUrgent: diffInHours < 24, // Business logic: Urgent if less than 24h
         };
     }
 
-    // 5. UPCOMING
+    // 6. UPCOMING
     if (isUpcoming) {
         return {
             ...defaults,
             label: 'UPCOMING',
             badgeColorClass: 'bg-secondary text-secondary-foreground border-border',
-            icon: <Calendar className="h-3 w-3" />,
-            subtitle: `Starts ${start.toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
+            icon: Calendar,
+            subtitle: `Starts ${new Date(startMs).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`,
         };
     }
 
-    // 6. FALLBACK
+    // 7. FALLBACK / CLOSED (Past events with no student data)
     return {
         ...defaults,
         label: 'CLOSED',
         badgeColorClass: 'bg-muted text-muted-foreground border-border',
-        icon: <CheckCircle className="h-3 w-3" />,
+        icon: CheckCircle,
         subtitle: assessment.score ? `Class Avg: ${assessment.score}%` : 'Past Due',
     };
 }

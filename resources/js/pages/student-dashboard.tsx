@@ -11,7 +11,7 @@ import {
 import { useMemo, useState } from 'react';
 import EmptyStateView from './dashboard/student/EmptyStateView';
 import SubjectCard from './dashboard/student/subject-card';
-
+import { BookOpen } from 'lucide-react';
 // ============================================================================
 // TYPE DEFINITIONS
 // ============================================================================
@@ -78,11 +78,11 @@ interface StudentDashboardProps {
 // CONSTANTS
 // ============================================================================
 
-const ANIMATION_VARIANTS = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -20 },
-} as const;
+// const ANIMATION_VARIANTS = {
+//     initial: { opacity: 0, y: 20 },
+//     animate: { opacity: 1, y: 0 },
+//     exit: { opacity: 0, y: -20 },
+// } as const;
 
 const STATUS_STYLES = {
     draft: 'RESUME',
@@ -98,13 +98,16 @@ const STATUS_STYLES = {
  */
 const calculateGlobalStats = (submissions: Submission[]): GlobalStats => {
     const scoredSubmissions = submissions.filter((s) => s.status === 'scored');
-    
+
     if (scoredSubmissions.length === 0) {
         return { avg: '0.0', completed: 0, peak: 0 };
     }
 
-    const scores = scoredSubmissions.map((s) => parseFloat(s.score?.toString() ?? '0'));
-    const average = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+    const scores = scoredSubmissions.map((s) =>
+        parseFloat(s.score?.toString() ?? '0'),
+    );
+    const average =
+        scores.reduce((sum, score) => sum + score, 0) / scores.length;
     const peak = Math.max(...scores);
 
     return {
@@ -119,7 +122,7 @@ const calculateGlobalStats = (submissions: Submission[]): GlobalStats => {
  */
 const findLiveMissions = (
     classrooms: Classroom[],
-    submissions: Submission[]
+    submissions: Submission[],
 ): LiveMission[] => {
     const now = new Date();
     const missions: LiveMission[] = [];
@@ -130,11 +133,12 @@ const findLiveMissions = (
                 const startTime = new Date(assessment.start_time);
                 const endTime = new Date(assessment.end_time);
                 const submission = submissions.find(
-                    (s) => s.assessment_id === assessment.id
+                    (s) => s.assessment_id === assessment.id,
                 );
 
                 const isActive = now >= startTime && now <= endTime;
-                const isIncomplete = !submission || submission.status !== 'scored';
+                const isIncomplete =
+                    !submission || submission.status !== 'scored';
 
                 if (isActive && isIncomplete) {
                     missions.push({
@@ -175,9 +179,10 @@ interface LiveMissionCardProps {
 }
 
 const LiveMissionCard = ({ mission }: LiveMissionCardProps) => {
-    const actionText = mission.submission?.status === 'draft' 
-        ? STATUS_STYLES.draft 
-        : STATUS_STYLES.default;
+    const actionText =
+        mission.submission?.status === 'draft'
+            ? STATUS_STYLES.draft
+            : STATUS_STYLES.default;
 
     return (
         <Link
@@ -331,7 +336,9 @@ const StudentIdentityCard = ({ student }: StudentIdentityCardProps) => (
             </div>
             <div className="flex items-center justify-between border-t border-white/10 pt-6">
                 <div>
-                    <p className="text-[10px] font-bold opacity-50">COMPLETED</p>
+                    <p className="text-[10px] font-bold opacity-50">
+                        COMPLETED
+                    </p>
                 </div>
                 <div>
                     <p className="text-right text-[10px] font-bold opacity-50">
@@ -371,7 +378,7 @@ const UpcomingTasks = ({ classroom, submissions }: UpcomingTasksProps) => {
                 {taskCount > 0 ? (
                     displayTasks.map((task, index) => {
                         const submission = submissions.find(
-                            (s) => s.assessment_id === task.id
+                            (s) => s.assessment_id === task.id,
                         );
 
                         return (
@@ -411,8 +418,8 @@ const UpcomingTasks = ({ classroom, submissions }: UpcomingTasksProps) => {
                             </h4>
                             <p className="max-w-xs text-xs text-muted-foreground">
                                 This classroom doesn't have any assignments,
-                                quizzes, or exams yet. They will appear here once
-                                your teacher adds them.
+                                quizzes, or exams yet. They will appear here
+                                once your teacher adds them.
                             </p>
                         </div>
                     </div>
@@ -426,28 +433,52 @@ const UpcomingTasks = ({ classroom, submissions }: UpcomingTasksProps) => {
 // MAIN COMPONENT: StudentDashboard
 // ============================================================================
 
+
+
+// Static variants outside to prevent re-allocation
+const ANIMATION_VARIANTS = {
+    initial: { opacity: 0, y: 10 },
+    animate: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.3, ease: 'easeOut' },
+    },
+    exit: { opacity: 0, y: -10, transition: { duration: 0.2 } },
+};
+
 export default function StudentDashboard({ student }: StudentDashboardProps) {
-    // Data initialization
+    // 1. Data initialization (O(1) access)
     const classrooms = student?.student_classrooms ?? [];
     const submissions = student?.student_assessment ?? [];
     const isNewUser = classrooms.length === 0;
 
-    // UI state
+    // 2. UI state
     const [activeClassIndex, setActiveClassIndex] = useState(0);
-    const activeClass = classrooms[activeClassIndex];
 
-    // Computed data
-    const { globalStats, liveMissions } = useMemo<DashboardData>(() => {
-        return {
+    // 3. Optimized Computed data
+    // useMemo ensures expensive calculations only run when raw data changes
+    const { globalStats, liveMissions } = useMemo(
+        () => ({
             globalStats: calculateGlobalStats(submissions),
             liveMissions: findLiveMissions(classrooms, submissions),
-        };
-    }, [classrooms, submissions]);
+        }),
+        [classrooms, submissions],
+    );
 
-    // Derived data
-    const firstName = student.name.split(' ')[0];
-    const greetingText = isNewUser ? 'Begin,' : 'Hello,';
-    const statusText = isNewUser ? 'System Standby' : 'Academic Session Active';
+    // 4. Derived data memoization
+    // Prevents string splitting/logic processing on every re-render (e.g. during animations)
+    const { firstName, greetingText, statusText } = useMemo(
+        () => ({
+            firstName: student.name.split(' ')[0],
+            greetingText: isNewUser ? 'Begin,' : 'Hello,',
+            statusText: isNewUser
+                ? 'System Standby'
+                : 'Academic Session Active',
+        }),
+        [student.name, isNewUser],
+    );
+
+    const activeClass = classrooms[activeClassIndex];
 
     return (
         <AppLayout>
@@ -497,7 +528,7 @@ export default function StudentDashboard({ student }: StudentDashboardProps) {
                     <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
                         {/* Left Column */}
                         <div className="space-y-12 lg:col-span-8">
-                            {/* Live Missions Section */}
+                            {/* Live Missions - Only render if missions exist to keep DOM slim */}
                             {liveMissions.length > 0 && (
                                 <section className="space-y-4">
                                     <div className="flex items-center gap-2 px-1">
@@ -527,14 +558,12 @@ export default function StudentDashboard({ student }: StudentDashboardProps) {
                                 onClassChange={setActiveClassIndex}
                             />
 
-                            {/* Subjects Grid */}
+                            {/* Subjects Grid with Optimized Transitions */}
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key={activeClass.id}
-                                    initial={ANIMATION_VARIANTS.initial}
-                                    animate={ANIMATION_VARIANTS.animate}
-                                    exit={ANIMATION_VARIANTS.exit}
-                                    className="grid grid-cols-1 gap-6 md:grid-cols-2"
+                                    {...ANIMATION_VARIANTS}
+                                    className="grid transform-gpu grid-cols-1 gap-6 md:grid-cols-2"
                                 >
                                     {activeClass.subjects.length > 0 ? (
                                         activeClass.subjects.map((subject) => (
@@ -547,26 +576,22 @@ export default function StudentDashboard({ student }: StudentDashboardProps) {
                                         ))
                                     ) : (
                                         <div className="col-span-full">
-                                            <motion.div
-                                                initial={{ scale: 0.95, opacity: 0 }}
-                                                animate={{ scale: 1, opacity: 1 }}
-                                                className="w-full rounded-3xl border border-dashed border-border bg-card p-12 text-center shadow-sm"
-                                            >
+                                            <div className="w-full rounded-3xl border border-dashed border-border bg-card p-12 text-center shadow-sm">
                                                 <div className="flex flex-col items-center gap-4">
                                                     <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-                                                        📚
+                                                        <BookOpen size={32} />
                                                     </div>
                                                     <h3 className="text-xl font-black text-title">
                                                         No subjects yet
                                                     </h3>
                                                     <p className="max-w-md text-sm text-muted-foreground">
-                                                        This classroom doesn't have any
-                                                        subjects assigned yet. Once your
-                                                        teacher adds them, they will appear
-                                                        here.
+                                                        Once your teacher adds
+                                                        subjects to this
+                                                        classroom, they will
+                                                        appear here.
                                                     </p>
                                                 </div>
-                                            </motion.div>
+                                            </div>
                                         </div>
                                     )}
                                 </motion.div>
@@ -574,13 +599,13 @@ export default function StudentDashboard({ student }: StudentDashboardProps) {
                         </div>
 
                         {/* Right Column */}
-                        <div className="space-y-8 lg:col-span-4">
+                        <aside className="space-y-8 lg:col-span-4">
                             <StudentIdentityCard student={student} />
                             <UpcomingTasks
                                 classroom={activeClass}
                                 submissions={submissions}
                             />
-                        </div>
+                        </aside>
                     </div>
                 )}
             </div>

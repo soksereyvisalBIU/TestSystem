@@ -57,20 +57,38 @@ class ClassroomController extends Controller
 
         $studentId = auth()->id();
 
+        // $classrooms = Classroom::query()
+        //     // Include public/protected or private classrooms the student joined
+        //     ->whereIn('visibility', ['public', 'protected'])
+        //     ->orWhereHas('students', function ($q) use ($studentId) {
+        //         $q->where('student_classroom.user_id', $studentId);
+        //     })
+        //     // Optional year filter
+        //     ->when($request->filled('year'), fn($q) => $q->where('year', (int) $request->year))
+        //     // Count if student has joined
+        //     ->withCount([
+        //         'students as joined' => fn($q) => $q->where('student_classroom.user_id', $studentId)
+        //     ])
+        //     ->paginate(10)
+        //     ->withQueryString();
+
         $classrooms = Classroom::query()
-            // Include public/protected or private classrooms the student joined
-            ->whereIn('visibility', ['public', 'protected'])
-            ->orWhereHas('students', function ($q) use ($studentId) {
-                $q->where('student_classroom.user_id', $studentId);
+            ->where(function ($q) use ($studentId) {
+                $q->whereIn('visibility', ['public', 'protected'])
+                    ->orWhereHas('students', function ($q) use ($studentId) {
+                        $q->where('student_classroom.user_id', $studentId);
+                    });
             })
-            // Optional year filter
-            ->when($request->filled('year'), fn($q) => $q->where('year', (int) $request->year))
-            // Count if student has joined
+            ->when($request->filled('year'), function ($q) use ($request) {
+                $q->where('year', (int) $request->year);
+            })
             ->withCount([
-                'students as joined' => fn($q) => $q->where('student_classroom.user_id', $studentId)
+                'students as joined' => fn($q) =>
+                $q->where('student_classroom.user_id', $studentId)
             ])
             ->paginate(10)
             ->withQueryString();
+
 
         return Inertia::render('student/classroom/Index', [
             'classrooms' => $classrooms

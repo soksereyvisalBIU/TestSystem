@@ -771,6 +771,7 @@ class ComposerStaticInit3c79e040a3570288a4004f205416801a
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\CourseController' => __DIR__ . '/../..' . '/app/Http/Controllers/CourseController.php',
         'App\\Http\\Controllers\\DashboardController' => __DIR__ . '/../..' . '/app/Http/Controllers/DashboardController.php',
+        'App\\Http\\Controllers\\FileAccessController' => __DIR__ . '/../..' . '/app/Http/Controllers/FileAccessController.php',
         'App\\Http\\Controllers\\Instructor\\AssessmentController' => __DIR__ . '/../..' . '/app/Http/Controllers/Instructor/AssessmentController.php',
         'App\\Http\\Controllers\\Instructor\\ClassroomController' => __DIR__ . '/../..' . '/app/Http/Controllers/Instructor/ClassroomController.php',
         'App\\Http\\Controllers\\Instructor\\QuestionController' => __DIR__ . '/../..' . '/app/Http/Controllers/Instructor/QuestionController.php',

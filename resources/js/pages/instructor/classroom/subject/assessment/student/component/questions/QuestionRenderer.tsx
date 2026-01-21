@@ -5,9 +5,7 @@ import {
     CheckCircle2,
     Edit3,
     FileUp,
-    FlipHorizontal,
     HelpCircle,
-    LineChart,
     Save,
     XCircle,
 } from 'lucide-react';
@@ -162,8 +160,12 @@ export const QuestionRenderer = ({
                 </div>
             </CardHeader>
             <CardContent className="flex-grow py-4">
-                <div className='pb-4'>
-                    <div dangerouslySetInnerHTML={{ __html: question.question_text }} />
+                <div className="pb-4">
+                    <div
+                        dangerouslySetInnerHTML={{
+                            __html: question.question_text,
+                        }}
+                    />
                     {/* <h4 className="">Q: {question.question_text}</h4> */}
                     {/* <div className='w-12 h-[2px] bg-foreground/50'></div> */}
                 </div>

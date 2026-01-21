@@ -13,12 +13,9 @@ export function AppSidebarHeader({
             <div className="flex w-full items-center justify-between gap-2">
                 <div className='flex items-center gap-2'>
                     <SidebarTrigger className="-ml-1" />
-                    {/* <Breadcrumbs breadcrumbs={breadcrumbs} /> */}
-                    {/* <div className="ms-4 mt-2"> */}
                     <AutoBreadcrumb />
                 </div>
                 <AppearanceTabsHeader />
-                {/* </div> */}
             </div>
         </header>
     );

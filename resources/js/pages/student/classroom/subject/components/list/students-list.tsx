@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/card';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpRight, Mail, Search, UserPlus, Users } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 interface Student {
     id: number;
@@ -24,49 +24,61 @@ interface StudentListProps {
 export function StudentList({ students = [] }: StudentListProps) {
     const [searchQuery, setSearchQuery] = useState('');
 
-    const filtered = students.filter(
-        (s) =>
-            s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            s.email.toLowerCase().includes(searchQuery.toLowerCase()),
+    // Performance: Only re-filter when query or data changes
+    const filteredStudents = useMemo(() => {
+        const query = searchQuery.toLowerCase().trim();
+        if (!query) return students;
+
+        return students.filter(
+            (s) =>
+                s.name.toLowerCase().includes(query) ||
+                s.email.toLowerCase().includes(query),
+        );
+    }, [students, searchQuery]);
+
+    const handleSearchChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            setSearchQuery(e.target.value);
+        },
+        [],
     );
 
     return (
-        <Card className="overflow-hidden gap-0 rounded-[2rem] bg-card shadow-none">
-            <CardHeader className="flex flex-col gap-4 space-y-0 pb-8 sm:flex-row sm:items-center sm:justify-between">
+        <Card className="gap-0 overflow-hidden rounded-[2.5rem] border-none bg-card/50 shadow-2xl shadow-black/5 backdrop-blur-md">
+            <CardHeader className="flex flex-col gap-4 space-y-0 p-8 py-6 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-1">
                     <CardTitle className="text-2xl font-black tracking-tight text-title">
                         Classmates
                     </CardTitle>
                     <CardDescription className="text-sm font-medium text-description">
-                        Managing {students.length} active students in this
-                        classroom.
+                        {students.length} active students in this classroom.
                     </CardDescription>
                 </div>
 
-                {/* Action & Search Area */}
                 <div className="flex items-center gap-3">
-                    <div className="relative">
-                        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-description" />
+                    <div className="group relative">
+                        <Search className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-description transition-colors group-focus-within:text-primary" />
                         <input
                             type="text"
-                            placeholder="Search..."
-                            className="h-10 rounded-full border-none bg-muted/50 pr-4 pl-10 text-sm font-bold text-title placeholder:text-description focus:ring-2 focus:ring-primary/20"
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Find a student..."
+                            autoComplete="off"
+                            className="h-11 w-full rounded-2xl border-none bg-muted/50 pr-4 pl-11 text-sm font-bold text-title placeholder:text-description focus:ring-2 focus:ring-primary/20 sm:w-max-64"
+                            onChange={handleSearchChange}
                         />
                     </div>
                     <Button
                         size="icon"
-                        className="h-10 w-10 rounded-full bg-primary text-primary-foreground transition-transform hover:scale-105"
+                        className="h-11 w-11 rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95"
                     >
-                        <UserPlus className="h-4 w-4" />
+                        <UserPlus className="h-5 w-5" />
                     </Button>
                 </div>
             </CardHeader>
 
-            <CardContent>
+            <CardContent className="p-8 pt-0">
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    <AnimatePresence mode="popLayout">
-                        {filtered.map((student, i) => (
+                    <AnimatePresence mode="popLayout" initial={false}>
+                        {filteredStudents.map((student, i) => (
                             <StudentCard
                                 key={student.id}
                                 student={student}
@@ -76,77 +88,85 @@ export function StudentList({ students = [] }: StudentListProps) {
                     </AnimatePresence>
                 </div>
 
-                {filtered.length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-20 text-center">
-                        <div className="mb-4 rounded-full bg-muted p-4">
-                            <Users className="h-8 w-8 text-description" />
+                {filteredStudents.length === 0 && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="flex flex-col items-center justify-center py-24 text-center"
+                    >
+                        <div className="mb-6 rounded-[2rem] bg-muted/50 p-6">
+                            <Users className="h-10 w-10 text-muted-foreground/40" />
                         </div>
-                        <p className="font-black text-title">
+                        <h3 className="text-lg font-black text-title">
                             No classmates found
+                        </h3>
+                        <p className="max-w-[240px] text-sm font-medium text-description">
+                            We couldn't find any student matching "{searchQuery}
+                            "
                         </p>
-                        <p className="text-sm font-medium text-description">
-                            Try a different search term.
-                        </p>
-                    </div>
+                    </motion.div>
                 )}
             </CardContent>
         </Card>
     );
 }
 
+// Sub-component optimized for high-frequency list rendering
 function StudentCard({ student, index }: { student: Student; index: number }) {
-    const initials = student.name
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2);
+    // Performance: Memoize initials to avoid re-splitting strings on every hover/render
+    const initials = useMemo(() => {
+        return student.name
+            .split(' ')
+            .slice(0, 2)
+            .map((n) => n[0])
+            .join('')
+            .toUpperCase();
+    }, [student.name]);
 
     return (
         <motion.div
             layout
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
             transition={{
-                delay: index * 0.05,
                 type: 'spring',
-                stiffness: 100,
-                damping: 15,
+                stiffness: 260,
+                damping: 20,
             }}
-            className="group relative flex items-center gap-4 rounded-[1.5rem] bg-muted/30 p-4 transition-all duration-300 hover:bg-muted/60"
+            className="group relative flex transform-gpu items-center gap-4 rounded-3xl bg-muted/20 p-4 transition-all duration-300 hover:bg-muted/40"
         >
-            {/* Avatar Container */}
-            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border-2 border-background shadow-sm">
+            {/* Avatar Section with Optimized Sizing */}
+            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border-2 border-background bg-background shadow-sm">
                 {student.avatar ? (
                     <img
                         src={student.avatar}
                         alt={student.name}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy" // Performance: Native lazy loading
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                 ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-primary text-sm font-black text-primary-foreground">
-                        {initials}
+                    <div className="flex h-full w-full items-center justify-center bg-primary/10 font-black text-primary">
+                        <span className="text-sm tracking-tighter">
+                            {initials}
+                        </span>
                     </div>
                 )}
             </div>
 
-            {/* Info */}
-            <div className="min-w-0 flex-1">
-                <h4 className="truncate text-sm font-black tracking-tight text-title">
+            <div className="min-w-0 flex-1 space-y-0.5">
+                <h4 className="truncate text-sm font-black tracking-tight text-title transition-colors group-hover:text-primary">
                     {student.name}
                 </h4>
-                <div className="flex items-center gap-1.5 text-xs font-bold text-description">
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-description/80">
                     <Mail className="h-3 w-3" />
                     <span className="truncate">{student.email}</span>
                 </div>
             </div>
 
-            {/* Hover Arrow Action */}
-            <div className="opacity-0 transition-opacity group-hover:opacity-100">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-background text-title shadow-sm">
-                    <ArrowUpRight className="h-4 w-4" />
-                </div>
+            {/* Micro-interaction: Animated Action Button */}
+            <div className="flex h-8 w-8 shrink-0 translate-x-2 items-center justify-center rounded-xl bg-background text-title opacity-0 shadow-sm transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
+                <ArrowUpRight className="h-4 w-4" />
             </div>
         </motion.div>
     );

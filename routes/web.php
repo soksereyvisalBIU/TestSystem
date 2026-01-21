@@ -7,6 +7,7 @@ use Laravel\Fortify\Features;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -383,7 +384,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/attempt/store',
             [App\Http\Controllers\Student\AttemptController::class, 'store']
         )->name('classes.subjects.assessments.attempt.store');
+
+        // In your routes file
+        Route::post('/upload-chunk', [App\Http\Controllers\Student\AttemptController::class, 'uploadChunk'])
+            ->name('classes.subjects.assessments.attempt.upload-chunk');
     });
+
+
+    Route::get(
+        '/files/{path}',
+        [\App\Http\Controllers\FileAccessController::class, 'show']
+    )->where('path', '.*')
+        ->middleware('auth')
+        ->name('files.show');
+
+    // Route::get('/files/{path}', function ($path) {
+    //     $path = str_replace('..', '', $path); // security
+
+    //     if (!Storage::disk('private')->exists($path)) {
+    //         abort(404);
+    //     }
+
+    //     return Storage::disk('private')->response($path);
+    // })->where('path', '.*')->name('files.show');
 });
 
 require __DIR__ . '/settings.php';

@@ -13,7 +13,6 @@ interface AuthLayoutProps {
 
 const backgroundImages = [
     'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop',
-    // "https://images.unsplash.com/photo-1614850523296-e8c0a9ee32a1?q=80&w=2670&auto=format&fit=crop",
     'https://images.unsplash.com/photo-1635776062127-d379bfcba9f8?q=80&w=2532&auto=format&fit=crop',
 ];
 

@@ -13,6 +13,8 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests; // ✅ ADD THIS
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class AttemptController extends Controller
 {
@@ -94,16 +96,30 @@ class AttemptController extends Controller
         foreach ($request->answers as $questionId => $answer) {
 
             // FILE
-            if ($answer instanceof \Illuminate\Http\UploadedFile) {
+            // if ($answer instanceof \Illuminate\Http\UploadedFile) {
+            //     $answerModel = Answer::create([
+            //         'student_assessment_attempt_id' => $assessmentAttempt->id,
+            //         'question_id' => $questionId,
+            //     ]);
+
+            //     $path = $answer->store('answers/' . $assessmentAttempt->id, 'public');
+
+            //     $answerModel->answerFiles()->create([
+            //         'file_path' => $path,
+            //     ]);
+
+            //     continue;
+            // }
+
+            if (is_string($answer) && str_starts_with($answer, 'uploads/')) {
+
                 $answerModel = Answer::create([
                     'student_assessment_attempt_id' => $assessmentAttempt->id,
                     'question_id' => $questionId,
                 ]);
 
-                $path = $answer->store('answers/' . $assessmentAttempt->id, 'public');
-
                 $answerModel->answerFiles()->create([
-                    'file_path' => $path,
+                    'file_path' => $answer,
                 ]);
 
                 continue;
@@ -180,5 +196,69 @@ class AttemptController extends Controller
             'student/classroom/subject/assessment/attempt/Review',
             compact('assessmentAttemptResource')
         );
+    }
+
+    public function uploadChunk(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file',
+            'chunkIndex' => 'required|integer|min:0',
+            'totalChunks' => 'required|integer|min:1',
+            'fileName' => 'required|string',
+            'questionId' => 'required',
+        ]);
+
+        $assessmentId = $request->assessment_id ?? 'general';
+
+        $chunkIndex  = (int) $request->chunkIndex;
+        $totalChunks = (int) $request->totalChunks;
+        $fileName    = $request->fileName;
+
+        $chunkDir = 'chunks/' . md5($fileName);
+
+        // Ensure chunk directory exists
+        Storage::makeDirectory($chunkDir);
+
+        // Store chunk
+        $chunkPath = "{$chunkDir}/chunk_{$chunkIndex}";
+        Storage::put($chunkPath, file_get_contents($request->file));
+
+        // If not final chunk, return early
+        if ($chunkIndex + 1 < $totalChunks) {
+            return response()->json(['status' => 'chunk_received']);
+        }
+
+        /* ---------- MERGE ---------- */
+        $finalName = Str::uuid() . '_' . $fileName;
+        $finalPath = "uploads/{$assessmentId}/answers/{$finalName}";
+        Storage::makeDirectory("uploads/{$assessmentId}/answers");
+
+        $output = fopen(Storage::path($finalPath), 'ab');
+
+        for ($i = 0; $i < $totalChunks; $i++) {
+            $path = "{$chunkDir}/chunk_{$i}";
+
+            if (!Storage::exists($path)) {
+                fclose($output);
+                abort(500, "Missing chunk {$i}");
+            }
+
+            fwrite($output, Storage::get($path));
+            Storage::delete($path);
+        }
+
+        fclose($output);
+        Storage::deleteDirectory($chunkDir);
+
+        /* ---------- SAVE FILE RECORD (OPTIONAL) ---------- */
+        // Example: save to DB
+        // $file = UploadedFile::create([
+        //     'path' => $finalPath,
+        //     'original_name' => $fileName,
+        // ]);
+
+        return response()->json([
+            'fileId' => $finalPath, // or $file->id
+        ]);
     }
 }

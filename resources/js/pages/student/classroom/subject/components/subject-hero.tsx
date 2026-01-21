@@ -1,7 +1,8 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { FileText, Calendar, GraduationCap, ChevronRight } from 'lucide-react';
+import { Calendar, ChevronRight, FileText, GraduationCap } from 'lucide-react';
+import { useMemo } from 'react';
 
 interface SubjectHeroProps {
     id: number;
@@ -14,7 +15,6 @@ interface SubjectHeroProps {
 }
 
 export function SubjectHero({
-    id,
     name,
     description,
     cover,
@@ -22,85 +22,114 @@ export function SubjectHero({
     semester,
     onViewReports,
 }: SubjectHeroProps) {
+    // Performance: Memoize image URL to prevent string concatenation on every render
+    const imageUrl = useMemo(() => {
+        if (!cover)
+            return 'https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=2070&auto=format&fit=crop';
+        // Ensure path is clean
+        const path = cover.startsWith('/') ? cover : `/${cover}`;
+        return `/storage${path}`;
+    }, [cover]);
+
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            // Reduced rounded corners for mobile to maximize content area
-            className="group relative overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] shadow-2xl bg-card border border-border/50"
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+            className="group relative transform-gpu overflow-hidden rounded-[1.5rem] border border-border/50 bg-muted shadow-2xl md:rounded-[2.5rem]"
         >
-            {/* Background with intelligent overlay */}
+            {/* Background Layer with Optimized Rendering */}
             <div className="absolute inset-0 z-0">
-                <motion.div
-                    className="h-full w-full bg-cover bg-center transition-transform duration-[3s] group-hover:scale-110"
-                    style={{
-                        backgroundImage: `url(${cover ? '/storage/' + cover : 'https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=2070&auto=format&fit=crop'})`,
-                    }}
+                <div
+                    className="absolute inset-0 transform-gpu bg-cover bg-center transition-transform duration-[5s] ease-out will-change-transform group-hover:scale-110"
+                    style={{ backgroundImage: `url(${imageUrl})` }}
+                    role="img"
+                    aria-label={name}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/20 md:via-black/60 md:to-transparent" />
-                <div className="absolute inset-0 bg-primary/10 mix-blend-multiply" />
+                {/* Unified Overlay: Better for mobile GPU over multiple div layers */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/20" />
             </div>
 
-            {/* Content Container: Responsive padding (p-5 vs p-8+) */}
-            <div className="relative z-10 p-5 md:p-12 lg:p-16">
-                <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-                    <div className="space-y-3 md:space-y-4">
+            {/* Content Container */}
+            <div className="relative z-10 p-6 md:p-12 lg:p-16">
+                <div className="">
+                    {/* <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between"> */}
+                    <div className="space-y-4 md:space-y-6">
                         {/* Meta Tags */}
                         <div className="flex flex-wrap items-center gap-2 md:gap-3">
-                            <Badge className="bg-primary/30 text-white border-primary/40 backdrop-blur-md px-2 py-0.5 md:px-3 md:py-1 text-[10px] md:text-xs font-bold uppercase tracking-wider">
-                                <Calendar className="mr-1 h-3 w-3" /> {year}
+                            <Badge className="border-primary/30 bg-primary/20 px-3 py-1 text-[10px] font-bold tracking-widest text-white uppercase backdrop-blur-md md:text-xs">
+                                <Calendar className="mr-1.5 h-3.5 w-3.5" />{' '}
+                                {year}
                             </Badge>
-                            <Badge className="bg-white/10 text-white border-white/20 backdrop-blur-md px-2 py-0.5 md:px-3 md:py-1 text-[10px] md:text-xs font-bold uppercase tracking-wider">
-                                <GraduationCap className="mr-1 h-3 w-3" /> Sem {semester}
+                            <Badge className="border-white/20 bg-white/10 px-3 py-1 text-[10px] font-bold tracking-widest text-white uppercase backdrop-blur-md md:text-xs">
+                                <GraduationCap className="mr-1.5 h-3.5 w-3.5" />{' '}
+                                Sem {semester}
                             </Badge>
                         </div>
 
-                        {/* Title & Description: Significant font scaling for mobile */}
-                        <div className="space-y-2">
-                            <h1 className="text-xl xs:text-2xl sm:text-3xl font-[1000] text-white md:text-7xl tracking-tighter leading-[1.1] uppercase">
+                        {/* Title & Description */}
+                        <div className="space-y-3">
+                            <h1 className="text-3xl leading-[0.95] font-black tracking-tight text-white uppercase xs:text-4xl sm:text-4xl md:text-5xl">
                                 {name}
                             </h1>
-                            <p className="max-w-2xl text-sm md:text-xl text-white/80 leading-relaxed font-medium line-clamp-3 md:line-clamp-none">
+                            <p className="line-clamp-2 text-sm leading-relaxed font-medium text-white/70 md:line-clamp-none md:text-lg">
                                 {description}
                             </p>
                         </div>
                     </div>
+                </div>
 
-                    {/* Action Area: Full width on small screens */}
+                {/* Sub-stat strip */}
+                <div className="hidden sm:grid mt-2 pt-4 sm:mt-6 sm:pt-8  grid-cols-2 gap-3 sm:gap-6 border-t border-white/10  md:flex md:flex-wrap md:gap-16">
+                    <StatItem label="Status" value="In Progress" active />
+                    <StatItem label="Enrolled" value="24 Students" />
+                    <StatItem label="Type" value="Mandatory Course" />
+                    {/* Action Area */}
                     {onViewReports && (
-                        <div className="flex flex-col w-full sm:w-auto">
+                        <div className="flex w-full shrink-0 flex-col sm:w-auto">
                             <Button
                                 size="lg"
                                 onClick={onViewReports}
-                                className="group/btn h-10 xs:h-12 md:h-14 rounded-xl md:rounded-2xl bg-primary text-primary-foreground hover:opacity-90 transition-all duration-300 px-6 md:px-8 shadow-xl shadow-primary/20"
+                                className="group/btn h-12 rounded-2xl bg-primary px-8 text-primary-foreground shadow-2xl shadow-primary/40 transition-all duration-300 hover:bg-primary/90 active:scale-95 "
                             >
-                                <FileText className="mr-2 h-4 w-4 md:h-5 md:w-5 transition-transform group-hover/btn:scale-110" />
-                                <span className="font-bold text-sm md:text-base">Analytics Report</span>
-                                <ChevronRight className="ml-2 h-4 w-4 opacity-50 transition-transform group-hover/btn:translate-x-1" />
+                                <FileText className="mr-2 h-5 w-5 transition-transform group-hover/btn:rotate-6" />
+                                <span className="text-sm font-bold  md:text-base">
+                                    Analytics
+                                </span>
+                                <ChevronRight className="ml-2 h-4 w-4 hidden sm:block opacity-50 transition-transform group-hover/btn:translate-x-1" />
                             </Button>
                         </div>
                     )}
                 </div>
-
-                {/* Sub-stat strip: Grid for mobile, flex for desktop */}
-                <div className="mt-3 pt-3 xs:mt-6 grid grid-cols-2 gap-4 md:flex md:flex-wrap md:gap-12 border-t border-white/10 xs:pt-5 md:pt-6">
-                    <div className="flex flex-col gap-0.5">
-                        <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Status</span>
-                        <span className="text-white text-xs md:text-base font-bold flex items-center gap-2">
-                             <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
-                             In Progress
-                        </span>
-                    </div>
-                    <div className="flex flex-col gap-0.5">
-                        <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Enrolled</span>
-                        <span className="text-white text-xs md:text-base font-bold">24 Students</span>
-                    </div>
-                    <div className="flex flex-col gap-0.5 col-span-2 md:col-span-1">
-                        <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Type</span>
-                        <span className="text-white text-xs md:text-base font-bold">Mandatory Course</span>
-                    </div>
-                </div>
             </div>
         </motion.div>
+    );
+}
+
+// Performance: Extracted sub-component to prevent unnecessary re-renders of the main block
+function StatItem({
+    label,
+    value,
+    active = false,
+}: {
+    label: string;
+    value: string;
+    active?: boolean;
+}) {
+    return (
+        <div className="flex flex-col gap-1.5">
+            <span className="text-[10px] font-black tracking-[0.2em] text-white/40 uppercase">
+                {label}
+            </span>
+            <span className="flex items-center gap-2 text-sm font-bold text-white md:text-base">
+                {active && (
+                    <span className="relative flex h-2 w-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+                    </span>
+                )}
+                {value}
+            </span>
+        </div>
     );
 }
