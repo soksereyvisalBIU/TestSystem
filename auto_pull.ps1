@@ -1,19 +1,21 @@
 # auto_pull.ps1
-# Path to your repo
 $repoPath = "D:\website\testsystem"
-$branch = "main"   # change if your branch is different
+$branch = "main"
+$logFile = "D:\Scripts\git_auto_pull.log"
 
-# Go to repo folder
 Set-Location $repoPath
 
-# Stash local changes safely (ignore errors if nothing to stash)
-git stash push -m "Auto-stash before pull" 2>$null
+# Add timestamp to log
+Add-Content $logFile "`n===== $(Get-Date) ====="
 
-# Pull latest changes from remote
-git pull origin $branch
+# Stash local changes safely
+git stash push -m "Auto-stash before pull" 2>>$logFile
 
-# Apply stashed changes back (if any)
+# Pull latest changes
+git pull origin $branch >>$logFile 2>&1
+
+# Apply stashed changes back
 $stashList = git stash list
 if ($stashList -match "Auto-stash before pull") {
-    git stash pop
+    git stash pop >>$logFile 2>&1
 }
