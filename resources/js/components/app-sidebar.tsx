@@ -73,28 +73,47 @@ export function AppSidebar() {
         const groups = [
             {
                 label: 'Platform',
-                items: [
-                    { title: 'Dashboard', href: dashboard(), icon: LayoutGrid },
-                ],
+                items: [{ title: 'Dashboard', href: '', icon: LayoutGrid }],
             },
+
+            // Admin
             {
                 label: 'System Admin',
+                can: 'access-admin-page',
+                items: [
+                    {
+                        title: 'User Management',
+                        icon: Users,
+                        href: route('admin.user-management.index'),
+                    },
+                    { title: 'Faculty Settings', icon: Settings2, href: '#' },
+                ],
+            },
+
+            // Instructor
+            {
+                label: 'Instructor Hub',
                 can: 'access-instructor-page',
                 items: [
-                    { title: 'User Management', icon: Users, href: '#' },
-                    { title: 'Faculty Settings', icon: Settings2, href: '#' },
+                    { title: 'Student Management', icon: Users, href: '#' },
                     {
-                        title: 'Instructor Hub',
+                        title: 'Class Management',
                         icon: Cpu,
                         items: [
                             {
-                                title: 'Class Management',
+                                title: 'My Classes',
                                 href: route('instructor.classes.index'),
+                            },
+                            {
+                                title: 'Attendance',
+                                href: route('instructor.attendance.index'),
                             },
                         ],
                     },
                 ],
             },
+
+            // Student
             {
                 label: 'Academic Management',
                 items: [
@@ -141,7 +160,8 @@ export function AppSidebar() {
             },
         ];
 
-        return groups.sort((a, b) => (a.can && can[a.can] ? -1 : 0));
+        // return groups.sort((a, b) => (a.can && can[a.can] ? -1 : 0));
+        return groups;
     }, [can]);
 
     // 3. Command Palette Data
@@ -262,7 +282,10 @@ export function AppSidebar() {
                                                                 : 'text-sidebar-foreground/70 hover:bg-sidebar-accent'
                                                         }`}
                                                     >
-                                                        <Link prefetch href={item.href}>
+                                                        <Link
+                                                            prefetch
+                                                            href={item.href}
+                                                        >
                                                             <item.icon
                                                                 className={`size-4 ${isActive ? 'text-primary' : 'opacity-70'}`}
                                                             />
@@ -327,7 +350,8 @@ export function AppSidebar() {
                                                                                 }
                                                                                 className="h-9 px-4"
                                                                             >
-                                                                                <Link prefetch
+                                                                                <Link
+                                                                                    prefetch
                                                                                     href={
                                                                                         subItem.href
                                                                                     }

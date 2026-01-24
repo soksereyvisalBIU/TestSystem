@@ -3,12 +3,14 @@ import SubjectController from './SubjectController'
 import AssessmentController from './AssessmentController'
 import QuestionController from './QuestionController'
 import StudentController from './StudentController'
+import AttendanceController from './AttendanceController'
 const Instructor = {
     ClassroomController: Object.assign(ClassroomController, ClassroomController),
 SubjectController: Object.assign(SubjectController, SubjectController),
 AssessmentController: Object.assign(AssessmentController, AssessmentController),
 QuestionController: Object.assign(QuestionController, QuestionController),
 StudentController: Object.assign(StudentController, StudentController),
+AttendanceController: Object.assign(AttendanceController, AttendanceController),
 }
 
 export default Instructor

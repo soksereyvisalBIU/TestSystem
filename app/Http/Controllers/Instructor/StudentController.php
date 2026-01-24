@@ -48,7 +48,7 @@ class StudentController extends Controller
             'student_assessment_attempt_id' => 'required|integer'
         ]);
 
-        Log::info($request->all());
+        // Log::info($request->all());
 
         $total_score = 0;
 
@@ -92,7 +92,7 @@ class StudentController extends Controller
             'score' => $total_score
         ]);
 
-        Log::info("Total Score: " . $total_score);
+        // Log::info("Total Score: " . $total_score);
 
         return redirect()->back()->with('success', 'Assessment scored successfully.');
     }
@@ -117,6 +117,7 @@ class StudentController extends Controller
             ->latest()
             ->first();
 
+        
 
         return Inertia::render('instructor/classroom/subject/assessment/student/Show', compact('attempt', 'assessment'));
     }

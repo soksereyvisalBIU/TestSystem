@@ -1,13 +1,14 @@
 <?php
 
+use App\Http\Controllers\Admin\SystemAdministratorController;
+use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\GoogleController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -15,6 +16,22 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
+Route::get('/test-https', function () {
+    return [
+        'scheme' => request()->getScheme(),
+        'secure' => request()->isSecure(),
+        'url'    => url()->current(),
+    ];
+});
+Route::get('/debug-proxy', function () {
+    return [
+        'X-Forwarded-Proto' => request()->header('x-forwarded-proto'),
+        'X-Forwarded-For'   => request()->header('x-forwarded-for'),
+        'scheme'            => request()->getScheme(),
+        'secure'            => request()->isSecure(),
+        'server_https'      => $_SERVER['HTTPS'] ?? null,
+    ];
+});
 
 
 Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.login');
@@ -22,338 +39,20 @@ Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 
 Route::post('auth/google/callback', [GoogleController::class, 'handleCredential'])
     ->name('google.callback');
+
+
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    Route::get('/force-password', [GoogleController::class, 'showForcePassword'])
-        ->name('password.force');
-
-    Route::post('/force-password', [GoogleController::class, 'storeForcePassword']);
-
-
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
-    // Route::get('dashboard', function () {
-    //     return Inertia::render('dashboard');
-    // })->name('dashboard');
 
-    // Route::get('/admin/dashboard', AdminDashboardController::class)->name('admin.dashboard');
-    // Route::get('/instructor/dashboard', InstructorDashboardController::class)->name('instructor.dashboard');
-    // Route::get('/student/dashboard', StudentDashboardController::class)->name('student.dashboard');
-
-
-    // ========================================================
-    //              Admin
-    // ========================================================
-
-    // Route::prefix('admin')
-    //     ->as('admin.')
-    //     ->middleware(['can:access-admin-page'])
-    //     ->group(function () {
-    //         Route::get('/run-artisan/{command}', function ($command) {
-    //             switch ($command) {
-    //                 case 'migrate':
-    //                     Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]); // avoid confirmation
-    //                     return 'Migration done!';
-
-    //                 case 'optimize':
-    //                     Illuminate\Support\Facades\Artisan::call('optimize');
-    //                     return 'Optimized!';
-    //                 case 'optimize-clear':
-    //                     Illuminate\Support\Facades\Artisan::call('optimize:clear');
-    //                     return 'Optimized!';
-
-    //                 case 'cache-clear':
-    //                     Illuminate\Support\Facades\Artisan::call('cache:clear');
-    //                     return 'Cache cleared!';
-
-    //                 case 'config-clear':
-    //                     Illuminate\Support\Facades\Artisan::call('config:clear');
-    //                     return 'Config cleared!';
-
-    //                 case 'config-cache':
-    //                     Illuminate\Support\Facades\Artisan::call('config:cache');
-    //                     return 'Config cached!';
-
-    //                 case 'route-cache':
-    //                     Illuminate\Support\Facades\Artisan::call('route:cache');
-    //                     return 'Routes cached!';
-
-    //                 case 'view-clear':
-    //                     Illuminate\Support\Facades\Artisan::call('view:clear');
-    //                     return 'Views cleared!';
-
-    //                 default:
-    //                     return 'Unknown command.';
-    //             }
-    //         });
-    //         // link folder
-    //         Route::get('/storage-link-to-root', function () {
-    //             $targetFolder = storage_path('app/public');
-    //             $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/storage';
-    //             symlink($targetFolder, $linkFolder);
-    //         });
-    //         Route::get('/storage-link', function () {
-    //             $targetFolder = storage_path('app/public');
-    //             $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/storage';
-    //             // echo 'Target Folder: ' . $targetFolder . '<br>';
-    //             // echo 'Link Folder: ' . $linkFolder . '<br>';
-    //             symlink($targetFolder, $linkFolder);
-    //         });
-
-    //         Route::get('/asset-link', function () {
-    //             $targetFolder = public_path('asset');
-    //             $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/asset';
-
-    //             try {
-    //                 // Check if the symlink already exists
-    //                 if (!file_exists($linkFolder)) {
-    //                     // Create the symbolic link
-    //                     symlink($targetFolder, $linkFolder);
-    //                     return 'Symbolic link created successfully.';
-    //                 } else {
-    //                     return 'Symbolic link already exists.';
-    //                 }
-    //             } catch (\Throwable $e) {
-    //                 return 'Error creating symbolic link: ' . $e->getMessage();
-    //             }
-    //         });
-
-    //         Route::get('/uploaded-link', function () {
-    //             $targetFolder = public_path('uploaded');
-    //             $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/uploaded';
-
-    //             try {
-    //                 // Check if the symlink already exists
-    //                 if (!file_exists($linkFolder)) {
-    //                     // Create the symbolic link
-    //                     symlink($targetFolder, $linkFolder);
-    //                     return 'Symbolic link created successfully.';
-    //                 } else {
-    //                     return 'Symbolic link already exists.';
-    //                 }
-    //             } catch (\Throwable $e) {
-    //                 return 'Error creating symbolic link: ' . $e->getMessage();
-    //             }
-    //         });
-    //     });
-
-
-
-
-    Route::prefix('admin')
-        ->as('admin.')
-        ->middleware([
-            'auth',
-            // 'verified',              // Email verified
-            // 'password.confirm',      // Re-enter password
-            'can:access-admin-page', // Policy / Gate
-            // 'throttle:5,1',          // Anti brute-force
-        ])
-        ->group(function () {
-
-            /*
-        |--------------------------------------------------------------------------
-        | Artisan Utilities (SAFE WHITELIST)
-        |--------------------------------------------------------------------------
-        */
-            Route::get('/artisan/{command}', function ($command) {
-
-                Log::info('Admin artisan command', [
-                    'user_id' => auth()->id(),
-                    'command' => $command,
-                    'ip' => request()->ip(),
-                ]);
-
-                return match ($command) {
-                    'migrate' => tap(Artisan::call('migrate', ['--force' => true]), fn() => 'Migration done!'),
-                    'optimize' => tap(Artisan::call('optimize'), fn() => 'Optimized!'),
-                    'optimize-clear' => tap(Artisan::call('optimize:clear'), fn() => 'Optimization cleared!'),
-                    'cache-clear' => tap(Artisan::call('cache:clear'), fn() => 'Cache cleared!'),
-                    'config-clear' => tap(Artisan::call('config:clear'), fn() => 'Config cleared!'),
-                    'config-cache' => tap(Artisan::call('config:cache'), fn() => 'Config cached!'),
-                    'route-cache' => tap(Artisan::call('route:cache'), fn() => 'Routes cached!'),
-                    'view-clear' => tap(Artisan::call('view:clear'), fn() => 'Views cleared!'),
-                    default => abort(404, 'Unknown command'),
-                };
-            });
-
-            /*
-        |--------------------------------------------------------------------------
-        | Maintenance Mode
-        |--------------------------------------------------------------------------
-        */
-            Route::get('/maintenance/on', function () {
-                Artisan::call('down', ['--secret' => 'admin-access']);
-                return 'Maintenance mode ON';
-            });
-
-            Route::get('/maintenance/off', function () {
-                Artisan::call('up');
-                return 'Maintenance mode OFF';
-            });
-
-            /*
-        |--------------------------------------------------------------------------
-        | Storage & Asset Links
-        |--------------------------------------------------------------------------
-        */
-            Route::get('/link/storage', function () {
-                $target = storage_path('app/public');
-                $link = $_SERVER['DOCUMENT_ROOT'] . '/storage';
-
-                if (!file_exists($link)) {
-                    symlink($target, $link);
-                    return 'Storage link created';
-                }
-
-                return 'Storage link already exists';
-            });
-
-            Route::get('/link/asset', function () {
-                $target = public_path('asset');
-                $link = $_SERVER['DOCUMENT_ROOT'] . '/asset';
-
-                if (!file_exists($link)) {
-                    symlink($target, $link);
-                    return 'Asset link created';
-                }
-
-                return 'Asset link already exists';
-            });
-
-            Route::get('/link/uploaded', function () {
-                $target = public_path('uploaded');
-                $link = $_SERVER['DOCUMENT_ROOT'] . '/uploaded';
-
-                if (!file_exists($link)) {
-                    symlink($target, $link);
-                    return 'Uploaded link created';
-                }
-
-                return 'Uploaded link already exists';
-            });
-
-            /*
-        |--------------------------------------------------------------------------
-        | System Diagnostics (READ ONLY)
-        |--------------------------------------------------------------------------
-        */
-            Route::get('/system-info', function () {
-                return response()->json([
-                    'app' => [
-                        'name' => config('app.name'),
-                        'env' => app()->environment(),
-                        'debug' => config('app.debug'),
-                    ],
-                    'laravel' => app()->version(),
-                    'php' => [
-                        'version' => phpversion(),
-                        'memory_limit' => ini_get('memory_limit'),
-                        'max_execution_time' => ini_get('max_execution_time'),
-                    ],
-                    'server' => [
-                        'os' => PHP_OS,
-                        'document_root' => $_SERVER['DOCUMENT_ROOT'] ?? null,
-                    ],
-                ]);
-            });
-
-            /*
-        |--------------------------------------------------------------------------
-        | Storage Health Check
-        |--------------------------------------------------------------------------
-        */
-            Route::get('/health/storage', function () {
-                $paths = [
-                    'storage' => storage_path(),
-                    'cache' => base_path('bootstrap/cache'),
-                    'public_storage' => storage_path('app/public'),
-                ];
-
-                return collect($paths)->map(fn($path) => [
-                    'exists' => file_exists($path),
-                    'writable' => is_writable($path),
-                    'realpath' => realpath($path),
-                ]);
-            });
-
-            /*
-        |--------------------------------------------------------------------------
-        | Queue Management
-        |--------------------------------------------------------------------------
-        */
-            Route::get('/queue/restart', function () {
-                Artisan::call('queue:restart');
-                return 'Queue restarted';
-            });
-
-            Route::get('/queue/failed', function () {
-                return DB::table('failed_jobs')->latest()->limit(50)->get();
-            });
-
-            Route::get('/queue/flush', function () {
-                Artisan::call('queue:flush');
-                return 'Failed jobs cleared';
-            });
-
-            /*
-        |--------------------------------------------------------------------------
-        | Logs
-        |--------------------------------------------------------------------------
-        */
-            Route::get('/logs/size', function () {
-                $log = storage_path('logs/laravel.log');
-                return file_exists($log)
-                    ? number_format(filesize($log) / 1024 / 1024, 2) . ' MB'
-                    : 'Log file not found';
-            });
-
-            Route::get('/logs/clear', function () {
-                file_put_contents(storage_path('logs/laravel.log'), '');
-                return 'Logs cleared';
-            });
-        });
-
-
-    // ========================================================
-    //              Instructor
-    // ========================================================
-    Route::prefix('instructor')
-        ->as('instructor.')
-        ->middleware(['can:access-instructor-page'])
-        ->group(function () {
-            Route::resource('classes', App\Http\Controllers\Instructor\ClassroomController::class)->names('classes');
-            Route::resource('classes.subjects', App\Http\Controllers\Instructor\SubjectController::class)->names('classes.subjects');
-            Route::post('classes/{class}/subjects/{subject}/copy', [App\Http\Controllers\Instructor\SubjectController::class, 'copy'])->name('classes.subjects.copy');
-            Route::resource('classes.subjects.assessment', App\Http\Controllers\Instructor\AssessmentController::class)->names('classes.subjects.assessments');
-            Route::post('classes/subjects/assessment/{assessment}/copy', [App\Http\Controllers\Instructor\AssessmentController::class, 'copy'])->name('classes.subjects.assessments.copy');
-            // Route::get('classes/{class}/subjects/{subject}/assessment/{assessment}/question', [App\Http\Controllers\Instructor\QuestionController::class, 'show'])->name('classes.subjects.assessments.questions.index-show');
-            Route::resource('classes.subjects.assessment.question', App\Http\Controllers\Instructor\QuestionController::class)->names('classes.subjects.assessments.questions');
-            Route::resource('classes.subjects.assessment.student', App\Http\Controllers\Instructor\StudentController::class)->names('classes.subjects.assessments.students');
-
-
-
-            Route::get(
-                'classes/{class}/subject/{subject}/assessment/{assessment}/student/{student}/check',
-                [App\Http\Controllers\Instructor\StudentController::class, 'check']
-            )->name('classes.subjects.assessments.students.check');
-
-
-            // Route::resource('assessments.questions', App\Http\Controllers\Instructor\QuestionController::class)->names('classes.subjects.assessments.questions');
-            // Route::resource('classes', ClassroomController::class);
-            // Route::resource('classes.subjects', SubjectController::class)->shallow();
-            // Route::resource('subjects.assessments', AssessmentController::class)->shallow();
-            // Route::resource('assessments.questions', QuestionController::class)->shallow();
-            // Route::resource('assessments.students', StudentController::class)->shallow();
-            // Route::post(
-            //     'students/{student}/check',
-            //     [StudentController::class, 'check']
-            // )->name('students.check');
-        });
+    Route::get('/force-password', [GoogleController::class, 'showForcePassword'])->name('password.force');
+    Route::post('/force-password', [GoogleController::class, 'storeForcePassword']);
 
 
     // ========================================================
     //              Student
     // ========================================================
+
     Route::prefix('student')->as('student.')->group(function () {
 
         Route::resource('classes', App\Http\Controllers\Student\ClassroomController::class)
@@ -388,7 +87,150 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // In your routes file
         Route::post('/upload-chunk', [App\Http\Controllers\Student\AttemptController::class, 'uploadChunk'])
             ->name('classes.subjects.assessments.attempt.upload-chunk');
+
+
+        Route::get('attendance', function(){
+            return Inertia::render('student/attendance/Index');
+        })->name('attendance.index');
     });
+
+    // =======================================================
+
+
+
+    // ========================================================
+    //              Instructor
+    // ========================================================
+
+    Route::prefix('instructor')
+        ->as('instructor.')
+        ->middleware(['can:access-instructor-page'])
+        ->group(function () {
+            Route::resource('classes', App\Http\Controllers\Instructor\ClassroomController::class)->names('classes');
+            Route::resource('classes.subjects', App\Http\Controllers\Instructor\SubjectController::class)->names('classes.subjects');
+            Route::post('classes/{class}/subjects/{subject}/copy', [App\Http\Controllers\Instructor\SubjectController::class, 'copy'])->name('classes.subjects.copy');
+            Route::resource('classes.subjects.assessment', App\Http\Controllers\Instructor\AssessmentController::class)->names('classes.subjects.assessments');
+            Route::post('classes/subjects/assessment/{assessment}/copy', [App\Http\Controllers\Instructor\AssessmentController::class, 'copy'])->name('classes.subjects.assessments.copy');
+            Route::resource('classes.subjects.assessment.question', App\Http\Controllers\Instructor\QuestionController::class)->names('classes.subjects.assessments.questions');
+            Route::resource('classes.subjects.assessment.student', App\Http\Controllers\Instructor\StudentController::class)->names('classes.subjects.assessments.students');
+
+
+
+            Route::get(
+                'classes/{class}/subject/{subject}/assessment/{assessment}/student/{student}/check',
+                [App\Http\Controllers\Instructor\StudentController::class, 'check']
+            )->name('classes.subjects.assessments.students.check');
+
+
+            // Teacher
+            Route::get('attendance', [App\Http\Controllers\Instructor\AttendanceController::class, 'index'])->name('attendance.index');
+
+
+            Route::get('/attendance/session/{session}', [App\Http\Controllers\Instructor\AttendanceController::class, 'show']);
+            Route::get('/attendance/session/{session}', [App\Http\Controllers\Instructor\AttendanceController::class, 'show']);
+
+            // Route::resource('attendance', App\Http\Controllers\Instructor\AttendanceController::class)
+            //     ->names('attendance');
+
+        });
+
+    // ========================================================
+
+
+    // ========================================================
+    //              Administrator
+    // ========================================================
+    Route::prefix('admin')
+        ->as('admin.')
+        ->middleware([
+            'auth',
+            'verified',
+            'password.confirm',
+            'can:access-admin-page',
+            // 'throttle:5,1',
+        ])
+        ->group(function () {
+
+            /*
+            |--------------------------------------------------------------------------
+            | User Management
+            |--------------------------------------------------------------------------
+            */
+            Route::resource('user-management', UserManagementController::class);
+            Route::post('users/bulk-delete', [UserManagementController::class, 'bulkDestroy'])
+                ->name('user-management.bulk-destroy');
+            Route::patch('users/{user}/role', [UserManagementController::class, 'updateRole'])
+                ->name('users.role');
+
+            /*
+            |--------------------------------------------------------------------------
+            | System & Telemetry (READ / SAFE)
+            |--------------------------------------------------------------------------
+            */
+            Route::controller(SystemAdministratorController::class)->group(function () {
+                // Health
+                Route::get('health/storage', 'getStorageHealth')->name('health.storage');
+                Route::get('health/database', 'getDatabaseHealth')->name('health.database');
+
+                // Telemetry
+                Route::get('telemetry/system', 'getSystemInfo')->name('telemetry.system');
+                Route::get('telemetry/database', 'getDatabaseHealth')->name('telemetry.db');
+                Route::get('telemetry/storage', 'getStorageHealth')->name('telemetry.storage');
+
+                // Logs
+                Route::post('logs/clear', 'clearLogs')->name('logs.clear');
+
+                // Artisan (WHITELISTED)
+                Route::post('artisan/{command}', 'runArtisan')->name('artisan.run');
+            });
+
+            /*
+            |--------------------------------------------------------------------------
+            | Maintenance Mode
+            |--------------------------------------------------------------------------
+            */
+            Route::post('maintenance/on', function () {
+                Artisan::call('down', ['--secret' => 'admin-access']);
+                return response()->json(['status' => 'Maintenance mode ON']);
+            });
+
+            Route::post('maintenance/off', function () {
+                Artisan::call('up');
+                return response()->json(['status' => 'Maintenance mode OFF']);
+            });
+
+            /*
+            |--------------------------------------------------------------------------
+            | Queue Management
+            |--------------------------------------------------------------------------
+            */
+            Route::post('queue/restart', fn() => Artisan::call('queue:restart'))
+                ->name('queue.restart');
+
+            Route::get(
+                'queue/failed',
+                fn() =>
+                DB::table('failed_jobs')->latest()->limit(50)->get()
+            )->name('queue.failed');
+
+            Route::post('queue/flush', fn() => Artisan::call('queue:flush'))
+                ->name('queue.flush');
+
+            /*
+        |--------------------------------------------------------------------------
+        | Logs (READ)
+        |--------------------------------------------------------------------------
+        */
+            Route::get('logs/size', function () {
+                $log = storage_path('logs/laravel.log');
+
+                return file_exists($log)
+                    ? number_format(filesize($log) / 1024 / 1024, 2) . ' MB'
+                    : 'Log file not found';
+            })->name('logs.size');
+        });
+    // ========================================================
+
 
 
     Route::get(
@@ -397,16 +239,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     )->where('path', '.*')
         ->middleware('auth')
         ->name('files.show');
-
-    // Route::get('/files/{path}', function ($path) {
-    //     $path = str_replace('..', '', $path); // security
-
-    //     if (!Storage::disk('private')->exists($path)) {
-    //         abort(404);
-    //     }
-
-    //     return Storage::disk('private')->response($path);
-    // })->where('path', '.*')->name('files.show');
 });
 
 require __DIR__ . '/settings.php';

@@ -157,7 +157,7 @@ callback.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     callback.form = callbackForm
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::handleCredential
- * @see app/Http/Controllers/Auth/GoogleController.php:55
+ * @see app/Http/Controllers/Auth/GoogleController.php:68
  * @route '/auth/google/callback'
  */
 export const handleCredential = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -172,7 +172,7 @@ handleCredential.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::handleCredential
- * @see app/Http/Controllers/Auth/GoogleController.php:55
+ * @see app/Http/Controllers/Auth/GoogleController.php:68
  * @route '/auth/google/callback'
  */
 handleCredential.url = (options?: RouteQueryOptions) => {
@@ -181,7 +181,7 @@ handleCredential.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::handleCredential
- * @see app/Http/Controllers/Auth/GoogleController.php:55
+ * @see app/Http/Controllers/Auth/GoogleController.php:68
  * @route '/auth/google/callback'
  */
 handleCredential.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -191,7 +191,7 @@ handleCredential.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =
 
     /**
 * @see \App\Http\Controllers\Auth\GoogleController::handleCredential
- * @see app/Http/Controllers/Auth/GoogleController.php:55
+ * @see app/Http/Controllers/Auth/GoogleController.php:68
  * @route '/auth/google/callback'
  */
     const handleCredentialForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -201,7 +201,7 @@ handleCredential.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =
 
             /**
 * @see \App\Http\Controllers\Auth\GoogleController::handleCredential
- * @see app/Http/Controllers/Auth/GoogleController.php:55
+ * @see app/Http/Controllers/Auth/GoogleController.php:68
  * @route '/auth/google/callback'
  */
         handleCredentialForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -212,7 +212,7 @@ handleCredential.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =
     handleCredential.form = handleCredentialForm
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::showForcePassword
- * @see app/Http/Controllers/Auth/GoogleController.php:81
+ * @see app/Http/Controllers/Auth/GoogleController.php:94
  * @route '/force-password'
  */
 export const showForcePassword = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -227,7 +227,7 @@ showForcePassword.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::showForcePassword
- * @see app/Http/Controllers/Auth/GoogleController.php:81
+ * @see app/Http/Controllers/Auth/GoogleController.php:94
  * @route '/force-password'
  */
 showForcePassword.url = (options?: RouteQueryOptions) => {
@@ -236,7 +236,7 @@ showForcePassword.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::showForcePassword
- * @see app/Http/Controllers/Auth/GoogleController.php:81
+ * @see app/Http/Controllers/Auth/GoogleController.php:94
  * @route '/force-password'
  */
 showForcePassword.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -245,7 +245,7 @@ showForcePassword.get = (options?: RouteQueryOptions): RouteDefinition<'get'> =>
 })
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::showForcePassword
- * @see app/Http/Controllers/Auth/GoogleController.php:81
+ * @see app/Http/Controllers/Auth/GoogleController.php:94
  * @route '/force-password'
  */
 showForcePassword.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -255,7 +255,7 @@ showForcePassword.head = (options?: RouteQueryOptions): RouteDefinition<'head'> 
 
     /**
 * @see \App\Http\Controllers\Auth\GoogleController::showForcePassword
- * @see app/Http/Controllers/Auth/GoogleController.php:81
+ * @see app/Http/Controllers/Auth/GoogleController.php:94
  * @route '/force-password'
  */
     const showForcePasswordForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -265,7 +265,7 @@ showForcePassword.head = (options?: RouteQueryOptions): RouteDefinition<'head'> 
 
             /**
 * @see \App\Http\Controllers\Auth\GoogleController::showForcePassword
- * @see app/Http/Controllers/Auth/GoogleController.php:81
+ * @see app/Http/Controllers/Auth/GoogleController.php:94
  * @route '/force-password'
  */
         showForcePasswordForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -274,7 +274,7 @@ showForcePassword.head = (options?: RouteQueryOptions): RouteDefinition<'head'> 
         })
             /**
 * @see \App\Http\Controllers\Auth\GoogleController::showForcePassword
- * @see app/Http/Controllers/Auth/GoogleController.php:81
+ * @see app/Http/Controllers/Auth/GoogleController.php:94
  * @route '/force-password'
  */
         showForcePasswordForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -290,7 +290,7 @@ showForcePassword.head = (options?: RouteQueryOptions): RouteDefinition<'head'> 
     showForcePassword.form = showForcePasswordForm
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::storeForcePassword
- * @see app/Http/Controllers/Auth/GoogleController.php:88
+ * @see app/Http/Controllers/Auth/GoogleController.php:99
  * @route '/force-password'
  */
 export const storeForcePassword = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -305,7 +305,7 @@ storeForcePassword.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::storeForcePassword
- * @see app/Http/Controllers/Auth/GoogleController.php:88
+ * @see app/Http/Controllers/Auth/GoogleController.php:99
  * @route '/force-password'
  */
 storeForcePassword.url = (options?: RouteQueryOptions) => {
@@ -314,7 +314,7 @@ storeForcePassword.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::storeForcePassword
- * @see app/Http/Controllers/Auth/GoogleController.php:88
+ * @see app/Http/Controllers/Auth/GoogleController.php:99
  * @route '/force-password'
  */
 storeForcePassword.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -324,7 +324,7 @@ storeForcePassword.post = (options?: RouteQueryOptions): RouteDefinition<'post'>
 
     /**
 * @see \App\Http\Controllers\Auth\GoogleController::storeForcePassword
- * @see app/Http/Controllers/Auth/GoogleController.php:88
+ * @see app/Http/Controllers/Auth/GoogleController.php:99
  * @route '/force-password'
  */
     const storeForcePasswordForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -334,7 +334,7 @@ storeForcePassword.post = (options?: RouteQueryOptions): RouteDefinition<'post'>
 
             /**
 * @see \App\Http\Controllers\Auth\GoogleController::storeForcePassword
- * @see app/Http/Controllers/Auth/GoogleController.php:88
+ * @see app/Http/Controllers/Auth/GoogleController.php:99
  * @route '/force-password'
  */
         storeForcePasswordForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

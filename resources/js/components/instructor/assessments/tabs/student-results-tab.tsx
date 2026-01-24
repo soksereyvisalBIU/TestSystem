@@ -208,7 +208,7 @@ export default function StudentResultsTab({
                                             <Search className="h-8 w-8" />
                                         </div>
                                         <p className="font-bold text-title">No matching students found</p>
-                                        <p className="text-xs text-description max-w-[200px] mx-auto">
+                                        <p className="text-xs text-description mx-auto">
                                             Try searching by full name or specific BELTEI student email.
                                         </p>
                                     </div>

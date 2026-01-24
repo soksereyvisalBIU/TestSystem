@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
+// use App\Enum\UserRole;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Enum\UserRole;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
-use Spatie\Permission\Traits\HasRoles;
+// use Spatie\Permission\Traits\HasRoles;
 
 // class User extends Authenticatable implements MustVerifyEmail
 class User extends Authenticatable
@@ -44,6 +44,7 @@ class User extends Authenticatable
         'two_factor_secret',
         'two_factor_recovery_codes',
         'remember_token',
+        'pivot'
     ];
 
     /**
@@ -65,14 +66,14 @@ class User extends Authenticatable
 
     public function studentAssessmentAttempt()
     {
-        // return $this->belongsToMany(
-        //     StudentAssessment::class,
-        //     'student_assessment_attempts',
-        //     'assessment_id', // pivot FK to assessment
-        //     'user_id',        // pivot FK to user
-        // )
-        //     ->withPivot(['status', 'started_at', 'completed_at'])
-        //     ->withTimestamps();
+        return $this->belongsToMany(
+            StudentAssessment::class,
+            'student_assessment_attempts',
+            'user_id',        // pivot FK to user
+            'assessment_id', // pivot FK to assessment
+        )
+            ->withPivot(['status', 'started_at', 'completed_at'])
+            ->withTimestamps();
     }
 
 
@@ -87,9 +88,6 @@ class User extends Authenticatable
             'classroom_id'
         );
     }
-
-
-
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
@@ -97,6 +95,10 @@ class User extends Authenticatable
 
     // ======== new relations ========
     public function classes()
+    {
+        return $this->hasMany(Classroom::class, 'creator_id');
+    }
+    public function ownClassrooms()
     {
         return $this->hasMany(Classroom::class, 'creator_id');
     }
@@ -129,41 +131,6 @@ class User extends Authenticatable
         //  ->withTimestamps();
     }
 
-    public function StudentCourse()
-    {
-        return $this->hasMany(StudentCourse::class, 'student_id');
-    }
-    public function courses()
-    {
-        return $this->hasMany(Course::class, 'creator_id');
-    }
-
-    public function assessments()
-    {
-        return $this->hasMany(Assessment::class, 'created_by');
-    }
-
-    //
-    public function studentCourses()
-    {
-        return $this->hasMany(StudentCourse::class, 'student_id');
-    }
-
-    public function enrolledCourses()
-    {
-        return $this->belongsToMany(Course::class, 'student_courses', 'student_id', 'course_id');
-    }
-
-    public function createdAssessments()
-    {
-        return $this->hasMany(Assessment::class, 'created_by');
-    }
-
-    public function createdCourses()
-    {
-        return $this->hasMany(Course::class, 'created_by');
-    }
-
     public function answers()
     {
         return $this->hasMany(Answer::class, 'student_id');
@@ -179,6 +146,44 @@ class User extends Authenticatable
         return $this->hasOne(StudentCourse::class, 'student_id')
             ->where('course_id', $courseId);
     }
+
+    //=============================================
+
+
+    // public function StudentCourse()
+    // {
+    //     return $this->hasMany(StudentCourse::class, 'student_id');
+    // }
+    // public function courses()
+    // {
+    //     return $this->hasMany(Course::class, 'creator_id');
+    // }
+
+    // public function assessments()
+    // {
+    //     return $this->hasMany(Assessment::class, 'created_by');
+    // }
+
+    //
+    // public function studentCourses()
+    // {
+    //     return $this->hasMany(StudentCourse::class, 'student_id');
+    // }
+
+    // public function enrolledCourses()
+    // {
+    //     return $this->belongsToMany(Course::class, 'student_courses', 'student_id', 'course_id');
+    // }
+
+    // public function createdAssessments()
+    // {
+    //     return $this->hasMany(Assessment::class, 'created_by');
+    // }
+
+    // public function createdCourses()
+    // {
+    //     return $this->hasMany(Course::class, 'created_by');
+    // }
 
     // public function getStudentCourseInCourseAttribute()
     // {

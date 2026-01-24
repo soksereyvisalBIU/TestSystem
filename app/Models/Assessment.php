@@ -19,9 +19,10 @@ class Assessment extends Model
         'created_by',
     ];
 
-    public function classroom(){
+    public function classroom()
+    {
         // return $this->hasOneThrough('subject_assessments' , );
-        
+
     }
     public function studentAssessment()
     {
@@ -39,13 +40,6 @@ class Assessment extends Model
 
     public function subjects()
     {
-
-        // return $this->belongsTo(
-        //     Subject::class,
-        //     'subject_assessment',     // pivot table
-        //     'assessment_id',          // FK on pivot
-        //     'subject_id'              // FK on pivot
-        // );
         return $this->belongsToMany(
             Subject::class,
             'subject_assessment',     // pivot table
@@ -80,6 +74,25 @@ class Assessment extends Model
             ->withPivot(['score', 'attempted_amount'])
             ->withTimestamps();
     }
+
+    public function studentAttempt()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'student_assessment',
+            'assessment_id',
+            'user_id'
+        )
+            ->withPivot(['score', 'attempted_amount'])
+            ->with([
+                'assessmentAttempts' => function ($q) {
+                    $q->where('assessment_id', $this->id)
+                        ->latest('started_at');
+                }
+            ]);
+    }
+
+
     public function student($studentId)
     {
         return $this->belongsToMany(
@@ -92,6 +105,8 @@ class Assessment extends Model
             ->withPivot(['score', 'attempted_amount'])
             ->withTimestamps();
     }
+
+
 
 
     public function attempts()

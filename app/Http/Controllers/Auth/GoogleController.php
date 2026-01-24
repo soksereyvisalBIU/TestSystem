@@ -24,32 +24,45 @@ class GoogleController extends Controller
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
 
-            $user = User::updateOrCreate(
-                ['email' => $googleUser->email],
-                [
-                    'name' => $googleUser->name,
-                    'google_id' => $googleUser->id,
-                    'avatar' => $googleUser->avatar,
-                    'password' => bcrypt(str()->random(16)) // Security: Use random pass
-                ]
-            );
+            $user = User::where('email', $googleUser->getEmail())->first();
 
+            if (!$user) {
+                // ✅ Register with Google
+                $user = User::create([
+                    'name'      => $googleUser->getName(),
+                    'email'     => $googleUser->getEmail(),
+                    'google_id' => $googleUser->getId(),
+                    'avatar'    => $googleUser->getAvatar(),
+                    'password'  => bcrypt(str()->random(24)), // temp password
+                ]);
+            } else {
+                // ✅ Login OR link Google account
+                if (!$user->google_id) {
+                    $user->update([
+                        'google_id' => $googleUser->getId(),
+                    ]);
+                }
 
-            Auth::login($user, true); // true = remember user
-            // Force password change
-            if ($user->google_id && !$user->password_changed_at) {
+                // Always keep avatar fresh (optional)
+                $user->update([
+                    'avatar' => $googleUser->getAvatar(),
+                ]);
+            }
+
+            Auth::login($user, true);
+
+            // 🔐 Force password setup if user never set one
+            if (!$user->password_changed_at) {
                 return redirect()->route('password.force');
             }
 
             return redirect()->intended('/dashboard');
-
-            // return view('auth.callback', ['status' => 'success']);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return redirect()->route('login')
                 ->withErrors(['email' => 'Google authentication failed.']);
-            // return view('auth.callback', ['status' => 'error']);
         }
     }
+
 
 
     public function handleCredential(Request $request)
@@ -80,8 +93,6 @@ class GoogleController extends Controller
 
     public function showForcePassword()
     {
-        // return view('auth.force-password');
-        // return inertia('Auth/ForcePassword');
         return Inertia::render('auth/force-password');
     }
 

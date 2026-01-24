@@ -57,9 +57,9 @@ export default function QuestionManager({
     };
 
     return (
-        <div className=" flex animate-in flex-col gap-6 p-4 duration-700 fade-in lg:flex-row bg-background">
+        <div className="container max-w-7xl mx-auto flex animate-in flex-col gap-6 p-4 duration-700 fade-in lg:flex-row bg-background">
             {/* Main Content: Question List */}
-            <div className="min-w-0 flex-1 overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+            <div className=" flex-1 overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
                 <div className="p-6 space-y-4">
                     <QuestionActions
                         onAdd={() => setModalOpen(true)}

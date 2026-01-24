@@ -67,7 +67,7 @@ export default function SubjectIndex({
         >
             <Head title="Classes" />
 
-            <div className="space-y-8 p-4 md:p-8">
+            <div className="container mx-auto space-y-8 p-4 md:p-8">
                 <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                     <div className="space-y-1">
                         <div className="flex items-center gap-3">

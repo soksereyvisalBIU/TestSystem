@@ -79,7 +79,7 @@ login.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     login.form = loginForm
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::callback
- * @see app/Http/Controllers/Auth/GoogleController.php:55
+ * @see app/Http/Controllers/Auth/GoogleController.php:68
  * @route '/auth/google/callback'
  */
 export const callback = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -94,7 +94,7 @@ callback.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::callback
- * @see app/Http/Controllers/Auth/GoogleController.php:55
+ * @see app/Http/Controllers/Auth/GoogleController.php:68
  * @route '/auth/google/callback'
  */
 callback.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ callback.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::callback
- * @see app/Http/Controllers/Auth/GoogleController.php:55
+ * @see app/Http/Controllers/Auth/GoogleController.php:68
  * @route '/auth/google/callback'
  */
 callback.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -113,7 +113,7 @@ callback.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\Auth\GoogleController::callback
- * @see app/Http/Controllers/Auth/GoogleController.php:55
+ * @see app/Http/Controllers/Auth/GoogleController.php:68
  * @route '/auth/google/callback'
  */
     const callbackForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -123,7 +123,7 @@ callback.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\Auth\GoogleController::callback
- * @see app/Http/Controllers/Auth/GoogleController.php:55
+ * @see app/Http/Controllers/Auth/GoogleController.php:68
  * @route '/auth/google/callback'
  */
         callbackForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

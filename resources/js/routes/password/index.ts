@@ -443,7 +443,7 @@ confirmation.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     confirmation.form = confirmationForm
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::force
- * @see app/Http/Controllers/Auth/GoogleController.php:81
+ * @see app/Http/Controllers/Auth/GoogleController.php:94
  * @route '/force-password'
  */
 export const force = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -458,7 +458,7 @@ force.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::force
- * @see app/Http/Controllers/Auth/GoogleController.php:81
+ * @see app/Http/Controllers/Auth/GoogleController.php:94
  * @route '/force-password'
  */
 force.url = (options?: RouteQueryOptions) => {
@@ -467,7 +467,7 @@ force.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::force
- * @see app/Http/Controllers/Auth/GoogleController.php:81
+ * @see app/Http/Controllers/Auth/GoogleController.php:94
  * @route '/force-password'
  */
 force.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -476,7 +476,7 @@ force.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Auth\GoogleController::force
- * @see app/Http/Controllers/Auth/GoogleController.php:81
+ * @see app/Http/Controllers/Auth/GoogleController.php:94
  * @route '/force-password'
  */
 force.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -486,7 +486,7 @@ force.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Auth\GoogleController::force
- * @see app/Http/Controllers/Auth/GoogleController.php:81
+ * @see app/Http/Controllers/Auth/GoogleController.php:94
  * @route '/force-password'
  */
     const forceForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -496,7 +496,7 @@ force.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Auth\GoogleController::force
- * @see app/Http/Controllers/Auth/GoogleController.php:81
+ * @see app/Http/Controllers/Auth/GoogleController.php:94
  * @route '/force-password'
  */
         forceForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -505,7 +505,7 @@ force.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Auth\GoogleController::force
- * @see app/Http/Controllers/Auth/GoogleController.php:81
+ * @see app/Http/Controllers/Auth/GoogleController.php:94
  * @route '/force-password'
  */
         forceForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

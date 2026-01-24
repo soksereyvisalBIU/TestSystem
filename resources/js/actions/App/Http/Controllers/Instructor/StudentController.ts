@@ -373,7 +373,7 @@ show.head = (args: { class: string | number, subject: string | number, assessmen
     show.form = showForm
 /**
 * @see \App\Http\Controllers\Instructor\StudentController::edit
- * @see app/Http/Controllers/Instructor/StudentController.php:146
+ * @see app/Http/Controllers/Instructor/StudentController.php:147
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}/edit'
  */
 export const edit = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -388,7 +388,7 @@ edit.definition = {
 
 /**
 * @see \App\Http\Controllers\Instructor\StudentController::edit
- * @see app/Http/Controllers/Instructor/StudentController.php:146
+ * @see app/Http/Controllers/Instructor/StudentController.php:147
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}/edit'
  */
 edit.url = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions) => {
@@ -420,7 +420,7 @@ edit.url = (args: { class: string | number, subject: string | number, assessment
 
 /**
 * @see \App\Http\Controllers\Instructor\StudentController::edit
- * @see app/Http/Controllers/Instructor/StudentController.php:146
+ * @see app/Http/Controllers/Instructor/StudentController.php:147
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}/edit'
  */
 edit.get = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -429,7 +429,7 @@ edit.get = (args: { class: string | number, subject: string | number, assessment
 })
 /**
 * @see \App\Http\Controllers\Instructor\StudentController::edit
- * @see app/Http/Controllers/Instructor/StudentController.php:146
+ * @see app/Http/Controllers/Instructor/StudentController.php:147
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}/edit'
  */
 edit.head = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -439,7 +439,7 @@ edit.head = (args: { class: string | number, subject: string | number, assessmen
 
     /**
 * @see \App\Http\Controllers\Instructor\StudentController::edit
- * @see app/Http/Controllers/Instructor/StudentController.php:146
+ * @see app/Http/Controllers/Instructor/StudentController.php:147
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}/edit'
  */
     const editForm = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -449,7 +449,7 @@ edit.head = (args: { class: string | number, subject: string | number, assessmen
 
             /**
 * @see \App\Http\Controllers\Instructor\StudentController::edit
- * @see app/Http/Controllers/Instructor/StudentController.php:146
+ * @see app/Http/Controllers/Instructor/StudentController.php:147
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}/edit'
  */
         editForm.get = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -458,7 +458,7 @@ edit.head = (args: { class: string | number, subject: string | number, assessmen
         })
             /**
 * @see \App\Http\Controllers\Instructor\StudentController::edit
- * @see app/Http/Controllers/Instructor/StudentController.php:146
+ * @see app/Http/Controllers/Instructor/StudentController.php:147
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}/edit'
  */
         editForm.head = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -474,7 +474,7 @@ edit.head = (args: { class: string | number, subject: string | number, assessmen
     edit.form = editForm
 /**
 * @see \App\Http\Controllers\Instructor\StudentController::update
- * @see app/Http/Controllers/Instructor/StudentController.php:154
+ * @see app/Http/Controllers/Instructor/StudentController.php:155
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}'
  */
 export const update = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -489,7 +489,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Instructor\StudentController::update
- * @see app/Http/Controllers/Instructor/StudentController.php:154
+ * @see app/Http/Controllers/Instructor/StudentController.php:155
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}'
  */
 update.url = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions) => {
@@ -521,7 +521,7 @@ update.url = (args: { class: string | number, subject: string | number, assessme
 
 /**
 * @see \App\Http\Controllers\Instructor\StudentController::update
- * @see app/Http/Controllers/Instructor/StudentController.php:154
+ * @see app/Http/Controllers/Instructor/StudentController.php:155
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}'
  */
 update.put = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -530,7 +530,7 @@ update.put = (args: { class: string | number, subject: string | number, assessme
 })
 /**
 * @see \App\Http\Controllers\Instructor\StudentController::update
- * @see app/Http/Controllers/Instructor/StudentController.php:154
+ * @see app/Http/Controllers/Instructor/StudentController.php:155
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}'
  */
 update.patch = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -540,7 +540,7 @@ update.patch = (args: { class: string | number, subject: string | number, assess
 
     /**
 * @see \App\Http\Controllers\Instructor\StudentController::update
- * @see app/Http/Controllers/Instructor/StudentController.php:154
+ * @see app/Http/Controllers/Instructor/StudentController.php:155
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}'
  */
     const updateForm = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -555,7 +555,7 @@ update.patch = (args: { class: string | number, subject: string | number, assess
 
             /**
 * @see \App\Http\Controllers\Instructor\StudentController::update
- * @see app/Http/Controllers/Instructor/StudentController.php:154
+ * @see app/Http/Controllers/Instructor/StudentController.php:155
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}'
  */
         updateForm.put = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -569,7 +569,7 @@ update.patch = (args: { class: string | number, subject: string | number, assess
         })
             /**
 * @see \App\Http\Controllers\Instructor\StudentController::update
- * @see app/Http/Controllers/Instructor/StudentController.php:154
+ * @see app/Http/Controllers/Instructor/StudentController.php:155
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}'
  */
         updateForm.patch = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -585,7 +585,7 @@ update.patch = (args: { class: string | number, subject: string | number, assess
     update.form = updateForm
 /**
 * @see \App\Http\Controllers\Instructor\StudentController::destroy
- * @see app/Http/Controllers/Instructor/StudentController.php:162
+ * @see app/Http/Controllers/Instructor/StudentController.php:163
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}'
  */
 export const destroy = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -600,7 +600,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Instructor\StudentController::destroy
- * @see app/Http/Controllers/Instructor/StudentController.php:162
+ * @see app/Http/Controllers/Instructor/StudentController.php:163
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}'
  */
 destroy.url = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions) => {
@@ -632,7 +632,7 @@ destroy.url = (args: { class: string | number, subject: string | number, assessm
 
 /**
 * @see \App\Http\Controllers\Instructor\StudentController::destroy
- * @see app/Http/Controllers/Instructor/StudentController.php:162
+ * @see app/Http/Controllers/Instructor/StudentController.php:163
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}'
  */
 destroy.delete = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -642,7 +642,7 @@ destroy.delete = (args: { class: string | number, subject: string | number, asse
 
     /**
 * @see \App\Http\Controllers\Instructor\StudentController::destroy
- * @see app/Http/Controllers/Instructor/StudentController.php:162
+ * @see app/Http/Controllers/Instructor/StudentController.php:163
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}'
  */
     const destroyForm = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -657,7 +657,7 @@ destroy.delete = (args: { class: string | number, subject: string | number, asse
 
             /**
 * @see \App\Http\Controllers\Instructor\StudentController::destroy
- * @see app/Http/Controllers/Instructor/StudentController.php:162
+ * @see app/Http/Controllers/Instructor/StudentController.php:163
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/student/{student}'
  */
         destroyForm.delete = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -673,7 +673,7 @@ destroy.delete = (args: { class: string | number, subject: string | number, asse
     destroy.form = destroyForm
 /**
 * @see \App\Http\Controllers\Instructor\StudentController::check
- * @see app/Http/Controllers/Instructor/StudentController.php:168
+ * @see app/Http/Controllers/Instructor/StudentController.php:169
  * @route '/instructor/classes/{class}/subject/{subject}/assessment/{assessment}/student/{student}/check'
  */
 export const check = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -688,7 +688,7 @@ check.definition = {
 
 /**
 * @see \App\Http\Controllers\Instructor\StudentController::check
- * @see app/Http/Controllers/Instructor/StudentController.php:168
+ * @see app/Http/Controllers/Instructor/StudentController.php:169
  * @route '/instructor/classes/{class}/subject/{subject}/assessment/{assessment}/student/{student}/check'
  */
 check.url = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions) => {
@@ -720,7 +720,7 @@ check.url = (args: { class: string | number, subject: string | number, assessmen
 
 /**
 * @see \App\Http\Controllers\Instructor\StudentController::check
- * @see app/Http/Controllers/Instructor/StudentController.php:168
+ * @see app/Http/Controllers/Instructor/StudentController.php:169
  * @route '/instructor/classes/{class}/subject/{subject}/assessment/{assessment}/student/{student}/check'
  */
 check.get = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -729,7 +729,7 @@ check.get = (args: { class: string | number, subject: string | number, assessmen
 })
 /**
 * @see \App\Http\Controllers\Instructor\StudentController::check
- * @see app/Http/Controllers/Instructor/StudentController.php:168
+ * @see app/Http/Controllers/Instructor/StudentController.php:169
  * @route '/instructor/classes/{class}/subject/{subject}/assessment/{assessment}/student/{student}/check'
  */
 check.head = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -739,7 +739,7 @@ check.head = (args: { class: string | number, subject: string | number, assessme
 
     /**
 * @see \App\Http\Controllers\Instructor\StudentController::check
- * @see app/Http/Controllers/Instructor/StudentController.php:168
+ * @see app/Http/Controllers/Instructor/StudentController.php:169
  * @route '/instructor/classes/{class}/subject/{subject}/assessment/{assessment}/student/{student}/check'
  */
     const checkForm = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -749,7 +749,7 @@ check.head = (args: { class: string | number, subject: string | number, assessme
 
             /**
 * @see \App\Http\Controllers\Instructor\StudentController::check
- * @see app/Http/Controllers/Instructor/StudentController.php:168
+ * @see app/Http/Controllers/Instructor/StudentController.php:169
  * @route '/instructor/classes/{class}/subject/{subject}/assessment/{assessment}/student/{student}/check'
  */
         checkForm.get = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -758,7 +758,7 @@ check.head = (args: { class: string | number, subject: string | number, assessme
         })
             /**
 * @see \App\Http\Controllers\Instructor\StudentController::check
- * @see app/Http/Controllers/Instructor/StudentController.php:168
+ * @see app/Http/Controllers/Instructor/StudentController.php:169
  * @route '/instructor/classes/{class}/subject/{subject}/assessment/{assessment}/student/{student}/check'
  */
         checkForm.head = (args: { class: string | number, subject: string | number, assessment: string | number, student: string | number } | [classParam: string | number, subject: string | number, assessment: string | number, student: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
