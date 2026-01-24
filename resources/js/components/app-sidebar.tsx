@@ -73,7 +73,7 @@ export function AppSidebar() {
         const groups = [
             {
                 label: 'Platform',
-                items: [{ title: 'Dashboard', href: '', icon: LayoutGrid }],
+                items: [{ title: 'Dashboard', href: dashboard(), icon: LayoutGrid }],
             },
 
             // Admin
@@ -147,6 +147,11 @@ export function AppSidebar() {
                                 }),
                             },
                         ],
+                    },
+                    {
+                        title: 'Attendance',
+                        icon: ClipboardCheck,
+                        href: route('student.attendance.index'),
                     },
                     {
                         title: 'Assessments',

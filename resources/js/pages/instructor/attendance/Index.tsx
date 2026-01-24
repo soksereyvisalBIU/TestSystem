@@ -148,8 +148,8 @@
                                         size={240}
                                         level="H"
                                         imageSettings={{
-                                            src: '/logo.png', // Replace with actual logo if needed
-                                            height: 40,
+                                            src: '/logo/beltei.svg', // Replace with actual logo if needed
+                                            height: 45,
                                             width: 40,
                                             excavate: true,
                                         }}

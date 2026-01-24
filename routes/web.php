@@ -16,22 +16,22 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::get('/test-https', function () {
-    return [
-        'scheme' => request()->getScheme(),
-        'secure' => request()->isSecure(),
-        'url'    => url()->current(),
-    ];
-});
-Route::get('/debug-proxy', function () {
-    return [
-        'X-Forwarded-Proto' => request()->header('x-forwarded-proto'),
-        'X-Forwarded-For'   => request()->header('x-forwarded-for'),
-        'scheme'            => request()->getScheme(),
-        'secure'            => request()->isSecure(),
-        'server_https'      => $_SERVER['HTTPS'] ?? null,
-    ];
-});
+// Route::get('/test-https', function () {
+//     return [
+//         'scheme' => request()->getScheme(),
+//         'secure' => request()->isSecure(),
+//         'url'    => url()->current(),
+//     ];
+// });
+// Route::get('/debug-proxy', function () {
+//     return [
+//         'X-Forwarded-Proto' => request()->header('x-forwarded-proto'),
+//         'X-Forwarded-For'   => request()->header('x-forwarded-for'),
+//         'scheme'            => request()->getScheme(),
+//         'secure'            => request()->isSecure(),
+//         'server_https'      => $_SERVER['HTTPS'] ?? null,
+//     ];
+// });
 
 
 Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.login');
