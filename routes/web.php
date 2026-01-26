@@ -89,9 +89,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('classes.subjects.assessments.attempt.upload-chunk');
 
 
-        Route::get('attendance', function(){
-            return Inertia::render('student/attendance/Index');
-        })->name('attendance.index');
+
+        Route::resource('attendance' , App\Http\Controllers\Student\AttendanceController::class)
+            ->names('attendance');
     });
 
     // =======================================================
@@ -124,9 +124,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             // Teacher
             Route::get('attendance', [App\Http\Controllers\Instructor\AttendanceController::class, 'index'])->name('attendance.index');
-
-
-            Route::get('/attendance/session/{session}', [App\Http\Controllers\Instructor\AttendanceController::class, 'show']);
+            Route::get('/attendance/request', [App\Http\Controllers\Instructor\AttendanceController::class, 'request'])->name('attendance.qr');
             Route::get('/attendance/session/{session}', [App\Http\Controllers\Instructor\AttendanceController::class, 'show']);
 
             // Route::resource('attendance', App\Http\Controllers\Instructor\AttendanceController::class)

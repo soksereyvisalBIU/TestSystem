@@ -55,7 +55,7 @@ clear.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     
     clear.form = clearForm
 /**
- * @see routes/web.php:224
+ * @see routes/web.php:222
  * @route '/admin/logs/size'
  */
 export const size = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -69,7 +69,7 @@ size.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/web.php:224
+ * @see routes/web.php:222
  * @route '/admin/logs/size'
  */
 size.url = (options?: RouteQueryOptions) => {
@@ -77,7 +77,7 @@ size.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/web.php:224
+ * @see routes/web.php:222
  * @route '/admin/logs/size'
  */
 size.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -85,7 +85,7 @@ size.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
- * @see routes/web.php:224
+ * @see routes/web.php:222
  * @route '/admin/logs/size'
  */
 size.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -94,7 +94,7 @@ size.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
- * @see routes/web.php:224
+ * @see routes/web.php:222
  * @route '/admin/logs/size'
  */
     const sizeForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -103,7 +103,7 @@ size.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
- * @see routes/web.php:224
+ * @see routes/web.php:222
  * @route '/admin/logs/size'
  */
         sizeForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -111,7 +111,7 @@ size.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
             /**
- * @see routes/web.php:224
+ * @see routes/web.php:222
  * @route '/admin/logs/size'
  */
         sizeForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

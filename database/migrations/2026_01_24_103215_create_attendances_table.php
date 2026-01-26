@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('student_id')->nullable();
             $table->timestamp('scanned_at');
             $table->string('ip_address');
-            $table->enum('status', ['present', 'late' , 'permission' , 'absent'])->default('absent');
+            $table->enum('status', ['present', 'late', 'permission', 'absent'])->default('absent');
             $table->timestamps();
         });
 
@@ -33,6 +33,16 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
+
+
+        Schema::create('attendance_logs', function ($table) {
+            $table->id();
+            $table->uuid('session_id');
+            $table->integer('student_id');
+            $table->timestamp('checked_in_at');
+            $table->string('distance')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**
@@ -42,5 +52,6 @@ return new class extends Migration
     {
         Schema::dropIfExists('attendances');
         Schema::dropIfExists('attendance_sessions');
+        Schema::dropIfExists('attendance_logs');
     }
 };

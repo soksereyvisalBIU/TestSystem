@@ -1,6 +1,6 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
 /**
- * @see routes/web.php:207
+ * @see routes/web.php:205
  * @route '/admin/queue/restart'
  */
 export const restart = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -14,7 +14,7 @@ restart.definition = {
 } satisfies RouteDefinition<["post"]>
 
 /**
- * @see routes/web.php:207
+ * @see routes/web.php:205
  * @route '/admin/queue/restart'
  */
 restart.url = (options?: RouteQueryOptions) => {
@@ -22,7 +22,7 @@ restart.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/web.php:207
+ * @see routes/web.php:205
  * @route '/admin/queue/restart'
  */
 restart.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -31,7 +31,7 @@ restart.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 })
 
     /**
- * @see routes/web.php:207
+ * @see routes/web.php:205
  * @route '/admin/queue/restart'
  */
     const restartForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -40,7 +40,7 @@ restart.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     })
 
             /**
- * @see routes/web.php:207
+ * @see routes/web.php:205
  * @route '/admin/queue/restart'
  */
         restartForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -50,7 +50,7 @@ restart.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     
     restart.form = restartForm
 /**
- * @see routes/web.php:212
+ * @see routes/web.php:210
  * @route '/admin/queue/failed'
  */
 export const failed = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -64,7 +64,7 @@ failed.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/web.php:212
+ * @see routes/web.php:210
  * @route '/admin/queue/failed'
  */
 failed.url = (options?: RouteQueryOptions) => {
@@ -72,7 +72,7 @@ failed.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/web.php:212
+ * @see routes/web.php:210
  * @route '/admin/queue/failed'
  */
 failed.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -80,7 +80,7 @@ failed.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
- * @see routes/web.php:212
+ * @see routes/web.php:210
  * @route '/admin/queue/failed'
  */
 failed.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -89,7 +89,7 @@ failed.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
- * @see routes/web.php:212
+ * @see routes/web.php:210
  * @route '/admin/queue/failed'
  */
     const failedForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -98,7 +98,7 @@ failed.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
- * @see routes/web.php:212
+ * @see routes/web.php:210
  * @route '/admin/queue/failed'
  */
         failedForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -106,7 +106,7 @@ failed.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
             /**
- * @see routes/web.php:212
+ * @see routes/web.php:210
  * @route '/admin/queue/failed'
  */
         failedForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -121,7 +121,7 @@ failed.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     
     failed.form = failedForm
 /**
- * @see routes/web.php:216
+ * @see routes/web.php:214
  * @route '/admin/queue/flush'
  */
 export const flush = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -135,7 +135,7 @@ flush.definition = {
 } satisfies RouteDefinition<["post"]>
 
 /**
- * @see routes/web.php:216
+ * @see routes/web.php:214
  * @route '/admin/queue/flush'
  */
 flush.url = (options?: RouteQueryOptions) => {
@@ -143,7 +143,7 @@ flush.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/web.php:216
+ * @see routes/web.php:214
  * @route '/admin/queue/flush'
  */
 flush.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -152,7 +152,7 @@ flush.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 })
 
     /**
- * @see routes/web.php:216
+ * @see routes/web.php:214
  * @route '/admin/queue/flush'
  */
     const flushForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -161,7 +161,7 @@ flush.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     })
 
             /**
- * @see routes/web.php:216
+ * @see routes/web.php:214
  * @route '/admin/queue/flush'
  */
         flushForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
