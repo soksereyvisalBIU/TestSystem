@@ -34,6 +34,16 @@ export default defineConfig({
     //     },
     // },
     
+    // server: {
+    //     host: true,
+    //     port: 5173,
+    //     hmr: {
+    //         host: '939db1d4a674.ngrok-free.app',
+    //         protocol: 'wss',
+    //     },
+    //     cors: true,
+    // },
+    
     esbuild: {
         jsx: 'automatic',
     },

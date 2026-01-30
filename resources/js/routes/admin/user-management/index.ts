@@ -215,7 +215,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
  * @see app/Http/Controllers/Admin/UserManagementController.php:86
  * @route '/admin/user-management/{user_management}'
  */
-export const show = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const show = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
@@ -230,7 +230,7 @@ show.definition = {
  * @see app/Http/Controllers/Admin/UserManagementController.php:86
  * @route '/admin/user-management/{user_management}'
  */
-show.url = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+show.url = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { user_management: args }
     }
@@ -263,7 +263,7 @@ show.url = (args: { user_management: number | { id: number } } | [user_managemen
  * @see app/Http/Controllers/Admin/UserManagementController.php:86
  * @route '/admin/user-management/{user_management}'
  */
-show.get = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+show.get = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
@@ -272,7 +272,7 @@ show.get = (args: { user_management: number | { id: number } } | [user_managemen
  * @see app/Http/Controllers/Admin/UserManagementController.php:86
  * @route '/admin/user-management/{user_management}'
  */
-show.head = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+show.head = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: show.url(args, options),
     method: 'head',
 })
@@ -282,7 +282,7 @@ show.head = (args: { user_management: number | { id: number } } | [user_manageme
  * @see app/Http/Controllers/Admin/UserManagementController.php:86
  * @route '/admin/user-management/{user_management}'
  */
-    const showForm = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const showForm = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: show.url(args, options),
         method: 'get',
     })
@@ -292,7 +292,7 @@ show.head = (args: { user_management: number | { id: number } } | [user_manageme
  * @see app/Http/Controllers/Admin/UserManagementController.php:86
  * @route '/admin/user-management/{user_management}'
  */
-        showForm.get = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        showForm.get = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: show.url(args, options),
             method: 'get',
         })
@@ -301,7 +301,7 @@ show.head = (args: { user_management: number | { id: number } } | [user_manageme
  * @see app/Http/Controllers/Admin/UserManagementController.php:86
  * @route '/admin/user-management/{user_management}'
  */
-        showForm.head = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        showForm.head = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: show.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
@@ -317,7 +317,7 @@ show.head = (args: { user_management: number | { id: number } } | [user_manageme
  * @see app/Http/Controllers/Admin/UserManagementController.php:124
  * @route '/admin/user-management/{user_management}/edit'
  */
-export const edit = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const edit = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
 })
@@ -332,7 +332,7 @@ edit.definition = {
  * @see app/Http/Controllers/Admin/UserManagementController.php:124
  * @route '/admin/user-management/{user_management}/edit'
  */
-edit.url = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+edit.url = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { user_management: args }
     }
@@ -365,7 +365,7 @@ edit.url = (args: { user_management: number | { id: number } } | [user_managemen
  * @see app/Http/Controllers/Admin/UserManagementController.php:124
  * @route '/admin/user-management/{user_management}/edit'
  */
-edit.get = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+edit.get = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
 })
@@ -374,7 +374,7 @@ edit.get = (args: { user_management: number | { id: number } } | [user_managemen
  * @see app/Http/Controllers/Admin/UserManagementController.php:124
  * @route '/admin/user-management/{user_management}/edit'
  */
-edit.head = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+edit.head = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: edit.url(args, options),
     method: 'head',
 })
@@ -384,7 +384,7 @@ edit.head = (args: { user_management: number | { id: number } } | [user_manageme
  * @see app/Http/Controllers/Admin/UserManagementController.php:124
  * @route '/admin/user-management/{user_management}/edit'
  */
-    const editForm = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const editForm = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: edit.url(args, options),
         method: 'get',
     })
@@ -394,7 +394,7 @@ edit.head = (args: { user_management: number | { id: number } } | [user_manageme
  * @see app/Http/Controllers/Admin/UserManagementController.php:124
  * @route '/admin/user-management/{user_management}/edit'
  */
-        editForm.get = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        editForm.get = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: edit.url(args, options),
             method: 'get',
         })
@@ -403,7 +403,7 @@ edit.head = (args: { user_management: number | { id: number } } | [user_manageme
  * @see app/Http/Controllers/Admin/UserManagementController.php:124
  * @route '/admin/user-management/{user_management}/edit'
  */
-        editForm.head = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        editForm.head = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: edit.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
@@ -419,7 +419,7 @@ edit.head = (args: { user_management: number | { id: number } } | [user_manageme
  * @see app/Http/Controllers/Admin/UserManagementController.php:131
  * @route '/admin/user-management/{user_management}'
  */
-export const update = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+export const update = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -434,7 +434,7 @@ update.definition = {
  * @see app/Http/Controllers/Admin/UserManagementController.php:131
  * @route '/admin/user-management/{user_management}'
  */
-update.url = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+update.url = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { user_management: args }
     }
@@ -467,7 +467,7 @@ update.url = (args: { user_management: number | { id: number } } | [user_managem
  * @see app/Http/Controllers/Admin/UserManagementController.php:131
  * @route '/admin/user-management/{user_management}'
  */
-update.put = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+update.put = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -476,7 +476,7 @@ update.put = (args: { user_management: number | { id: number } } | [user_managem
  * @see app/Http/Controllers/Admin/UserManagementController.php:131
  * @route '/admin/user-management/{user_management}'
  */
-update.patch = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+update.patch = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: update.url(args, options),
     method: 'patch',
 })
@@ -486,7 +486,7 @@ update.patch = (args: { user_management: number | { id: number } } | [user_manag
  * @see app/Http/Controllers/Admin/UserManagementController.php:131
  * @route '/admin/user-management/{user_management}'
  */
-    const updateForm = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    const updateForm = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
         action: update.url(args, {
                     [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                         _method: 'PUT',
@@ -501,7 +501,7 @@ update.patch = (args: { user_management: number | { id: number } } | [user_manag
  * @see app/Http/Controllers/Admin/UserManagementController.php:131
  * @route '/admin/user-management/{user_management}'
  */
-        updateForm.put = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        updateForm.put = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: update.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'PUT',
@@ -515,7 +515,7 @@ update.patch = (args: { user_management: number | { id: number } } | [user_manag
  * @see app/Http/Controllers/Admin/UserManagementController.php:131
  * @route '/admin/user-management/{user_management}'
  */
-        updateForm.patch = (args: { user_management: number | { id: number } } | [user_management: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        updateForm.patch = (args: { user_management: string | number | { id: string | number } } | [user_management: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: update.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'PATCH',

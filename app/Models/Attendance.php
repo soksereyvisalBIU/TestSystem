@@ -13,12 +13,23 @@ class Attendance extends Model
     // public $timestamps = false;
 
     protected $table = 'attendances';
+    // protected $fillable = [
+    //     'attendance_session_id',
+    //     'student_id',
+    //     'scanned_at',
+    //     'ip_address',
+    //     'status',
+    // ];
+
     protected $fillable = [
-        'attendance_session_id',
         'student_id',
-        'scanned_at',
-        'ip_address',
+        'schedule_id',
+        'check_in_time',
         'status',
+        'method',
+        'ip_address',
     ];
+
+
     
 }

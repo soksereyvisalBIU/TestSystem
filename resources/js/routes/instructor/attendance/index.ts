@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::index
- * @see app/Http/Controllers/Instructor/AttendanceController.php:15
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:20
  * @route '/instructor/attendance'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::index
- * @see app/Http/Controllers/Instructor/AttendanceController.php:15
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:20
  * @route '/instructor/attendance'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::index
- * @see app/Http/Controllers/Instructor/AttendanceController.php:15
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:20
  * @route '/instructor/attendance'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::index
- * @see app/Http/Controllers/Instructor/AttendanceController.php:15
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:20
  * @route '/instructor/attendance'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::index
- * @see app/Http/Controllers/Instructor/AttendanceController.php:15
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:20
  * @route '/instructor/attendance'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::index
- * @see app/Http/Controllers/Instructor/AttendanceController.php:15
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:20
  * @route '/instructor/attendance'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::index
- * @see app/Http/Controllers/Instructor/AttendanceController.php:15
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:20
  * @route '/instructor/attendance'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,22 +79,22 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::qr
- * @see app/Http/Controllers/Instructor/AttendanceController.php:20
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:56
  * @route '/instructor/attendance/request'
  */
-export const qr = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const qr = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: qr.url(options),
-    method: 'get',
+    method: 'post',
 })
 
 qr.definition = {
-    methods: ["get","head"],
+    methods: ["post"],
     url: '/instructor/attendance/request',
-} satisfies RouteDefinition<["get","head"]>
+} satisfies RouteDefinition<["post"]>
 
 /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::qr
- * @see app/Http/Controllers/Instructor/AttendanceController.php:20
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:56
  * @route '/instructor/attendance/request'
  */
 qr.url = (options?: RouteQueryOptions) => {
@@ -103,49 +103,104 @@ qr.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::qr
- * @see app/Http/Controllers/Instructor/AttendanceController.php:20
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:56
  * @route '/instructor/attendance/request'
  */
-qr.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+qr.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: qr.url(options),
-    method: 'get',
-})
-/**
-* @see \App\Http\Controllers\Instructor\AttendanceController::qr
- * @see app/Http/Controllers/Instructor/AttendanceController.php:20
- * @route '/instructor/attendance/request'
- */
-qr.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: qr.url(options),
-    method: 'head',
+    method: 'post',
 })
 
     /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::qr
- * @see app/Http/Controllers/Instructor/AttendanceController.php:20
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:56
  * @route '/instructor/attendance/request'
  */
-    const qrForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const qrForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
         action: qr.url(options),
-        method: 'get',
+        method: 'post',
     })
 
             /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::qr
- * @see app/Http/Controllers/Instructor/AttendanceController.php:20
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:56
  * @route '/instructor/attendance/request'
  */
-        qrForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        qrForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: qr.url(options),
+            method: 'post',
+        })
+    
+    qr.form = qrForm
+/**
+* @see \App\Http\Controllers\Instructor\AttendanceController::requestStudent
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:35
+ * @route '/instructor/attendance/request-student'
+ */
+export const requestStudent = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: requestStudent.url(options),
+    method: 'get',
+})
+
+requestStudent.definition = {
+    methods: ["get","head"],
+    url: '/instructor/attendance/request-student',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\Instructor\AttendanceController::requestStudent
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:35
+ * @route '/instructor/attendance/request-student'
+ */
+requestStudent.url = (options?: RouteQueryOptions) => {
+    return requestStudent.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Instructor\AttendanceController::requestStudent
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:35
+ * @route '/instructor/attendance/request-student'
+ */
+requestStudent.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: requestStudent.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\Instructor\AttendanceController::requestStudent
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:35
+ * @route '/instructor/attendance/request-student'
+ */
+requestStudent.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: requestStudent.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\Instructor\AttendanceController::requestStudent
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:35
+ * @route '/instructor/attendance/request-student'
+ */
+    const requestStudentForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: requestStudent.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\Instructor\AttendanceController::requestStudent
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:35
+ * @route '/instructor/attendance/request-student'
+ */
+        requestStudentForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: requestStudent.url(options),
             method: 'get',
         })
             /**
-* @see \App\Http\Controllers\Instructor\AttendanceController::qr
- * @see app/Http/Controllers/Instructor/AttendanceController.php:20
- * @route '/instructor/attendance/request'
+* @see \App\Http\Controllers\Instructor\AttendanceController::requestStudent
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:35
+ * @route '/instructor/attendance/request-student'
  */
-        qrForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: qr.url({
+        requestStudentForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: requestStudent.url({
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
                             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -154,10 +209,11 @@ qr.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
     
-    qr.form = qrForm
+    requestStudent.form = requestStudentForm
 const attendance = {
     index: Object.assign(index, index),
 qr: Object.assign(qr, qr),
+requestStudent: Object.assign(requestStudent, requestStudent),
 }
 
 export default attendance

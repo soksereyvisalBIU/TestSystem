@@ -376,7 +376,7 @@ show.head = (args: { class: string | number, subject: string | number, assessmen
  * @see app/Http/Controllers/Instructor/QuestionController.php:204
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}/edit'
  */
-export const edit = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const edit = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
 })
@@ -391,7 +391,7 @@ edit.definition = {
  * @see app/Http/Controllers/Instructor/QuestionController.php:204
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}/edit'
  */
-edit.url = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions) => {
+edit.url = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions) => {
     if (Array.isArray(args)) {
         args = {
                     class: args[0],
@@ -425,7 +425,7 @@ edit.url = (args: { class: string | number, subject: string | number, assessment
  * @see app/Http/Controllers/Instructor/QuestionController.php:204
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}/edit'
  */
-edit.get = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+edit.get = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
 })
@@ -434,7 +434,7 @@ edit.get = (args: { class: string | number, subject: string | number, assessment
  * @see app/Http/Controllers/Instructor/QuestionController.php:204
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}/edit'
  */
-edit.head = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+edit.head = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: edit.url(args, options),
     method: 'head',
 })
@@ -444,7 +444,7 @@ edit.head = (args: { class: string | number, subject: string | number, assessmen
  * @see app/Http/Controllers/Instructor/QuestionController.php:204
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}/edit'
  */
-    const editForm = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const editForm = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: edit.url(args, options),
         method: 'get',
     })
@@ -454,7 +454,7 @@ edit.head = (args: { class: string | number, subject: string | number, assessmen
  * @see app/Http/Controllers/Instructor/QuestionController.php:204
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}/edit'
  */
-        editForm.get = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        editForm.get = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: edit.url(args, options),
             method: 'get',
         })
@@ -463,7 +463,7 @@ edit.head = (args: { class: string | number, subject: string | number, assessmen
  * @see app/Http/Controllers/Instructor/QuestionController.php:204
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}/edit'
  */
-        editForm.head = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        editForm.head = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: edit.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
@@ -479,7 +479,7 @@ edit.head = (args: { class: string | number, subject: string | number, assessmen
  * @see app/Http/Controllers/Instructor/QuestionController.php:220
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}'
  */
-export const update = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+export const update = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -494,7 +494,7 @@ update.definition = {
  * @see app/Http/Controllers/Instructor/QuestionController.php:220
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}'
  */
-update.url = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions) => {
+update.url = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions) => {
     if (Array.isArray(args)) {
         args = {
                     class: args[0],
@@ -528,7 +528,7 @@ update.url = (args: { class: string | number, subject: string | number, assessme
  * @see app/Http/Controllers/Instructor/QuestionController.php:220
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}'
  */
-update.put = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+update.put = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -537,7 +537,7 @@ update.put = (args: { class: string | number, subject: string | number, assessme
  * @see app/Http/Controllers/Instructor/QuestionController.php:220
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}'
  */
-update.patch = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+update.patch = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: update.url(args, options),
     method: 'patch',
 })
@@ -547,7 +547,7 @@ update.patch = (args: { class: string | number, subject: string | number, assess
  * @see app/Http/Controllers/Instructor/QuestionController.php:220
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}'
  */
-    const updateForm = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    const updateForm = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
         action: update.url(args, {
                     [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                         _method: 'PUT',
@@ -562,7 +562,7 @@ update.patch = (args: { class: string | number, subject: string | number, assess
  * @see app/Http/Controllers/Instructor/QuestionController.php:220
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}'
  */
-        updateForm.put = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        updateForm.put = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: update.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'PUT',
@@ -576,7 +576,7 @@ update.patch = (args: { class: string | number, subject: string | number, assess
  * @see app/Http/Controllers/Instructor/QuestionController.php:220
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}'
  */
-        updateForm.patch = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        updateForm.patch = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: update.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'PATCH',
@@ -592,7 +592,7 @@ update.patch = (args: { class: string | number, subject: string | number, assess
  * @see app/Http/Controllers/Instructor/QuestionController.php:346
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}'
  */
-export const destroy = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+export const destroy = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -607,7 +607,7 @@ destroy.definition = {
  * @see app/Http/Controllers/Instructor/QuestionController.php:346
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}'
  */
-destroy.url = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions) => {
+destroy.url = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions) => {
     if (Array.isArray(args)) {
         args = {
                     class: args[0],
@@ -641,7 +641,7 @@ destroy.url = (args: { class: string | number, subject: string | number, assessm
  * @see app/Http/Controllers/Instructor/QuestionController.php:346
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}'
  */
-destroy.delete = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+destroy.delete = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -651,7 +651,7 @@ destroy.delete = (args: { class: string | number, subject: string | number, asse
  * @see app/Http/Controllers/Instructor/QuestionController.php:346
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}'
  */
-    const destroyForm = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    const destroyForm = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
         action: destroy.url(args, {
                     [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                         _method: 'DELETE',
@@ -666,7 +666,7 @@ destroy.delete = (args: { class: string | number, subject: string | number, asse
  * @see app/Http/Controllers/Instructor/QuestionController.php:346
  * @route '/instructor/classes/{class}/subjects/{subject}/assessment/{assessment}/question/{question}'
  */
-        destroyForm.delete = (args: { class: string | number, subject: string | number, assessment: string | number, question: number | { id: number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        destroyForm.delete = (args: { class: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } } | [classParam: string | number, subject: string | number, assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: destroy.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'DELETE',

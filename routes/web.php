@@ -124,11 +124,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             // Teacher
             Route::get('attendance', [App\Http\Controllers\Instructor\AttendanceController::class, 'index'])->name('attendance.index');
-            Route::get('/attendance/request', [App\Http\Controllers\Instructor\AttendanceController::class, 'request'])->name('attendance.qr');
+            // Route::get('/attendance/request', [App\Http\Controllers\Instructor\AttendanceController::class, 'request'])->name('attendance.qr');
+            Route::post('/attendance/request', [App\Http\Controllers\Instructor\AttendanceController::class, 'request'])->name('attendance.qr');
             Route::get('/attendance/session/{session}', [App\Http\Controllers\Instructor\AttendanceController::class, 'show']);
 
-            // Route::resource('attendance', App\Http\Controllers\Instructor\AttendanceController::class)
-            //     ->names('attendance');
+
+            Route::get('/attendance/request-student', [App\Http\Controllers\Instructor\AttendanceController::class, 'requestStudent'])->name('attendance.request-student');
 
         });
 

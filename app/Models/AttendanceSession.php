@@ -15,6 +15,10 @@ class AttendanceSession extends Model
         'started_at',
         'ended_at',
         'is_active',
+
+        'latitude',
+        'longitude',
+        
     ];
 
     protected $casts = [

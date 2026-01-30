@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::index
- * @see app/Http/Controllers/Instructor/AttendanceController.php:15
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:20
  * @route '/instructor/attendance'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::index
- * @see app/Http/Controllers/Instructor/AttendanceController.php:15
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:20
  * @route '/instructor/attendance'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::index
- * @see app/Http/Controllers/Instructor/AttendanceController.php:15
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:20
  * @route '/instructor/attendance'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::index
- * @see app/Http/Controllers/Instructor/AttendanceController.php:15
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:20
  * @route '/instructor/attendance'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::index
- * @see app/Http/Controllers/Instructor/AttendanceController.php:15
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:20
  * @route '/instructor/attendance'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::index
- * @see app/Http/Controllers/Instructor/AttendanceController.php:15
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:20
  * @route '/instructor/attendance'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::index
- * @see app/Http/Controllers/Instructor/AttendanceController.php:15
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:20
  * @route '/instructor/attendance'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,22 +79,22 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::request
- * @see app/Http/Controllers/Instructor/AttendanceController.php:20
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:56
  * @route '/instructor/attendance/request'
  */
-export const request = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const request = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: request.url(options),
-    method: 'get',
+    method: 'post',
 })
 
 request.definition = {
-    methods: ["get","head"],
+    methods: ["post"],
     url: '/instructor/attendance/request',
-} satisfies RouteDefinition<["get","head"]>
+} satisfies RouteDefinition<["post"]>
 
 /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::request
- * @see app/Http/Controllers/Instructor/AttendanceController.php:20
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:56
  * @route '/instructor/attendance/request'
  */
 request.url = (options?: RouteQueryOptions) => {
@@ -103,61 +103,38 @@ request.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::request
- * @see app/Http/Controllers/Instructor/AttendanceController.php:20
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:56
  * @route '/instructor/attendance/request'
  */
-request.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+request.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: request.url(options),
-    method: 'get',
-})
-/**
-* @see \App\Http\Controllers\Instructor\AttendanceController::request
- * @see app/Http/Controllers/Instructor/AttendanceController.php:20
- * @route '/instructor/attendance/request'
- */
-request.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: request.url(options),
-    method: 'head',
+    method: 'post',
 })
 
     /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::request
- * @see app/Http/Controllers/Instructor/AttendanceController.php:20
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:56
  * @route '/instructor/attendance/request'
  */
-    const requestForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const requestForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
         action: request.url(options),
-        method: 'get',
+        method: 'post',
     })
 
             /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::request
- * @see app/Http/Controllers/Instructor/AttendanceController.php:20
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:56
  * @route '/instructor/attendance/request'
  */
-        requestForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        requestForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: request.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\Instructor\AttendanceController::request
- * @see app/Http/Controllers/Instructor/AttendanceController.php:20
- * @route '/instructor/attendance/request'
- */
-        requestForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: request.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
+            method: 'post',
         })
     
     request.form = requestForm
 /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::show
- * @see app/Http/Controllers/Instructor/AttendanceController.php:54
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:215
  * @route '/instructor/attendance/session/{session}'
  */
 export const show = (args: { session: string | number } | [session: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -172,7 +149,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::show
- * @see app/Http/Controllers/Instructor/AttendanceController.php:54
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:215
  * @route '/instructor/attendance/session/{session}'
  */
 show.url = (args: { session: string | number } | [session: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -200,7 +177,7 @@ show.url = (args: { session: string | number } | [session: string | number ] | s
 
 /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::show
- * @see app/Http/Controllers/Instructor/AttendanceController.php:54
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:215
  * @route '/instructor/attendance/session/{session}'
  */
 show.get = (args: { session: string | number } | [session: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -209,7 +186,7 @@ show.get = (args: { session: string | number } | [session: string | number ] | s
 })
 /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::show
- * @see app/Http/Controllers/Instructor/AttendanceController.php:54
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:215
  * @route '/instructor/attendance/session/{session}'
  */
 show.head = (args: { session: string | number } | [session: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -219,7 +196,7 @@ show.head = (args: { session: string | number } | [session: string | number ] | 
 
     /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::show
- * @see app/Http/Controllers/Instructor/AttendanceController.php:54
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:215
  * @route '/instructor/attendance/session/{session}'
  */
     const showForm = (args: { session: string | number } | [session: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -229,7 +206,7 @@ show.head = (args: { session: string | number } | [session: string | number ] | 
 
             /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::show
- * @see app/Http/Controllers/Instructor/AttendanceController.php:54
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:215
  * @route '/instructor/attendance/session/{session}'
  */
         showForm.get = (args: { session: string | number } | [session: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -238,7 +215,7 @@ show.head = (args: { session: string | number } | [session: string | number ] | 
         })
             /**
 * @see \App\Http\Controllers\Instructor\AttendanceController::show
- * @see app/Http/Controllers/Instructor/AttendanceController.php:54
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:215
  * @route '/instructor/attendance/session/{session}'
  */
         showForm.head = (args: { session: string | number } | [session: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -252,6 +229,84 @@ show.head = (args: { session: string | number } | [session: string | number ] | 
         })
     
     show.form = showForm
-const AttendanceController = { index, request, show }
+/**
+* @see \App\Http\Controllers\Instructor\AttendanceController::requestStudent
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:35
+ * @route '/instructor/attendance/request-student'
+ */
+export const requestStudent = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: requestStudent.url(options),
+    method: 'get',
+})
+
+requestStudent.definition = {
+    methods: ["get","head"],
+    url: '/instructor/attendance/request-student',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\Instructor\AttendanceController::requestStudent
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:35
+ * @route '/instructor/attendance/request-student'
+ */
+requestStudent.url = (options?: RouteQueryOptions) => {
+    return requestStudent.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Instructor\AttendanceController::requestStudent
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:35
+ * @route '/instructor/attendance/request-student'
+ */
+requestStudent.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: requestStudent.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\Instructor\AttendanceController::requestStudent
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:35
+ * @route '/instructor/attendance/request-student'
+ */
+requestStudent.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: requestStudent.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\Instructor\AttendanceController::requestStudent
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:35
+ * @route '/instructor/attendance/request-student'
+ */
+    const requestStudentForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: requestStudent.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\Instructor\AttendanceController::requestStudent
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:35
+ * @route '/instructor/attendance/request-student'
+ */
+        requestStudentForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: requestStudent.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\Instructor\AttendanceController::requestStudent
+ * @see app/Http/Controllers/Instructor/AttendanceController.php:35
+ * @route '/instructor/attendance/request-student'
+ */
+        requestStudentForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: requestStudent.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    requestStudent.form = requestStudentForm
+const AttendanceController = { index, request, show, requestStudent }
 
 export default AttendanceController

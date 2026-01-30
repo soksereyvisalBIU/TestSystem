@@ -175,7 +175,7 @@ store.post = (args: { assessment: string | number } | [assessment: string | numb
  * @see app/Http/Controllers/Api/V1/QuestionController.php:163
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-export const show = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const show = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
@@ -190,7 +190,7 @@ show.definition = {
  * @see app/Http/Controllers/Api/V1/QuestionController.php:163
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-show.url = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions) => {
+show.url = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions) => {
     if (Array.isArray(args)) {
         args = {
                     assessment: args[0],
@@ -218,7 +218,7 @@ show.url = (args: { assessment: string | number, question: number | { id: number
  * @see app/Http/Controllers/Api/V1/QuestionController.php:163
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-show.get = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+show.get = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
@@ -227,7 +227,7 @@ show.get = (args: { assessment: string | number, question: number | { id: number
  * @see app/Http/Controllers/Api/V1/QuestionController.php:163
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-show.head = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+show.head = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: show.url(args, options),
     method: 'head',
 })
@@ -237,7 +237,7 @@ show.head = (args: { assessment: string | number, question: number | { id: numbe
  * @see app/Http/Controllers/Api/V1/QuestionController.php:163
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-    const showForm = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const showForm = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: show.url(args, options),
         method: 'get',
     })
@@ -247,7 +247,7 @@ show.head = (args: { assessment: string | number, question: number | { id: numbe
  * @see app/Http/Controllers/Api/V1/QuestionController.php:163
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-        showForm.get = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        showForm.get = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: show.url(args, options),
             method: 'get',
         })
@@ -256,7 +256,7 @@ show.head = (args: { assessment: string | number, question: number | { id: numbe
  * @see app/Http/Controllers/Api/V1/QuestionController.php:163
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-        showForm.head = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        showForm.head = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: show.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
@@ -272,7 +272,7 @@ show.head = (args: { assessment: string | number, question: number | { id: numbe
  * @see app/Http/Controllers/Api/V1/QuestionController.php:168
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-export const update = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+export const update = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -287,7 +287,7 @@ update.definition = {
  * @see app/Http/Controllers/Api/V1/QuestionController.php:168
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-update.url = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions) => {
+update.url = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions) => {
     if (Array.isArray(args)) {
         args = {
                     assessment: args[0],
@@ -315,7 +315,7 @@ update.url = (args: { assessment: string | number, question: number | { id: numb
  * @see app/Http/Controllers/Api/V1/QuestionController.php:168
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-update.put = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+update.put = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -324,7 +324,7 @@ update.put = (args: { assessment: string | number, question: number | { id: numb
  * @see app/Http/Controllers/Api/V1/QuestionController.php:168
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-update.patch = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+update.patch = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: update.url(args, options),
     method: 'patch',
 })
@@ -334,7 +334,7 @@ update.patch = (args: { assessment: string | number, question: number | { id: nu
  * @see app/Http/Controllers/Api/V1/QuestionController.php:168
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-    const updateForm = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    const updateForm = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
         action: update.url(args, {
                     [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                         _method: 'PUT',
@@ -349,7 +349,7 @@ update.patch = (args: { assessment: string | number, question: number | { id: nu
  * @see app/Http/Controllers/Api/V1/QuestionController.php:168
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-        updateForm.put = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        updateForm.put = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: update.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'PUT',
@@ -363,7 +363,7 @@ update.patch = (args: { assessment: string | number, question: number | { id: nu
  * @see app/Http/Controllers/Api/V1/QuestionController.php:168
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-        updateForm.patch = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        updateForm.patch = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: update.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'PATCH',
@@ -379,7 +379,7 @@ update.patch = (args: { assessment: string | number, question: number | { id: nu
  * @see app/Http/Controllers/Api/V1/QuestionController.php:302
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-export const destroy = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+export const destroy = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -394,7 +394,7 @@ destroy.definition = {
  * @see app/Http/Controllers/Api/V1/QuestionController.php:302
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-destroy.url = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions) => {
+destroy.url = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions) => {
     if (Array.isArray(args)) {
         args = {
                     assessment: args[0],
@@ -422,7 +422,7 @@ destroy.url = (args: { assessment: string | number, question: number | { id: num
  * @see app/Http/Controllers/Api/V1/QuestionController.php:302
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-destroy.delete = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+destroy.delete = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -432,7 +432,7 @@ destroy.delete = (args: { assessment: string | number, question: number | { id: 
  * @see app/Http/Controllers/Api/V1/QuestionController.php:302
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-    const destroyForm = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    const destroyForm = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
         action: destroy.url(args, {
                     [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                         _method: 'DELETE',
@@ -447,7 +447,7 @@ destroy.delete = (args: { assessment: string | number, question: number | { id: 
  * @see app/Http/Controllers/Api/V1/QuestionController.php:302
  * @route '/api/v1/assessments/{assessment}/questions/{question}'
  */
-        destroyForm.delete = (args: { assessment: string | number, question: number | { id: number } } | [assessment: string | number, question: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        destroyForm.delete = (args: { assessment: string | number, question: string | number | { id: string | number } } | [assessment: string | number, question: string | number | { id: string | number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: destroy.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'DELETE',
