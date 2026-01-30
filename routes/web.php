@@ -17,6 +17,11 @@ Route::get('/storage-link', function () {
     $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/storage';
     symlink($targetFolder, $linkFolder);
 });
+Route::get('/build-link', function () {
+    $targetFolder = public_path('build');
+    $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/build';
+    symlink($targetFolder, $linkFolder);
+});
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
