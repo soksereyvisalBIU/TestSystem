@@ -10,6 +10,14 @@ use Laravel\Fortify\Features;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 
+
+
+Route::get('/storage-link', function () {
+    $targetFolder = storage_path('app/public');
+    $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/storage';
+    symlink($targetFolder, $linkFolder);
+});
+
 Route::get('/', function () {
     return Inertia::render('welcome', [
         'canRegister' => Features::enabled(Features::registration()),
@@ -90,7 +98,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 
-        Route::resource('attendance' , App\Http\Controllers\Student\AttendanceController::class)
+        Route::resource('attendance', App\Http\Controllers\Student\AttendanceController::class)
             ->names('attendance');
     });
 
@@ -130,7 +138,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
             Route::get('/attendance/request-student', [App\Http\Controllers\Instructor\AttendanceController::class, 'requestStudent'])->name('attendance.request-student');
-
         });
 
     // ========================================================
