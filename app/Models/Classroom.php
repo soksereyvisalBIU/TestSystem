@@ -42,4 +42,8 @@ class Classroom extends Model
             'user_id'
         );
     }
+    public function getStudentsCountAttribute()
+    {
+        return $this->students()->count();
+    }
 }

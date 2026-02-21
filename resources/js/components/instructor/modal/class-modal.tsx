@@ -285,7 +285,7 @@ export default function ClassModal({
                             Class Title
                         </StyledLabel>
                         <Input
-                            placeholder="e.g. Design Systems 101"
+                            placeholder="e.g. UC1-Y1S1-SE-E1 101"
                             value={formData.name}
                             onChange={(e) =>
                                 updateField('name', e.target.value)
@@ -341,10 +341,10 @@ export default function ClassModal({
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl">
                                     <SelectItem value="1">
-                                        Main Campus
+                                        Campus I    
                                     </SelectItem>
                                     <SelectItem value="2">
-                                        City Branch
+                                        Campus II
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
@@ -391,7 +391,10 @@ export default function ClassModal({
                             </StyledLabel>
                             <Input
                                 type="number"
+                                placeholder='batch'
                                 value={formData.batch}
+                                min={1}
+                                max={100}
                                 onChange={(e) =>
                                     updateField('batch', e.target.value)
                                 }

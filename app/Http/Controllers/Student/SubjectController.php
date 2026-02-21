@@ -41,7 +41,7 @@ class SubjectController extends Controller
      */
     public function show($class_id, $subject_id)
     {
-        $subject = Subject::with('assessments.studentAssessment')->findOrFail($subject_id);
+        $subject = Subject::with('assessments.studentAssessment' , 'classroomCreator')->findOrFail($subject_id);
 
         $classmates = $subject->classroom->students;
 

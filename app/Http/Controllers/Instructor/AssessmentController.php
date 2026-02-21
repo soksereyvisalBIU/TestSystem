@@ -96,9 +96,12 @@ class AssessmentController extends Controller
     {
         // $assessment = Assessment::with('questions')->findOrFail($assessment_id);
 
-        $assessment = (new AssessmentResource(
-            Assessment::with('questions', 'students')->findOrFail($assessment_id)
-        ))->resolve();
+        // $assessment = (new AssessmentResource(
+        //     Assessment::with('questions', 'students')->findOrFail($assessment_id)
+        // ))->resolve();
+
+        $assessment = Assessment::with('questions','students','studentAssessmentAttempts')->findOrFail($assessment_id);
+        // return response()->json($assessment);
 
         return Inertia::render('instructor/classroom/subject/assessment/Show', compact('assessment', 'classId', 'subjectId'));
     }

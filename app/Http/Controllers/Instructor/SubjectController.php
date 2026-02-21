@@ -81,7 +81,7 @@ class SubjectController extends Controller
 
         // dd('show subject', $subjectId);
 
-        $subject = Subject::with('assessments')->findOrFail($subjectId);
+        $subject = Subject::with('assessments' , 'classroom.creator')->findOrFail($subjectId);
         $students = $subject->classroom->students;
         return Inertia::render('instructor/classroom/subject/Index', compact('subject', 'students'));
     }

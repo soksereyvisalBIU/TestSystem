@@ -22,13 +22,13 @@ class StudentController extends Controller
      */
     public function index($classId, $subjectId, $assessment_id)
     {
-        $assessment = (new AssessmentResource(
-            Assessment::with('students')->findOrFail($assessment_id)
-        ))->resolve();
+        // $assessment = (new AssessmentResource(
+        //     Assessment::with('studentAssessmentAttempts')->findOrFail($assessment_id)
+        // ))->resolve();
+        $assessment = Assessment::with('studentAssessmentAttempts')->findOrFail($assessment_id);
 
-        // return response()->json($assessment);
 
-        return Inertia::render('instructor/classroom/subject/assessment/student/Index' , compact('assessment', ));
+        return Inertia::render('instructor/classroom/subject/assessment/student/Index', compact('assessment', 'classId', 'subjectId'));
     }
 
     /**
@@ -98,28 +98,64 @@ class StudentController extends Controller
     }
 
 
+    // public function show($class, $subject, $assessment, $id)
+    // {
+    //     $assessmentId = $assessment;
+    //     // Get the assessment (validate)
+    //     $assessment = Assessment::with('questions.options')->findOrFail($assessmentId);
+
+    //     // Get the student's assessment row
+    //     $studentAssessment = StudentAssessment::with('student')->where('assessment_id', $assessmentId)
+    //         ->where('user_id', $id)
+    //         ->firstOrFail();
+
+
+    //     // Get the latest attempt
+    //     $attempt = $studentAssessment->attempts()
+    //         ->with('answers.answerFiles')
+    //         ->whereIn('status', ['submitted', 'scored'])
+    //         ->latest()
+    //         ->first();
+
+
+
+    //     return Inertia::render('instructor/classroom/subject/assessment/student/Show', compact('attempt', 'assessment'));
+    // }
+
     public function show($class, $subject, $assessment, $id)
     {
         $assessmentId = $assessment;
-        // Get the assessment (validate)
-        $assessment = Assessment::with('questions.options')->findOrFail($assessmentId);
 
-        // Get the student's assessment row
-        $studentAssessment = StudentAssessment::where('assessment_id', $assessmentId)
+        // Load assessment with questions & options
+        $assessment = Assessment::with('questions.options')
+            ->findOrFail($assessmentId);
+
+        // Get student assessment row
+        $studentAssessment = StudentAssessment::with('student')
+            ->where('assessment_id', $assessmentId)
             ->where('user_id', $id)
             ->firstOrFail();
 
-
-        // Get the latest attempt
+        // Get latest submitted/scored attempt
         $attempt = $studentAssessment->attempts()
-            ->with('answers.answerFiles')
+            ->with([
+                'answers.answerFiles',
+                'student', // ensure student relation available
+            ])
             ->whereIn('status', ['submitted', 'scored'])
             ->latest()
-            ->first();
+            ->firstOrFail(); // safer
 
-        
-
-        return Inertia::render('instructor/classroom/subject/assessment/student/Show', compact('attempt', 'assessment'));
+        return Inertia::render(
+            'instructor/classroom/subject/assessment/student/Show',
+            [
+                'assessment' => $assessment,
+                'attempt' => $attempt,
+                'student' => $studentAssessment->student,
+                'classId' => $class,
+                'subjectId' => $subject,
+            ]
+        );
     }
 
 

@@ -20,6 +20,8 @@ import { route } from 'ziggy-js';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
     Tooltip,
@@ -35,9 +37,12 @@ export default function StudentAssessmentAttemptScoring({
     assessment,
     attempt,
     student,
-    classId,
+    classId, // Retained in case you need them for dynamic routing later
     subjectId,
 }) {
+
+    console.log(attempt);
+    
     const [answersState, setAnswersState] = useState(attempt?.answers || []);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [viewMode, setViewMode] = useState('list'); // 'list' | 'single'
@@ -85,7 +90,7 @@ export default function StudentAssessmentAttemptScoring({
         assessment.questions.forEach((q) => {
             const qMax = parseFloat(q.point || 0);
             max += qMax;
-
+            
             const qAnswers = answersByQuestionId.get(q.id) || [];
             const manual = qAnswers[0]?.manual_score;
             const hasManual = manual !== undefined && manual !== null && manual !== '';
@@ -102,7 +107,7 @@ export default function StudentAssessmentAttemptScoring({
 
         const totalQuestions = assessment.questions.length;
         return {
-            earned: Math.round(earned * 10) / 10, // Keep as a number for accurate comparison
+            earned: earned.toFixed(1),
             max,
             progress: totalQuestions === 0 ? 0 : (gradedCount / totalQuestions) * 100,
             isComplete: gradedCount === totalQuestions && totalQuestions > 0,
@@ -132,8 +137,8 @@ export default function StudentAssessmentAttemptScoring({
 
         router.post(
             route('instructor.classes.subjects.assessments.students.store', {
-                class: classId,
-                subject: subjectId,
+                class: 1, // Consider using classId if dynamic
+                subject: 1, // Consider using subjectId if dynamic
                 assessment: assessment.id,
                 student: attempt.student_id,
             }),
@@ -147,10 +152,7 @@ export default function StudentAssessmentAttemptScoring({
                 onFinish: () => setIsSubmitting(false),
             }
         );
-    }, [assessment.id, assessment.questions, answersByQuestionId, attempt?.id, attempt?.student_id, classId, subjectId]);
-
-    // Check if there are unsaved changes
-    const hasUnsavedChanges = attempt?.status !== "scored" || attempt?.sub_score !== stats.earned;
+    }, [assessment.id, assessment.questions, answersByQuestionId, attempt?.id, attempt?.student_id]);
 
     return (
         <AppLayout>
@@ -233,10 +235,9 @@ export default function StudentAssessmentAttemptScoring({
 
                         {/* STICKY SIDEBAR NAVIGATION */}
                         <aside className="sticky top-8 lg:col-span-4 xl:col-span-3">
-                            <Card className="flex flex-col overflow-hidden border-none shadow-lg ring-1 ring-slate-200 dark:ring-border gap-0 pt-0 max-h-[calc(100vh-4rem)]">
-                                
-                                {/* Header: Context */}
-                                <div className="border-b bg-slate-50 p-5 pb-4 dark:bg-card shrink-0">
+                            <Card className="overflow-hidden border-none shadow-lg ring-1 ring-slate-200 dark:ring-border gap-0 pt-0">
+                                {/* Header: Context & Progress */}
+                                <div className="border-b bg-slate-50 p-5 pb-2 dark:bg-card">
                                     <Button
                                         variant="ghost"
                                         size="sm"
@@ -245,8 +246,8 @@ export default function StudentAssessmentAttemptScoring({
                                     >
                                         <Link
                                             href={route('instructor.classes.subjects.assessments.students.index', {
-                                                class: classId,
-                                                subject: subjectId,
+                                                class: 1, // Consider dynamic if needed
+                                                subject: 1, // Consider dynamic if needed
                                                 assessment: assessment.id,
                                             })}
                                         >
@@ -255,7 +256,7 @@ export default function StudentAssessmentAttemptScoring({
                                         </Link>
                                     </Button>
 
-                                    <div>
+                                    <div className="mb-6">
                                         <h2 className="text-xl font-bold line-clamp-1" title={student?.name}>
                                             {student?.name}
                                         </h2>
@@ -263,12 +264,28 @@ export default function StudentAssessmentAttemptScoring({
                                             {student?.email}
                                         </p>
                                     </div>
+
+                                    {/* <div className="space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="text-sm font-bold text-title">
+                                                Grading Progress
+                                            </h4>
+                                            <Badge
+                                                variant={stats.isComplete ? 'success' : 'secondary'}
+                                                className="font-mono transition-colors"
+                                            >
+                                                {Math.round(stats.progress)}%
+                                            </Badge>
+                                        </div>
+                                        <Progress
+                                            value={stats.progress}
+                                            className="h-2 bg-slate-200 dark:bg-muted"
+                                        />
+                                    </div> */}
                                 </div>
 
-                                {/* Scrollable Middle Section */}
-                                <ScrollArea className="flex-1 p-5">
+                                <ScrollArea className="max-h-[calc(100vh-22rem)] p-5">
                                     <div className="space-y-6">
-                                        
                                         {/* View & Filter Toggles */}
                                         <div className="space-y-3">
                                             <label className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
@@ -326,14 +343,13 @@ export default function StudentAssessmentAttemptScoring({
                                                         return (
                                                             <Tooltip key={q.id}>
                                                                 <TooltipTrigger asChild>
-                                                                    <button
-                                                                        type="button"
+                                                                    <Button
                                                                         onClick={() => {
                                                                             if (viewMode === 'single') {
                                                                                 const idx = visibleQuestions.findIndex((vq) => vq.id === q.id);
                                                                                 if (idx !== -1) setCurrentIndex(idx);
                                                                             } else {
-                                                                                document.getElementById(`q-${q.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                                                document.getElementById(`q-${q.id}`)?.scrollIntoView({ behavior: 'smooth' });
                                                                             }
                                                                         }}
                                                                         className={`flex aspect-square w-full items-center justify-center rounded-md border text-[11px] font-bold transition-all ${
@@ -347,7 +363,7 @@ export default function StudentAssessmentAttemptScoring({
                                                                         }`}
                                                                     >
                                                                         {i + 1}
-                                                                    </button>
+                                                                    </Button>
                                                                 </TooltipTrigger>
                                                                 <TooltipContent side="top">
                                                                     <p className="text-xs">
@@ -360,11 +376,16 @@ export default function StudentAssessmentAttemptScoring({
                                                 </div>
                                             </TooltipProvider>
                                         </div>
-                                    </div>
-                                </ScrollArea>
 
-                                {/* Footer: Totals & Action */}
-                                <div className="border-t bg-slate-50/50 p-5 dark:bg-card/30 shrink-0">
+                                        {/* Legend */}
+                                        {/* <div className="space-y-2 border-t pt-4 dark:border-border">
+                                            <LegendItem color="bg-primary" label="Manually Graded" />
+                                            <LegendItem color="bg-amber-400 dark:bg-amber-500" label="Pending Review" />
+                                            <LegendItem color="bg-slate-200 dark:bg-muted" label="Auto-scored" />
+                                        </div> */}
+
+                                                                        {/* Footer: Totals & Action */}
+                                <div className="border-t bg-slate-50/50 p-5 dark:bg-card/30">
                                     <div className="mb-4 flex items-end justify-between">
                                         <div>
                                             <p className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
@@ -372,29 +393,43 @@ export default function StudentAssessmentAttemptScoring({
                                             </p>
                                             <div className="flex items-baseline gap-1">
                                                 <span className="text-3xl font-black text-primary">
-                                                    {stats.earned.toFixed(1)}
+                                                    {stats.earned}
                                                 </span>
                                                 <span className="text-sm font-bold text-muted-foreground">
                                                     / {stats.max} pts
                                                 </span>
                                             </div>
                                         </div>
+                                        {/* <div className="text-right">
+                                            <p className="text-[10px] font-bold text-muted-foreground uppercase">
+                                                Weighted
+                                            </p>
+                                            <p className="text-sm font-black text-foreground">
+                                                {(
+                                                    (stats.earned / stats.max) *
+                                                    100
+                                                ).toFixed(1)}
+                                                %
+                                            </p>
+                                        </div> */}
                                     </div>
 
-                                    {hasUnsavedChanges ? (
-                                        <Badge variant="outline" className="mb-4 font-bold border-amber-500 text-amber-600 bg-amber-50 dark:bg-amber-950/50 dark:text-amber-400">
-                                            <AlertCircle className="w-3 h-3 mr-1" /> Unsaved Changes
-                                        </Badge>
-                                    ) : (
-                                        <Badge variant="outline" className="mb-4 font-bold border-green-500 text-green-600 bg-green-50 dark:bg-green-950/50 dark:text-green-400">
-                                            <CheckCircle2 className="w-3 h-3 mr-1" /> All Changes Saved
-                                        </Badge>
-                                    )}
+                                    {
+                                        (attempt.status !== "scored" && attempt.sub_score !== stats.earned) ? (
+                                            <Badge variant="warning" className="mb-4 font-bold">
+                                                Unsaved Changes
+                                            </Badge>
+                                        ) : (
+                                            <Badge variant="success" className="mb-4 font-bold">
+                                                All Changes Saved
+                                            </Badge>
+                                        )
+                                    }
 
                                     <Button
                                         size="lg"
                                         onClick={handleSubmit}
-                                        disabled={isSubmitting || !hasUnsavedChanges}
+                                        disabled={isSubmitting}
                                         className={`w-full rounded-xl font-bold shadow-lg transition-all active:scale-[0.98] ${
                                             stats.isComplete
                                                 ? 'bg-primary shadow-primary/20 hover:bg-primary/90'
@@ -409,11 +444,78 @@ export default function StudentAssessmentAttemptScoring({
                                         Update Grade
                                     </Button>
                                 </div>
+                                    </div>
+                                </ScrollArea>
+                                
                             </Card>
                         </aside>
                     </div>
                 </div>
+
+                {/* FLOATING ACTION FOOTER */}
+                {/* <div className="fixed bottom-6 left-0 right-0 z-50 mx-auto w-full max-w-4xl px-4 animate-in slide-in-from-bottom-6">
+                    <div className="flex items-center justify-between rounded-2xl border bg-background/95 p-4 shadow-2xl backdrop-blur-md dark:border-border dark:bg-card/95">
+                        <div className="flex items-center gap-6 md:gap-8 pl-4">
+                            <div>
+                                <p className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
+                                    Current Total
+                                </p>
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-2xl md:text-3xl font-black text-primary transition-all">
+                                        {stats.earned}
+                                    </span>
+                                    <span className="text-sm font-medium text-muted-foreground">
+                                        / {stats.max} pts
+                                    </span>
+                                </div>
+                            </div>
+
+                            <Separator orientation="vertical" className="h-10 hidden sm:block" />
+
+                            <div className="hidden sm:block">
+                                {stats.isComplete ? (
+                                    <Badge className="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 py-1">
+                                        <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" /> 
+                                        Ready to Finalize
+                                    </Badge>
+                                ) : (
+                                    <div className="flex items-center gap-2 text-sm font-semibold text-amber-600 dark:text-amber-400">
+                                        <AlertCircle className="h-4 w-4" /> 
+                                        Pending Review
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <Button
+                            size="lg"
+                            onClick={handleSubmit}
+                            disabled={isSubmitting}
+                            className={`rounded-xl px-8 md:px-10 font-bold transition-all ${
+                                stats.isComplete 
+                                ? 'bg-primary hover:bg-primary/90 shadow-md shadow-primary/20' 
+                                : 'bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600'
+                            }`}
+                        >
+                            {isSubmitting ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                                <Save className="mr-2 h-4 w-4" />
+                            )}
+                            Update Grade
+                        </Button>
+                    </div>
+                </div> */}
             </div>
         </AppLayout>
+    );
+}
+
+function LegendItem({ color, label }: { color: string; label: string }) {
+    return (
+        <div className="flex items-center gap-2 text-[10px] font-bold tracking-tight text-muted-foreground/80 uppercase">
+            <div className={`h-2.5 w-2.5 rounded-full ${color}`} />
+            <span>{label}</span>
+        </div>
     );
 }

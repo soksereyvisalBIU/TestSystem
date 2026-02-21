@@ -35,7 +35,7 @@ interface Props {
 }
 
 export default function StudentResultsTab({
-    students,
+    students = [],
     totalMarks,
     classId,
     subjectId,
@@ -43,12 +43,16 @@ export default function StudentResultsTab({
 }: Props) {
     const [search, setSearch] = useState('');
 
+    // Performance: Memoize search results to avoid re-filtering on every render
     const filteredStudents = useMemo(() => {
-        return students.filter(
-            (s) =>
-                s.name?.toLowerCase().includes(search.toLowerCase()) ||
-                s.email?.toLowerCase().includes(search.toLowerCase()),
-        );
+        const query = search.toLowerCase().trim();
+        if (!query) return students;
+
+        return students.filter((s) => {
+            const studentName = s.student?.name?.toLowerCase() ?? '';
+            const studentEmail = s.student?.email?.toLowerCase() ?? '';
+            return studentName.includes(query) || studentEmail.includes(query);
+        });
     }, [students, search]);
 
     return (
@@ -84,139 +88,155 @@ export default function StudentResultsTab({
                     >
                         <Filter className="h-4 w-4 text-description" />
                     </Button>
+
+                    <Button>
+                        <Link
+                            href={route('instructor.classes.subjects.assessments.students.index', {
+                                class: classId,
+                                subject: subjectId,
+                                assessment: assessmentId,
+                            })}
+                            className="flex items-center gap-1 font-bold"
+                        >
+                            View All
+                            <ArrowRight className="ml-2 h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                        </Link>
+                    </Button>
                 </div>
             </CardHeader>
 
             <CardContent className="p-0">
-                <Table>
-                    <TableHeader className="bg-muted/30">
-                        <TableRow className="hover:bg-transparent border-b-border/50">
-                            <TableHead className="py-4 pl-6 text-[10px] font-black uppercase tracking-[0.15em] text-description">
-                                Student Info
-                            </TableHead>
-                            <TableHead className="text-[10px] font-black uppercase tracking-[0.15em] text-description">
-                                Status
-                            </TableHead>
-                            <TableHead className="text-[10px] font-black uppercase tracking-[0.15em] text-description">
-                                Submitted Date
-                            </TableHead>
-                            <TableHead className="text-[10px] font-black uppercase tracking-[0.15em] text-description">
-                                Results
-                            </TableHead>
-                            <TableHead className="text-right pr-6 text-[10px] font-black uppercase tracking-[0.15em] text-description">
-                                Actions
-                            </TableHead>
-                        </TableRow>
-                    </TableHeader>
-
-                    <TableBody>
-                        {filteredStudents.length > 0 ? (
-                            filteredStudents.map((s) => {
-                                const score = Number(s.pivot?.score ?? 0);
-                                const percentage = totalMarks > 0 ? (score / totalMarks) * 100 : 0;
-                                const isPending = s.pivot?.status === 'submitted';
-
-                                return (
-                                    <TableRow
-                                        key={s.id}
-                                        className={`group transition-colors hover:bg-muted/40 border-b-border/40 ${isPending ? 'bg-primary/5' : ''}`}
-                                    >
-                                        <TableCell className="pl-6 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <Avatar className="h-10 w-10 border-2 border-background shadow-sm">
-                                                    <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${s.name}`} />
-                                                    <AvatarFallback className="bg-primary/10 text-xs font-black text-primary">
-                                                        {s.name?.substring(0, 2).toUpperCase()}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <div className="flex flex-col">
-                                                    <span className="font-bold text-title tracking-tight">
-                                                        {s.name}
-                                                    </span>
-                                                    <span className="text-[11px] font-medium text-description">
-                                                        {s.email}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </TableCell>
-
-                                        <TableCell>
-                                            <StatusBadge status={s.pivot?.status} />
-                                        </TableCell>
-
-                                        <TableCell className="text-sm font-bold text-title">
-                                            {s.pivot?.submitted_at ? (
-                                                <div className="flex flex-col">
-                                                    <span>{format(new Date(s.pivot.submitted_at), 'MMM d, yyyy')}</span>
-                                                    <span className="text-[10px] font-medium text-description uppercase tracking-wider">
-                                                        {format(new Date(s.pivot.submitted_at), 'h:mm a')}
-                                                    </span>
-                                                </div>
-                                            ) : (
-                                                <span className="text-description/40 italic font-medium">No record</span>
-                                            )}
-                                        </TableCell>
-
-                                        <TableCell>
-                                            <div className="flex w-36 flex-col gap-1.5">
-                                                <div className="flex justify-between text-[11px] font-black tracking-tight">
-                                                    <span className={percentage >= 70 ? 'text-success' : 'text-primary'}>
-                                                        {s.pivot?.score ?? '0'} / {totalMarks}
-                                                    </span>
-                                                    <span className="text-description">{Math.round(percentage)}%</span>
-                                                </div>
-                                                <Progress
-                                                    value={percentage}
-                                                    className={`h-2 rounded-full bg-muted ${
-                                                        percentage >= 70 ? '[&>div]:bg-success' : '[&>div]:bg-primary'
-                                                    }`}
-                                                />
-                                            </div>
-                                        </TableCell>
-
-                                        <TableCell className="text-right pr-6">
-                                            <Button
-                                                asChild
-                                                size="sm"
-                                                className={`h-9 px-4 rounded-xl font-bold transition-all active:scale-95 ${
-                                                    isPending 
-                                                    ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 hover:opacity-90' 
-                                                    : 'bg-background border border-border text-title hover:bg-muted shadow-none '
-                                                }`}
-                                            >
-                                                <Link
-                                                    href={route('instructor.classes.subjects.assessments.students.show', {
-                                                        class: classId,
-                                                        subject: subjectId,
-                                                        assessment: assessmentId,
-                                                        student: s.id,
-                                                    })}
-                                                >
-                                                    {isPending ? 'Review Exam' : 'View Results'}
-                                                    <ArrowRight className={`ml-2 h-3.5 w-3.5 transition-transform group-hover:translate-x-1 ${isPending ? 'text-primary-foreground' : 'text-description'}`} />
-                                                </Link>
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={5} className="h-72 text-center">
-                                    <div className="flex flex-col items-center justify-center space-y-3">
-                                        <div className="rounded-2xl bg-muted/50 p-4 text-description/50">
-                                            <Search className="h-8 w-8" />
-                                        </div>
-                                        <p className="font-bold text-title">No matching students found</p>
-                                        <p className="text-xs text-description mx-auto">
-                                            Try searching by full name or specific BELTEI student email.
-                                        </p>
-                                    </div>
-                                </TableCell>
+                    <Table>
+                        <TableHeader className="bg-muted/30">
+                            <TableRow className="hover:bg-transparent border-b-border/50">
+                                <TableHead className="py-4 pl-6 text-[10px] font-black uppercase tracking-[0.15em] text-description">
+                                    Student Info
+                                </TableHead>
+                                <TableHead className="text-[10px] font-black uppercase tracking-[0.15em] text-description">
+                                    Status
+                                </TableHead>
+                                <TableHead className="text-[10px] font-black uppercase tracking-[0.15em] text-description">
+                                    Completed Date
+                                </TableHead>
+                                <TableHead className="text-[10px] font-black uppercase tracking-[0.15em] text-description">
+                                    Results
+                                </TableHead>
+                                <TableHead className="text-right pr-6 text-[10px] font-black uppercase tracking-[0.15em] text-description">
+                                    Actions
+                                </TableHead>
                             </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+
+                        <TableBody>
+                            {filteredStudents.length > 0 ? (
+                                filteredStudents.map((s) => {
+                                    // Performance: Access flattened score and status
+                                    const score = Number(s.score ?? 0);
+                                    const percentage = totalMarks > 0 ? (score / totalMarks) * 100 : 0;
+                                    const isPending = s.status === 'submitted';
+                                    const completionDate = s.last_attempt?.completed_at;
+
+                                    return (
+                                        <TableRow
+                                            key={s.id}
+                                            className={`group transition-colors hover:bg-muted/40 border-b-border/40 ${isPending ? 'bg-primary/5' : ''}`}
+                                        >
+                                            <TableCell className="pl-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar className="h-10 w-10 border-2 border-background shadow-sm">
+                                                        <AvatarImage src={s.student?.avatar ?? `https://api.dicebear.com/7.x/initials/svg?seed=${s.student?.name}`} />
+                                                        <AvatarFallback className="bg-primary/10 text-xs font-black text-primary">
+                                                            {s.student?.name?.substring(0, 2).toUpperCase()}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="flex flex-col">
+                                                        <span className="font-bold text-title tracking-tight">
+                                                            {s.student?.name}
+                                                        </span>
+                                                        <span className="text-[11px] font-medium text-description">
+                                                            {s.student?.email}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </TableCell>
+
+                                            <TableCell>
+                                                <StatusBadge status={s.status} />
+                                            </TableCell>
+
+                                            <TableCell className="text-sm font-bold text-title">
+                                                {completionDate ? (
+                                                    <div className="flex flex-col">
+                                                        <span>{format(new Date(completionDate), 'MMM d, yyyy')}</span>
+                                                        <span className="text-[10px] font-medium text-description uppercase tracking-wider">
+                                                            {format(new Date(completionDate), 'h:mm a')}
+                                                        </span>
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-description/40 italic font-medium">Not completed</span>
+                                                )}
+                                            </TableCell>
+
+                                            <TableCell>
+                                                <div className="flex w-36 flex-col gap-1.5">
+                                                    <div className="flex justify-between text-[11px] font-black tracking-tight">
+                                                        <span className={percentage >= 70 ? 'text-success' : 'text-primary'}>
+                                                            {score} / {totalMarks}
+                                                        </span>
+                                                        <span className="text-description">{Math.round(percentage)}%</span>
+                                                    </div>
+                                                    <Progress
+                                                        value={percentage}
+                                                        className={`h-2 rounded-full bg-muted ${
+                                                            percentage >= 70 ? '[&>div]:bg-success' : '[&>div]:bg-primary'
+                                                        }`}
+                                                    />
+                                                </div>
+                                            </TableCell>
+
+                                            <TableCell className="text-right pr-6">
+                                                <Button
+                                                    asChild
+                                                    size="sm"
+                                                    className={`h-9 px-4 rounded-xl font-bold transition-all active:scale-95 ${
+                                                        isPending 
+                                                        ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 hover:opacity-90' 
+                                                        : 'bg-background border border-border text-title hover:bg-muted shadow-none '
+                                                    }`}
+                                                >
+                                                    <Link
+                                                        href={route('instructor.classes.subjects.assessments.students.show', {
+                                                            class: classId,
+                                                            subject: subjectId,
+                                                            assessment: assessmentId,
+                                                            student: s.user_id, // Map to user_id for the show route
+                                                        })}
+                                                    >
+                                                        {isPending ? 'Review Exam' : 'View Results'}
+                                                        <ArrowRight className={`ml-2 h-3.5 w-3.5 transition-transform group-hover:translate-x-1 ${isPending ? 'text-primary-foreground' : 'text-description'}`} />
+                                                    </Link>
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={5} className="h-72 text-center">
+                                        <div className="flex flex-col items-center justify-center space-y-3">
+                                            <div className="rounded-2xl bg-muted/50 p-4 text-description/50">
+                                                <Search className="h-8 w-8" />
+                                            </div>
+                                            <p className="font-bold text-title">No matching students found</p>
+                                            <p className="text-xs text-description mx-auto">
+                                                Try searching by full name or specific email address.
+                                            </p>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
             </CardContent>
         </Card>
     );

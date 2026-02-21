@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -19,7 +20,6 @@ import {
     TrendingUp,
     Users,
 } from 'lucide-react';
-import { useMemo } from 'react';
 import {
     Bar,
     BarChart,
@@ -32,25 +32,44 @@ import {
     YAxis,
 } from 'recharts';
 
-export default function AnalyticsTab({ students }: { students: any[] }) {
+// Define Interfaces for better Type Safety and Performance
+interface StudentData {
+    id: number;
+    score: number;
+    student: {
+        name: string;
+    };
+    [key: string]: any;
+}
+
+export default function AnalyticsTab({ students = [] }: { students: StudentData[] }) {
+    
     const stats = useMemo(() => {
-        const data = students
-            .map((s) => ({
-                name: s.name.split(' ')[0],
-                fullName: s.name,
-                score: Number(s.pivot?.score ?? 0),
-                status: s.pivot?.status,
-            }))
-            .sort((a, b) => b.score - a.score);
+        if (!students.length) return { data: [], avg: 0, highest: 0, passRate: 0 };
 
-        const totalScore = data.reduce((sum, s) => sum + s.score, 0);
-        const avg = totalScore / (data.length || 1);
-        const highest = data.length > 0 ? data[0].score : 0;
+        let totalScore = 0;
+        let passedCount = 0;
+        let highest = 0;
 
-        // Calculate pass rate (assuming 50% is pass)
-        const passedCount = data.filter((s) => s.score >= 50).length;
-        const passRate =
-            data.length > 0 ? (passedCount / data.length) * 100 : 0;
+        const data = students.map((s) => {
+            const currentScore = Number(s.score ?? 0);
+            const fullName = s.student?.name ?? 'Unknown';
+            
+            // Single pass calculations
+            totalScore += currentScore;
+            if (currentScore >= 50) passedCount++;
+            if (currentScore > highest) highest = currentScore;
+
+            return {
+                name: fullName.split(' ')[0], // Faster than regex for simple first name
+                fullName: fullName,
+                score: currentScore,
+            };
+        }).sort((a, b) => b.score - a.score);
+
+        const count = students.length;
+        const avg = totalScore / count;
+        const passRate = (passedCount / count) * 100;
 
         return { data, avg, highest, passRate };
     }, [students]);
@@ -91,15 +110,14 @@ export default function AnalyticsTab({ students }: { students: any[] }) {
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 {/* 2. Main Chart */}
-                <Card className="overflow-hidden rounded-[2rem] border-none py-0 shadow-sm ring-1 ring-border/60 lg:col-span-2">
+                <Card className="overflow-hidden rounded-[2rem] border-none shadow-sm ring-1 ring-border/60 lg:col-span-2">
                     <CardHeader className="flex flex-row items-center justify-between border-b border-border/50 bg-muted/20 px-8 py-6">
                         <div>
                             <CardTitle className="text-xl font-black tracking-tight text-title uppercase">
                                 Score Distribution
                             </CardTitle>
                             <CardDescription className="font-medium">
-                                Student performance ranked from highest to
-                                lowest
+                                Student performance ranked from highest to lowest
                             </CardDescription>
                         </div>
                         <div className="hidden items-center gap-2 rounded-full border border-border bg-background px-4 py-1.5 text-[10px] font-black tracking-widest text-description uppercase md:flex">
@@ -112,56 +130,19 @@ export default function AnalyticsTab({ students }: { students: any[] }) {
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
                                 data={stats.data}
-                                margin={{
-                                    top: 10,
-                                    right: 10,
-                                    left: 0,
-                                    bottom: 20,
-                                }}
+                                margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
                             >
                                 <defs>
-                                    <linearGradient
-                                        id="barGradient"
-                                        x1="0"
-                                        y1="0"
-                                        x2="0"
-                                        y2="1"
-                                    >
-                                        <stop
-                                            offset="5%"
-                                            stopColor="#3b82f6"
-                                            stopOpacity={0.8}
-                                        />
-                                        <stop
-                                            offset="95%"
-                                            stopColor="#3b82f6"
-                                            stopOpacity={0.3}
-                                        />
+                                    <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.3} />
                                     </linearGradient>
-                                    <linearGradient
-                                        id="lowGradient"
-                                        x1="0"
-                                        y1="0"
-                                        x2="0"
-                                        y2="1"
-                                    >
-                                        <stop
-                                            offset="5%"
-                                            stopColor="#94a3b8"
-                                            stopOpacity={0.8}
-                                        />
-                                        <stop
-                                            offset="95%"
-                                            stopColor="#94a3b8"
-                                            stopOpacity={0.3}
-                                        />
+                                    <linearGradient id="lowGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="#94a3b8" stopOpacity={0.3} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                    vertical={false}
-                                    stroke="#f1f5f9"
-                                />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                                 <XAxis
                                     dataKey="name"
                                     axisLine={false}
@@ -194,15 +175,12 @@ export default function AnalyticsTab({ students }: { students: any[] }) {
                                     dataKey="score"
                                     radius={[4, 4, 0, 0]}
                                     barSize={32}
+                                    isAnimationActive={false} // Performance: Disable animations for large datasets
                                 >
                                     {stats.data.map((entry, index) => (
                                         <Cell
                                             key={`cell-${index}`}
-                                            fill={
-                                                entry.score >= stats.avg
-                                                    ? 'url(#barGradient)'
-                                                    : 'url(#lowGradient)'
-                                            }
+                                            fill={entry.score >= stats.avg ? 'url(#barGradient)' : 'url(#lowGradient)'}
                                         />
                                     ))}
                                 </Bar>
@@ -223,21 +201,9 @@ export default function AnalyticsTab({ students }: { students: any[] }) {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3 p-6">
-                            <ReportLink
-                                icon={FileText}
-                                title="Full Gradebook"
-                                desc="CSV / Excel format"
-                            />
-                            <ReportLink
-                                icon={Users}
-                                title="Late Submissions"
-                                desc="Follow-up list"
-                            />
-                            <ReportLink
-                                icon={BarChart3}
-                                title="Item Analysis"
-                                desc="Per-question accuracy"
-                            />
+                            <ReportLink icon={FileText} title="Full Gradebook" desc="CSV / Excel format" />
+                            <ReportLink icon={Users} title="Late Submissions" desc="Follow-up list" />
+                            <ReportLink icon={BarChart3} title="Item Analysis" desc="Per-question accuracy" />
                         </CardContent>
                     </Card>
 
@@ -250,13 +216,9 @@ export default function AnalyticsTab({ students }: { students: any[] }) {
                                 <div className="w-fit rounded-xl bg-white/20 p-2 backdrop-blur-md">
                                     <Sparkles className="h-5 w-5 text-white" />
                                 </div>
-                                <h3 className="text-xl leading-tight font-black">
-                                    AI Academic Assistant
-                                </h3>
+                                <h3 className="text-xl leading-tight font-black">AI Academic Assistant</h3>
                                 <p className="text-sm font-medium text-primary-foreground/80">
-                                    Get an instant summary of class performance,
-                                    identifying learning gaps and top
-                                    performers.
+                                    Get an instant summary of class performance and gaps.
                                 </p>
                             </div>
                             <Button className="h-12 w-full rounded-xl bg-white font-black text-primary shadow-lg transition-all hover:bg-white/90 active:scale-95">
@@ -270,6 +232,7 @@ export default function AnalyticsTab({ students }: { students: any[] }) {
     );
 }
 
+// Sub-component optimized with memoization or kept simple for small props
 function InsightMiniCard({ title, value, icon: Icon, color, bg }: any) {
     return (
         <Card className="overflow-hidden rounded-2xl border-none shadow-sm ring-1 ring-border/60">

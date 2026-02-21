@@ -19,6 +19,30 @@ class Assessment extends Model
         'created_by',
     ];
 
+    public function studentAssessmentAttempts()
+    {
+        return $this->hasMany(StudentAssessment::class, 'assessment_id')
+            ->with(['student:id,name,email,avatar' , 'lastAttempt:id,student_assessment_id,started_at,completed_at,status,sub_score']);
+    } // used
+
+    public function attempts()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'student_assessment_attempts', // Pivot table name
+            'assessment_id',               // Foreign key on pivot for this model
+            'student_id'                      // Foreign key on pivot for the related model
+        )
+            ->withPivot([
+                'id',
+                'status',
+                'started_at',
+                'completed_at',
+                'score' // Include score if you have it in your pivot
+            ])
+            ->withTimestamps();
+    }
+
     public function classroom()
     {
         // return $this->hasOneThrough('subject_assessments' , );
@@ -79,17 +103,22 @@ class Assessment extends Model
     {
         return $this->belongsToMany(
             User::class,
-            'student_assessment',
+            'student_assessments',
             'assessment_id',
             'user_id'
         )
-            ->withPivot(['score', 'attempted_amount'])
-            ->with([
-                'assessmentAttempts' => function ($q) {
-                    $q->where('assessment_id', $this->id)
-                        ->latest('started_at');
-                }
-            ]);
+            ->withPivot(['score', 'attempted_amount']);
+        // ->with([
+        //     'assessmentAttempts' => function ($q) {
+        //         $q->where('assessment_id', $this->id)
+        //             ->latest('started_at');
+        //     }
+        // ]);
+    }
+
+    public function studentAssessmentAttempt()
+    {
+        return $this->hasMany(StudentAssessmentAttempt::class, 'assessment_id');
     }
 
 
@@ -109,10 +138,10 @@ class Assessment extends Model
 
 
 
-    public function attempts()
-    {
-        return $this->hasMany(AssessmentAttempt::class, 'assessment_id');
-    }
+    // public function attempts()
+    // {
+    //     return $this->hasMany(AssessmentAttempt::class, 'assessment_id');
+    // }
 
     public function getCourseAttribute()
     {

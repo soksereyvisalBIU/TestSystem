@@ -2581,17 +2581,17 @@
         },
         {
             "name": "laravel/reverb",
-            "version": "v1.6.2",
-            "version_normalized": "1.6.2.0",
+            "version": "v1.7.0",
+            "version_normalized": "1.7.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/reverb.git",
-                "reference": "913af6181e4c6ce2399c3c0c41a4ede05803d646"
+                "reference": "4300fbbc3535f5cbbdf600b00edca1e4c515bfcf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/reverb/zipball/913af6181e4c6ce2399c3c0c41a4ede05803d646",
-                "reference": "913af6181e4c6ce2399c3c0c41a4ede05803d646",
+                "url": "https://api.github.com/repos/laravel/reverb/zipball/4300fbbc3535f5cbbdf600b00edca1e4c515bfcf",
+                "reference": "4300fbbc3535f5cbbdf600b00edca1e4c515bfcf",
                 "shasum": ""
             },
             "require": {
@@ -2618,7 +2618,7 @@
                 "react/async": "^4.2",
                 "react/http": "^1.9"
             },
-            "time": "2025-11-21T13:59:20+00:00",
+            "time": "2026-01-06T16:26:25+00:00",
             "type": "library",
             "extra": {
                 "laravel": {
@@ -2660,7 +2660,7 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel/reverb/issues",
-                "source": "https://github.com/laravel/reverb/tree/v1.6.2"
+                "source": "https://github.com/laravel/reverb/tree/v1.7.0"
             },
             "install-path": "../laravel/reverb"
         },

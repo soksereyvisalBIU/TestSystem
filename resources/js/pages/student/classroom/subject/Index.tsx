@@ -39,6 +39,8 @@ export default function SubjectDetail({
         setActiveTab('overview');
     }, []);
 
+    // console.log('Subject Detail Rendered', { subject, classmates });
+
     return (
         <AppLayout>
             <Head title={`${subject?.name} | Student Portal`} />
@@ -143,16 +145,16 @@ export default function SubjectDetail({
                             className="space-y-6"
                         >
                             <InstructorCard
-                                name="Mr. RIN CHETRA"
+                                name={subject?.classroom_creator?.name || 'Unknown Instructor'}
                                 title="Lead Lecturer"
-                                avatar="/assets/img/profile/rinchetra.jpg"
+                                avatar={subject?.classroom_creator?.avatar || '/assets/img/profile/rinchetra.jpg'}
                             />
 
-                            <LogisticsCard
+                            {/* <LogisticsCard
                                 schedule="Mon & Wed • 08:00 - 10:00"
                                 location="Lab 4, Innovation Center"
                                 credits="3.0 Credits"
-                            />
+                            /> */}
 
                             <div className="group flex gap-4 rounded-[2rem] border border-primary/10 bg-primary/5 p-6 transition-all hover:bg-primary/[0.08]">
                                 <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary">

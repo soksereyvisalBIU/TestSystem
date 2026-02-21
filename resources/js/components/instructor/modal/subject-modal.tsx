@@ -114,7 +114,7 @@ export default function SubjectModal({
 
     return (
         <Modal
-            size="lg"
+            size="md"
             isOpen={isOpen}
             setIsOpen={setIsOpen}
             title={isEdit ? 'Update Subject' : 'Create Subject'}
@@ -123,6 +123,7 @@ export default function SubjectModal({
                 <div className="space-y-2">
                     <Label>Subject Name</Label>
                     <Input
+                        placeholder='Web Development I'
                         value={data.name}
                         onChange={(e) => setData('name', e.target.value)}
                     />
@@ -137,6 +138,7 @@ export default function SubjectModal({
                     <Label>Description</Label>
                     <Textarea
                         value={data.description}
+                        placeholder='Describe the subject in a few lines...'
                         onChange={(e) => setData('description', e.target.value)}
                     />
                     {errors.description && (
@@ -146,7 +148,7 @@ export default function SubjectModal({
                     )}
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 hidden">
                     <Label>Visibility</Label>
                     <Select
                         value={data.visibility}

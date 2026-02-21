@@ -31,4 +31,17 @@ class Subject extends Model
             'assessment_id'
         );
     }
+
+    public function classroomCreator()
+    {
+        return $this->hasOneThrough(
+            User::class,
+            Classroom::class,
+            'id', // Foreign key on the classrooms table...
+            'id', // Foreign key on the users table...
+            'class_id', // Local key on the subjects table...
+            'creator_id' // Local key on the classrooms table...
+        );
+    }
+    
 }

@@ -167,11 +167,11 @@ export function ClassroomHeader({ classroom }: any) {
 
                     {/* Stats Section with Hardware Acceleration */}
                     <div className="hidden gap-2 rounded-[2rem] border border-white/5 bg-white/[0.03] p-2 shadow-2xl backdrop-blur-3xl lg:flex transform-gpu transition-all hover:bg-white/[0.06]">
-                        <StatMini icon={Users} label="Students" value="32" />
+                        <StatMini icon={Users} label="Students" value={classroom.students_count?.toString() || '0'} />
                         <div className="h-10 w-px self-center bg-white/10" />
                         <StatMini
                             icon={BookOpen}
-                            label="Modules"
+                            label="Subjects"
                             value={subjectsCount.toString()}
                         />
                     </div>

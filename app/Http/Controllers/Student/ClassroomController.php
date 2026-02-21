@@ -164,9 +164,12 @@ class ClassroomController extends Controller
     //     $classroom = Classroom::with('subjects')->findOrFail($id);
     //     return Inertia::render('student/classroom/Show', compact('classroom'));
     // }
+
     public function show(string $id)
     {
-        $classroom = Classroom::findOrFail($id);
+        $classroom = Classroom::with(['subjects'])
+            ->withCount('students')
+            ->findOrFail($id);
 
         // Private classroom protection
         if ($classroom->visibility === 'private') {
@@ -180,20 +183,48 @@ class ClassroomController extends Controller
             }
         }
 
-        $classroom->load(['subjects']);
-
         // Check if user joined
         $isJoined = $classroom->students()
             ->where('user_id', auth()->id())
             ->exists();
 
-        // dd($isJoin);
-
         return Inertia::render('student/classroom/Show', [
             'classroom' => $classroom,
-            'isJoined' => $isJoined,
+            'isJoined'  => $isJoined,
         ]);
     }
+    
+    
+    // public function show(string $id)
+    // {
+    //     $classroom = Classroom::findOrFail($id);
+
+    //     // Private classroom protection
+    //     if ($classroom->visibility === 'private') {
+    //         $isMember = auth()->user()
+    //             ->classrooms()
+    //             ->where('classroom_id', $id)
+    //             ->exists();
+
+    //         if (!$isMember) {
+    //             abort(403, 'This classroom is private.');
+    //         }
+    //     }
+
+    //     $classroom->load(['subjects']);
+
+    //     // Check if user joined
+    //     $isJoined = $classroom->students()
+    //         ->where('user_id', auth()->id())
+    //         ->exists();
+
+    //     // dd($isJoin);
+
+    //     return Inertia::render('student/classroom/Show', [
+    //         'classroom' => $classroom,
+    //         'isJoined' => $isJoined,
+    //     ]);
+    // }
 
 
     /**

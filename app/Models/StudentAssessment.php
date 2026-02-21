@@ -30,4 +30,8 @@ class StudentAssessment extends Model
     {
         return $this->hasMany(StudentAssessmentAttempt::class, 'student_assessment_id', 'id');
     }
+    public function lastAttempt()
+    {
+        return $this->hasOne(StudentAssessmentAttempt::class, 'student_assessment_id', 'id')->latest('started_at');
+    }
 }

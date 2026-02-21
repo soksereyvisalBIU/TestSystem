@@ -48,6 +48,8 @@ export default function SubjectDetail({ subject , students }: { subject: Subject
         <AppLayout>
             <Head title={`${subject?.name} | Student Portal`} />
 
+            {console.log(subject)}
+
             <div className="mx-auto min-h-screen max-w-7xl space-y-8 p-4 pb-20 md:p-8">
                 {/* 1. Hero Section */}
                 <motion.div
@@ -137,7 +139,7 @@ export default function SubjectDetail({ subject , students }: { subject: Subject
                                             <StatCard
                                                 icon={Users}
                                                 label="Total Students"
-                                                value="24"
+                                                value={students.length}
                                                 color="text-primary"
                                                 bg="bg-primary/10"
                                             />
@@ -183,18 +185,18 @@ export default function SubjectDetail({ subject , students }: { subject: Subject
                             className="space-y-6"
                         >
                             <InstructorCard
-                                name="Mr. RIN CHETRA"
-                                title="Lecturer"
-                                avatar="/assets/img/profile/rinchetra.jpg"
+                                name={subject.classroom.creator.name}
+                                title={`Instructor of ${subject.name}`}
+                                avatar={subject.classroom.creator.avatar}
                             />
 
-                            <LogisticsCard
+                            {/* <LogisticsCard
                                 schedule="Mon & Wed • 08:00 - 10:00"
                                 location="Main Campus, Lab 4"
                                 credits="3.0 Credits"
-                            />
+                            /> */}
 
-                            <QuickActionsCard actions={quickActions} />
+                            {/* <QuickActionsCard actions={quickActions} /> */}
 
                             <div className="flex gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
                                 <Info className="h-5 w-5 shrink-0 text-primary" />

@@ -11,6 +11,7 @@ interface SubjectHeroProps {
     cover: string;
     year: string;
     semester: string;
+    classroom: any;
     onViewReports?: () => void;
 }
 
@@ -20,6 +21,7 @@ export function SubjectHero({
     cover,
     year,
     semester,
+    classroom,
     onViewReports,
 }: SubjectHeroProps) {
     // Performance: Memoize image URL to prevent string concatenation on every render
@@ -80,23 +82,26 @@ export function SubjectHero({
                 </div>
 
                 {/* Sub-stat strip */}
-                <div className="hidden sm:grid mt-2 pt-4 sm:mt-6 sm:pt-8  grid-cols-2 gap-3 sm:gap-6 border-t border-white/10  md:flex md:flex-wrap md:gap-16">
+                <div className="mt-2 hidden grid-cols-2 gap-3 border-t border-white/10 pt-4 sm:mt-6 sm:grid sm:gap-6 sm:pt-8 md:flex md:flex-wrap md:gap-16">
                     <StatItem label="Status" value="In Progress" active />
-                    <StatItem label="Enrolled" value="24 Students" />
-                    <StatItem label="Type" value="Mandatory Course" />
+                    <StatItem
+                        label="Enrolled"
+                        value={`${classroom?.students?.length ?? 0} Students`}
+                    />{' '}
+                    {/* <StatItem label="Type" value="Classroom" /> */}
                     {/* Action Area */}
                     {onViewReports && (
                         <div className="flex w-full shrink-0 flex-col sm:w-auto">
                             <Button
                                 size="lg"
                                 onClick={onViewReports}
-                                className="group/btn h-12 rounded-2xl bg-primary px-8 text-primary-foreground shadow-2xl shadow-primary/40 transition-all duration-300 hover:bg-primary/90 active:scale-95 "
+                                className="group/btn h-12 rounded-2xl bg-primary px-8 text-primary-foreground shadow-2xl shadow-primary/40 transition-all duration-300 hover:bg-primary/90 active:scale-95"
                             >
                                 <FileText className="mr-2 h-5 w-5 transition-transform group-hover/btn:rotate-6" />
-                                <span className="text-sm font-bold  md:text-base">
+                                <span className="text-sm font-bold md:text-base">
                                     Analytics
                                 </span>
-                                <ChevronRight className="ml-2 h-4 w-4 hidden sm:block opacity-50 transition-transform group-hover/btn:translate-x-1" />
+                                <ChevronRight className="ml-2 hidden h-4 w-4 opacity-50 transition-transform group-hover/btn:translate-x-1 sm:block" />
                             </Button>
                         </div>
                     )}
