@@ -3,7 +3,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import { Trash2, Plus, ArrowRightLeft, GripVertical } from 'lucide-react';
+import { Trash2, Plus, ArrowRightLeft, GripVertical, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Pair {
@@ -70,8 +70,8 @@ export default function MatchingForm({ data, onChange }: Props) {
 
                 <div className="space-y-3">
                     {pairs.map((p, i) => (
-                        <div 
-                            key={i} 
+                        <div
+                            key={i}
                             className="group flex items-start gap-3 p-3 rounded-xl border border-border bg-muted/20 hover:bg-card hover:border-primary/30 hover:shadow-sm transition-all animate-in zoom-in-95 duration-200"
                         >
                             {/* Drag Handle Decoration */}
@@ -79,31 +79,35 @@ export default function MatchingForm({ data, onChange }: Props) {
                                 <GripVertical className="w-4 h-4 text-description/40" />
                             </div>
 
-                            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="space-y-1.5">
-                                    <Input
-                                        required
-                                        className="bg-background border-input focus:ring-primary/10 text-body"
-                                        placeholder="Term (Left)"
-                                        value={p.left}
-                                        onChange={(e) => updatePair(i, 'left', e.target.value)}
-                                    />
+                        <div className="flex-1 flex items-center gap-3 min-w-0">
+
+                            <div className="space-y-1.5 flex-1 min-w-0">
+                                <Textarea
+                                    required
+                                    className="bg-background border-input focus:ring-primary/10 text-body min-h-10 w-full"
+                                    placeholder="Term (Left)"
+                                    value={p.left}
+                                    onChange={(e) => updatePair(i, 'left', e.target.value)}
+                                />
+                            </div>
+
+                            <ArrowRight className="text-sm shrink-0" size={12} />
+
+                            <div className="relative space-y-1.5 flex-1 min-w-0">
+                                <div className="hidden sm:block absolute -left-4 top-1/2 -translate-y-1/2 z-10">
+                                    <div className="w-4 h-[1px] bg-border" />
                                 </div>
 
-                                <div className="relative space-y-1.5">
-                                    {/* Visual Connection Line */}
-                                    <div className="hidden sm:block absolute -left-4 top-1/2 -translate-y-1/2 z-10">
-                                        <div className="w-4 h-[1px] bg-border" />
-                                    </div>
-                                    <Input
-                                        required
-                                        className="bg-background border-input focus:ring-primary/10 text-body"
-                                        placeholder="Definition (Right)"
-                                        value={p.right}
-                                        onChange={(e) => updatePair(i, 'right', e.target.value)}
-                                    />
-                                </div>
+                                <Textarea
+                                    required
+                                    className="bg-background border-input focus:ring-primary/10 text-body min-h-10 w-full"
+                                    placeholder="Definition (Right)"
+                                    value={p.right}
+                                    onChange={(e) => updatePair(i, 'right', e.target.value)}
+                                />
                             </div>
+
+                        </div>
 
                             {/* Delete Action */}
                             <Button

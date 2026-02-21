@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Edit3, Trash2, GripVertical, Star } from 'lucide-react';
+import { Edit3, Trash2, GripVertical, Star, MousePointerClick } from 'lucide-react';
 import { renderAnswers } from './function/renderAnswer';
 import { cn } from '@/lib/utils';
 
@@ -58,7 +58,10 @@ export default function QuestionCard({
             <div className="absolute top-4 right-4 flex items-center gap-4">
                 {/* Actions Menu */}
                 <div className="flex items-center bg-muted rounded-lg p-0.5 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 border border-border/50 shadow-sm">
-                    <Button
+
+                    <MousePointerClick />
+
+                    {/* <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-subtitle hover:text-primary hover:bg-card rounded-md transition-colors"
@@ -73,7 +76,7 @@ export default function QuestionCard({
                         onClick={(e) => { e.stopPropagation(); onDelete(index); }}
                     >
                         <Trash2 className="h-4 w-4" />
-                    </Button>
+                    </Button> */}
                 </div>
 
                 {/* Point Badge */}

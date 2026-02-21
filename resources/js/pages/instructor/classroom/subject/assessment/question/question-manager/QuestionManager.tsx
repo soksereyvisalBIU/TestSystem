@@ -19,8 +19,10 @@ export default function QuestionManager({
         editIndex,
         setModalOpen,
         handleAddQuestion,
+        handleClear,
         handleEdit,
         handleDelete,
+        handleDeleteOnModal,
         handleDragEnd,
         handleSubmitAll,
         totalScore,
@@ -29,7 +31,7 @@ export default function QuestionManager({
         setTypePercentages,
         autoPoints,
         setAutoPoints,
-        setQuestions, 
+        setQuestions,
     } = useQuestionManager(assessmentId);
 
     if (isLoading) {
@@ -62,7 +64,7 @@ export default function QuestionManager({
             <div className=" flex-1 overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
                 <div className="p-6 space-y-4">
                     <QuestionActions
-                        onAdd={() => setModalOpen(true)}
+                        onAdd={() => {setModalOpen(true); handleClear();}}
                         onSave={handleSubmitAll}
                         hasChanges={hasChanges}
                     />
@@ -101,6 +103,7 @@ export default function QuestionManager({
                 setIsOpen={setModalOpen}
                 onClose={() => setModalOpen(false)}
                 onSave={handleAddQuestion}
+                onDelete={handleDeleteOnModal}
                 question={selectedQuestion}
                 defaultData={
                     editIndex !== null ? questions[editIndex] : undefined

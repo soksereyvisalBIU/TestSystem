@@ -41,6 +41,7 @@ interface Props {
     isOpen: boolean;
     setIsOpen: (v: boolean) => void;
     onClose: () => void;
+    onDelete: () => void;
     onSave: (payload: any) => void;
 }
 
@@ -49,6 +50,7 @@ export default function QuestionFormModal({
     question,
     isOpen,
     setIsOpen,
+    onDelete,
     onClose,
     onSave,
 }: Props) {
@@ -67,7 +69,7 @@ export default function QuestionFormModal({
             });
         } else {
             setType('true_false');
-            setData({ 
+            setData({
                 point: 1,
                 question: '',
                 answer: '',
@@ -75,7 +77,7 @@ export default function QuestionFormModal({
                 max_file_size: 10,
                 accepted_file_types: 'image',
                 allow_file_upload: false
-            }); 
+            });
         }
     }, [question, isOpen]);
 
@@ -158,12 +160,12 @@ export default function QuestionFormModal({
                         {question ? <Settings2 className="h-5 w-5" /> : <PlusCircle className="h-5 w-5" />}
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-sm font-bold leading-none text-title">
+                        <span className="text-md font-bold leading-none text-title">
                             {question ? 'Edit Question' : 'Create Question'}
                         </span>
-                        <span className="text-[10px] text-description font-medium">
+                        {/* <span className="text-[10px] text-description font-medium">
                             {question ? `ID: #${question.id}` : 'Drafting new assessment item'}
-                        </span>
+                        </span> */}
                     </div>
                 </div>
             }
@@ -264,11 +266,18 @@ export default function QuestionFormModal({
                 <div className="flex items-center justify-between border-t border-border bg-muted/20 -mx-6 -mb-6 px-6 py-5 rounded-b-3xl">
                     <Button
                         variant="ghost"
+                        onClick={() => (question ? onDelete() : onClose())}
+                        className="font-bold text-xs uppercase tracking-widest text-description hover:bg-background hover:text-destructive transition-all"
+                    >
+                        {question ? 'Delete Question' : 'Discard Changes'}
+                    </Button>
+                    {/* <Button
+                        variant="ghost"
                         onClick={onClose}
                         className="font-bold text-xs uppercase tracking-widest text-description hover:bg-background hover:text-destructive transition-all"
                     >
                         Discard Changes
-                    </Button>
+                    </Button> */}
 
                     <Button
                         onClick={handleSave}

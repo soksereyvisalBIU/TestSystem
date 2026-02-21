@@ -313,7 +313,7 @@ export const useQuestionManager = (assessmentId: number) => {
     // =================================================
     useEffect(() => {
         const savedBackup = localStorage.getItem(getStorageKey(assessmentId));
-        
+
         if (savedBackup) {
             try {
                 const parsed = JSON.parse(savedBackup);
@@ -355,6 +355,8 @@ export const useQuestionManager = (assessmentId: number) => {
         const handleShortcut = (e: KeyboardEvent) => {
             if (e.ctrlKey && (e.key === 'q' || e.key === 'Q')) {
                 e.preventDefault();
+                setSelectedQuestion(null);
+                setEditIndex(null);
                 setModalOpen(true);
             }
         };
@@ -401,7 +403,13 @@ export const useQuestionManager = (assessmentId: number) => {
     // =================================================
     // CRUD handlers
     // =================================================
+    const handleClear = () =>{
+        setSelectedQuestion(null);
+        setEditIndex(null);
+    }
+
     const handleAddQuestion = (question: any) => {
+        console.log("add")
         if (editIndex !== null) {
             const updated = [...questions];
             updated[editIndex] = { ...updated[editIndex], ...question, updated: true };
@@ -416,6 +424,34 @@ export const useQuestionManager = (assessmentId: number) => {
         setModalOpen(false);
     };
 
+    // const handleDeleteOnModal = () => {
+    //     console.log(editIndex);
+    //     const q = questions[editIndex];
+    //     const newList = questions.filter((_, i) => i !== editIndex).map((q, i) => ({ ...q, order: i + 1 }));
+    //     setQuestions(newList);
+    //     if (q.id) deleteQuestion(q.id);
+    //     toast.success('Question deleted.');
+    //     setModalOpen(false)
+    // };
+
+    const handleDeleteOnModal = () => {
+        if (!window.confirm("Are you sure you want to delete this question?")) return;
+
+        const q = questions[editIndex];
+
+        setQuestions(prev =>
+            prev
+                .filter((_, i) => i !== editIndex)
+                .map((q, i) => ({ ...q, order: i + 1 }))
+        );
+
+        if (q?.id) deleteQuestion(q.id);
+
+        toast.success("Question deleted.");
+        setModalOpen(false);
+    };
+
+
     const handleDelete = (index: number) => {
         const q = questions[index];
         const newList = questions.filter((_, i) => i !== index).map((q, i) => ({ ...q, order: i + 1 }));
@@ -425,6 +461,7 @@ export const useQuestionManager = (assessmentId: number) => {
     };
 
     const handleEdit = (index: number) => {
+        console.log("edit")
         setSelectedQuestion(questions[index]);
         setEditIndex(index);
         setModalOpen(true);
@@ -483,8 +520,10 @@ export const useQuestionManager = (assessmentId: number) => {
         setAutoPoints,
         setModalOpen,
         handleAddQuestion,
+        handleClear,
         handleEdit,
         handleDelete,
+        handleDeleteOnModal,
         handleDragEnd,
         handlePointChange,
         handleSubmitAll,
