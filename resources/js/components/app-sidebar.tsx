@@ -104,10 +104,10 @@ export function AppSidebar() {
                                 title: 'My Classes',
                                 href: route('instructor.classes.index'),
                             },
-                            {
-                                title: 'Attendance',
-                                href: route('instructor.attendance.index'),
-                            },
+                            // {
+                            //     title: 'Attendance',
+                            //     href: route('instructor.attendance.index'),
+                            // },
                         ],
                     },
                 ],
