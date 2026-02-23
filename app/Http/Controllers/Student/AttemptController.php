@@ -157,7 +157,7 @@ class AttemptController extends Controller
                 'student_assessment_attempt_id' => $assessmentAttempt->id,
                 'question_id' => $questionId,
                 'option_id' => is_numeric($answer) ? $answer : null,
-                'answer_text' => is_numeric($answer) ? null : $answer,
+                'answer_text' => $answer,
             ]);
         }
 
