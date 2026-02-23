@@ -92,7 +92,7 @@ class AttemptController extends Controller
         ]);
 
         Log::info("Student ID {$assessmentAttempt->studentAssessment->user_id} Name: {$assessmentAttempt->studentAssessment->user->name} submitted attempt ID {$assessmentAttempt->id} for assessment ID {$assessmentAttempt->studentAssessment->assessment_id}");
-        Log::info("Submitted answers: " . json_encode($request->answers));
+        Log::info("Submitted answers: " . $request->answers);
         // ===============================
         // Save Answers
         // ===============================
