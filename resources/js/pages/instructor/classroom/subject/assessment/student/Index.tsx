@@ -167,7 +167,7 @@ export default function StudentAssessmentAttemptShow({ assessment, classId, subj
         const dataToExport = processedAttempts.map((attempt) => ({
             'Student Name': attempt.student?.name || 'N/A',
             'Email': attempt.student?.email || 'N/A',
-            'Status': attempt.status.toUpperCase(),
+            'Status': attempt.status,
             'Score': attempt.score || 0,
             'Max Score': totalMarks,
             'Percentage': `${((Number(attempt.score) / totalMarks) * 100).toFixed(2)}%`,
