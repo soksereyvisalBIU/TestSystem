@@ -13,6 +13,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests; // ✅ ADD THIS
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -90,6 +91,8 @@ class AttemptController extends Controller
             'status' => 'submitted',
         ]);
 
+        Log::info("Student ID {$assessmentAttempt->studentAssessment->user_id} Name: {$assessmentAttempt->studentAssessment->user->name} submitted attempt ID {$assessmentAttempt->id} for assessment ID {$assessmentAttempt->studentAssessment->assessment_id}");
+        Log::info("Submitted answers: " . json_encode($request->answers));
         // ===============================
         // Save Answers
         // ===============================
