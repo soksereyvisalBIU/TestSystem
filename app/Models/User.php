@@ -79,6 +79,17 @@ class User extends Authenticatable
 
     // ==================
 
+
+    // ========== instructor relations ==========
+
+    public function createdClassrooms()
+    {
+        return $this->hasMany(Classroom::class, 'creator_id');
+    }
+    
+    // ==========================================
+    
+    
     public function classrooms()
     {
         return $this->belongsToMany(

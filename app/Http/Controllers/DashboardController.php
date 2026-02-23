@@ -26,7 +26,83 @@ class DashboardController extends Controller
         }
 
         if (Gate::allows('access-instructor-page')) {
-            return Inertia::render('instructor-dashboard');
+
+            // $user->load('createdClassrooms'); // Only count classes, no need for full relation
+
+            // base on the respone json below, the result of it is in the json below it
+            // return response()->json($user->createdClassrooms()->with('subjects.assessments.studentAssessmentAttempts' , 'students')->get());
+
+
+            // $classrooms = $user->createdClassrooms()
+            //     ->select([
+            //         'id',
+            //         'name',
+            //         'code',
+            //         'creator_id',
+            //         'created_at',
+            //     ])
+            //     ->with([
+            //         // Students enrolled in classroom
+            //         'students:id,name,email',
+
+            //         // Subjects
+            //         'subjects:id,name,class_id',
+
+            //         // Assessments under subjects
+            //         'subjects.assessments:id,title,type,start_time,end_time',
+
+            //         // Student attempts for each assessment
+            //         'subjects.assessments.studentAssessmentAttempts' => function ($q) {
+            //             $q->select([
+            //                 'id',
+            //                 'user_id',
+            //                 'assessment_id',
+            //                 'status',
+            //                 'score',
+            //                 'attempted_amount',
+            //             ])
+            //                 ->with([
+            //                     // Student info
+            //                     'student:id,name,email',
+
+            //                     // Last attempt only (important for dashboard)
+            //                     'lastAttempt:id,student_assessment_id,completed_at,status',
+            //                 ]);
+            //         },
+            //     ])
+            //     ->orderBy('created_at', 'desc')
+            //     ->get();
+
+
+            $classrooms = $user->createdClassrooms()
+                ->select('id', 'name', 'code') // Only basic classroom info
+                ->with([
+                    'students' => function ($query) {
+                        $query->select('users.id', 'name', 'email', 'avatar');
+                    },
+                    'subjects' => function ($query) {
+                        $query->select('id', 'class_id', 'name');
+                    },
+                    'subjects.assessments' => function ($query) {
+                        $query->select('assessments.id', 'title', 'type');
+                    },
+                    'subjects.assessments.studentAssessmentAttempts' => function ($query) {
+                        // Filter down to the bare essentials for the dashboard logic
+                        $query->select('id', 'user_id', 'assessment_id', 'status', 'score', 'updated_at')
+                            ->with([
+                                'student:id,name,email,avatar',
+                                'lastAttempt:id,student_assessment_id,completed_at,status'
+                            ]);
+                    }
+                ])
+                ->get();
+            return Inertia::render('instructor-dashboard', [
+                'classrooms' => $classrooms,
+            ]);
+
+            // $user->load('createdClassrooms.subjects');
+
+            // dd($user->createdClassrooms);
         }
 
         // 2. High-Performance Eager Loading

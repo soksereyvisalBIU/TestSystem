@@ -95,7 +95,7 @@ export function AppSidebar() {
                 label: 'Instructor Hub',
                 can: 'access-instructor-page',
                 items: [
-                    { title: 'Student Management', icon: Users, href: '#' },
+                    // { title: 'Student Management', icon: Users, href: '#' },
                     {
                         title: 'Class Management',
                         icon: Cpu,
@@ -148,19 +148,19 @@ export function AppSidebar() {
                             },
                         ],
                     },
-                    {
-                        title: 'Attendance',
-                        icon: ClipboardCheck,
-                        href: route('student.attendance.index'),
-                    },
-                    {
-                        title: 'Assessments',
-                        icon: ClipboardCheck,
-                        items: [
-                            { title: 'Active Exams', href: '#', badge: 'Live' },
-                            { title: 'Gradebook', href: '#' },
-                        ],
-                    },
+                    // {
+                    //     title: 'Attendance',
+                    //     icon: ClipboardCheck,
+                    //     href: route('student.attendance.index'),
+                    // },
+                    // {
+                    //     title: 'Assessments',
+                    //     icon: ClipboardCheck,
+                    //     items: [
+                    //         { title: 'Active Exams', href: '#', badge: 'Live' },
+                    //         { title: 'Gradebook', href: '#' },
+                    //     ],
+                    // },
                 ],
             },
         ];
