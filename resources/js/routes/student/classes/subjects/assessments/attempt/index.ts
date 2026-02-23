@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Student\AttemptController::review
- * @see app/Http/Controllers/Student/AttemptController.php:177
+ * @see app/Http/Controllers/Student/AttemptController.php:176
  * @route '/student/classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/review'
  */
 export const review = (args: { class_id: string | number, subject_id: string | number, assessment_id: string | number } | [class_id: string | number, subject_id: string | number, assessment_id: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ review.definition = {
 
 /**
 * @see \App\Http\Controllers\Student\AttemptController::review
- * @see app/Http/Controllers/Student/AttemptController.php:177
+ * @see app/Http/Controllers/Student/AttemptController.php:176
  * @route '/student/classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/review'
  */
 review.url = (args: { class_id: string | number, subject_id: string | number, assessment_id: string | number } | [class_id: string | number, subject_id: string | number, assessment_id: string | number ], options?: RouteQueryOptions) => {
@@ -45,7 +45,7 @@ review.url = (args: { class_id: string | number, subject_id: string | number, as
 
 /**
 * @see \App\Http\Controllers\Student\AttemptController::review
- * @see app/Http/Controllers/Student/AttemptController.php:177
+ * @see app/Http/Controllers/Student/AttemptController.php:176
  * @route '/student/classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/review'
  */
 review.get = (args: { class_id: string | number, subject_id: string | number, assessment_id: string | number } | [class_id: string | number, subject_id: string | number, assessment_id: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -54,7 +54,7 @@ review.get = (args: { class_id: string | number, subject_id: string | number, as
 })
 /**
 * @see \App\Http\Controllers\Student\AttemptController::review
- * @see app/Http/Controllers/Student/AttemptController.php:177
+ * @see app/Http/Controllers/Student/AttemptController.php:176
  * @route '/student/classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/review'
  */
 review.head = (args: { class_id: string | number, subject_id: string | number, assessment_id: string | number } | [class_id: string | number, subject_id: string | number, assessment_id: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -64,7 +64,7 @@ review.head = (args: { class_id: string | number, subject_id: string | number, a
 
     /**
 * @see \App\Http\Controllers\Student\AttemptController::review
- * @see app/Http/Controllers/Student/AttemptController.php:177
+ * @see app/Http/Controllers/Student/AttemptController.php:176
  * @route '/student/classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/review'
  */
     const reviewForm = (args: { class_id: string | number, subject_id: string | number, assessment_id: string | number } | [class_id: string | number, subject_id: string | number, assessment_id: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -74,7 +74,7 @@ review.head = (args: { class_id: string | number, subject_id: string | number, a
 
             /**
 * @see \App\Http\Controllers\Student\AttemptController::review
- * @see app/Http/Controllers/Student/AttemptController.php:177
+ * @see app/Http/Controllers/Student/AttemptController.php:176
  * @route '/student/classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/review'
  */
         reviewForm.get = (args: { class_id: string | number, subject_id: string | number, assessment_id: string | number } | [class_id: string | number, subject_id: string | number, assessment_id: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -83,7 +83,7 @@ review.head = (args: { class_id: string | number, subject_id: string | number, a
         })
             /**
 * @see \App\Http\Controllers\Student\AttemptController::review
- * @see app/Http/Controllers/Student/AttemptController.php:177
+ * @see app/Http/Controllers/Student/AttemptController.php:176
  * @route '/student/classes/{class_id}/subjects/{subject_id}/assessment/{assessment_id}/review'
  */
         reviewForm.head = (args: { class_id: string | number, subject_id: string | number, assessment_id: string | number } | [class_id: string | number, subject_id: string | number, assessment_id: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -174,7 +174,7 @@ store.post = (args: { class_id: string | number, subject_id: string | number, as
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\Student\AttemptController::uploadChunk
- * @see app/Http/Controllers/Student/AttemptController.php:204
+ * @see app/Http/Controllers/Student/AttemptController.php:203
  * @route '/student/upload-chunk'
  */
 export const uploadChunk = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -189,7 +189,7 @@ uploadChunk.definition = {
 
 /**
 * @see \App\Http\Controllers\Student\AttemptController::uploadChunk
- * @see app/Http/Controllers/Student/AttemptController.php:204
+ * @see app/Http/Controllers/Student/AttemptController.php:203
  * @route '/student/upload-chunk'
  */
 uploadChunk.url = (options?: RouteQueryOptions) => {
@@ -198,7 +198,7 @@ uploadChunk.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Student\AttemptController::uploadChunk
- * @see app/Http/Controllers/Student/AttemptController.php:204
+ * @see app/Http/Controllers/Student/AttemptController.php:203
  * @route '/student/upload-chunk'
  */
 uploadChunk.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -208,7 +208,7 @@ uploadChunk.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\Student\AttemptController::uploadChunk
- * @see app/Http/Controllers/Student/AttemptController.php:204
+ * @see app/Http/Controllers/Student/AttemptController.php:203
  * @route '/student/upload-chunk'
  */
     const uploadChunkForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -218,7 +218,7 @@ uploadChunk.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\Student\AttemptController::uploadChunk
- * @see app/Http/Controllers/Student/AttemptController.php:204
+ * @see app/Http/Controllers/Student/AttemptController.php:203
  * @route '/student/upload-chunk'
  */
         uploadChunkForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
