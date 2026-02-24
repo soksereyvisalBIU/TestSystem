@@ -97,7 +97,7 @@ class AttemptController extends Controller
         // ===============================
         foreach ($request->answers as $questionId => $answer) {
 
-            Log::info("Processing answer for question {$questionId}: " . json_encode($answer));
+            // Log::info("Processing answer for question {$questionId}: " . json_encode($answer));
 
             // FILE
             // if ($answer instanceof \Illuminate\Http\UploadedFile) {

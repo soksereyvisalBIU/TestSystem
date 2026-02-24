@@ -233,7 +233,7 @@ export default function StudentAssessmentAttemptScoring({
 
                         {/* STICKY SIDEBAR NAVIGATION */}
                         <aside className="sticky top-8 lg:col-span-4 xl:col-span-3">
-                            <Card className="flex flex-col overflow-hidden border-none shadow-lg ring-1 ring-slate-200 dark:ring-border gap-0 pt-0 max-h-[calc(100vh-4rem)]">
+                            <Card className="flex flex-col overflow-hidden border-none shadow-lg ring-1 ring-slate-200 dark:ring-border gap-0 pt-0">
                                 
                                 {/* Header: Context */}
                                 <div className="border-b bg-slate-50 p-5 pb-4 dark:bg-card shrink-0">
