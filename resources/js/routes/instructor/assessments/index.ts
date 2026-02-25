@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Instructor\StudentController::autoScore
- * @see app/Http/Controllers/Instructor/StudentController.php:161
+ * @see app/Http/Controllers/Instructor/StudentController.php:326
  * @route '/instructor/instructor/classes/{class}/subjects/{subject}/assessments/{assessment}/auto-score'
  */
 export const autoScore = (args: { class: string | number, subject: string | number, assessment: string | number } | [classParam: string | number, subject: string | number, assessment: string | number ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ autoScore.definition = {
 
 /**
 * @see \App\Http\Controllers\Instructor\StudentController::autoScore
- * @see app/Http/Controllers/Instructor/StudentController.php:161
+ * @see app/Http/Controllers/Instructor/StudentController.php:326
  * @route '/instructor/instructor/classes/{class}/subjects/{subject}/assessments/{assessment}/auto-score'
  */
 autoScore.url = (args: { class: string | number, subject: string | number, assessment: string | number } | [classParam: string | number, subject: string | number, assessment: string | number ], options?: RouteQueryOptions) => {
@@ -45,7 +45,7 @@ autoScore.url = (args: { class: string | number, subject: string | number, asses
 
 /**
 * @see \App\Http\Controllers\Instructor\StudentController::autoScore
- * @see app/Http/Controllers/Instructor/StudentController.php:161
+ * @see app/Http/Controllers/Instructor/StudentController.php:326
  * @route '/instructor/instructor/classes/{class}/subjects/{subject}/assessments/{assessment}/auto-score'
  */
 autoScore.post = (args: { class: string | number, subject: string | number, assessment: string | number } | [classParam: string | number, subject: string | number, assessment: string | number ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -55,7 +55,7 @@ autoScore.post = (args: { class: string | number, subject: string | number, asse
 
     /**
 * @see \App\Http\Controllers\Instructor\StudentController::autoScore
- * @see app/Http/Controllers/Instructor/StudentController.php:161
+ * @see app/Http/Controllers/Instructor/StudentController.php:326
  * @route '/instructor/instructor/classes/{class}/subjects/{subject}/assessments/{assessment}/auto-score'
  */
     const autoScoreForm = (args: { class: string | number, subject: string | number, assessment: string | number } | [classParam: string | number, subject: string | number, assessment: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -65,7 +65,7 @@ autoScore.post = (args: { class: string | number, subject: string | number, asse
 
             /**
 * @see \App\Http\Controllers\Instructor\StudentController::autoScore
- * @see app/Http/Controllers/Instructor/StudentController.php:161
+ * @see app/Http/Controllers/Instructor/StudentController.php:326
  * @route '/instructor/instructor/classes/{class}/subjects/{subject}/assessments/{assessment}/auto-score'
  */
         autoScoreForm.post = (args: { class: string | number, subject: string | number, assessment: string | number } | [classParam: string | number, subject: string | number, assessment: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

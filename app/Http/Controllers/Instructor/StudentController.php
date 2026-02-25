@@ -158,80 +158,85 @@ class StudentController extends Controller
             ]
         );
     }
-    public function autoScore($class, $subject, $assessmentId)
-    {
-        // Log::info("🚀 AutoScore START", compact('class', 'subject', 'assessmentId'));
+    // public function autoScore($class, $subject, $assessmentId)
+    // {
+    //     Log::info("🚀 AutoScore START", compact('class', 'subject', 'assessmentId'));
 
-        $assessment = Assessment::with('questions.options')->findOrFail($assessmentId);
+    //     $assessment = Assessment::with('questions.options')->findOrFail($assessmentId);
 
-        // Speed optimization: Check for manual types using the pre-loaded collection
-        $manualTypes = ['fill_blank', 'short_answer', 'fileupload'];
-        if ($assessment->questions->whereIn('type', $manualTypes)->isNotEmpty()) {
-            return back()->with('error', 'Manual grading required.');
-        }
+    //     // Speed optimization: Check for manual types using the pre-loaded collection
+    //     $manualTypes = ['fill_blank', 'short_answer', 'fileupload'];
+    //     if ($assessment->questions->whereIn('type', $manualTypes)->isNotEmpty()) {
+    //         return back()->with('error', 'Manual grading required.');
+    //     }
 
-        $studentAssessments = StudentAssessment::where('assessment_id', $assessmentId)->get();
+    //     $studentAssessments = StudentAssessment::where('assessment_id', $assessmentId)->get();
 
-        // PERFORMANCE: Fetch the latest attempt for every student assessment in ONE query
-        // We remove the 'status' = 'submitted' filter here to ensure we actually find the records
-        $attemptsMap = StudentAssessmentAttempt::with('answers')
-            ->whereIn('student_assessment_id', $studentAssessments->pluck('id'))
-            ->latest()
-            ->get()
-            ->groupBy('student_assessment_id');
+    //     // PERFORMANCE: Fetch the latest attempt for every student assessment in ONE query
+    //     // We remove the 'status' = 'submitted' filter here to ensure we actually find the records
+    //     $attemptsMap = StudentAssessmentAttempt::with('answers')
+    //         ->whereIn('student_assessment_id', $studentAssessments->pluck('id'))
+    //         ->latest()
+    //         ->get()
+    //         ->groupBy('student_assessment_id');
 
-        DB::beginTransaction();
-        try {
-            foreach ($studentAssessments as $studentAssessment) {
-                // Get the most recent attempt
-                $attempt = $attemptsMap->get($studentAssessment->id)?->first();
+    //     DB::beginTransaction();
+    //     try {
+    //         foreach ($studentAssessments as $studentAssessment) {
+    //             // Get the most recent attempt
+    //             $attempt = $attemptsMap->get($studentAssessment->id)?->first();
 
-                // If no attempt exists, we still want to mark the parent as 'scored' (0) 
-                // or keep it as 'submitted'. Here we skip to avoid logic errors.
-                if (!$attempt) {
-                    Log::warning("No attempt for SA ID: {$studentAssessment->id}");
-                    continue;
-                }
+    //             // If no attempt exists, we still want to mark the parent as 'scored' (0) 
+    //             // or keep it as 'submitted'. Here we skip to avoid logic errors.
+    //             if (!$attempt) {
+    //                 Log::warning("No attempt for SA ID: {$studentAssessment->id}");
+    //                 continue;
+    //             }
 
-                $totalScore = 0;
-                $answersByQuestion = $attempt->answers->groupBy('question_id');
+    //             $totalScore = 0;
+    //             $answersByQuestion = $attempt->answers->groupBy('question_id');
 
-                foreach ($assessment->questions as $question) {
-                    $questionAnswers = $answersByQuestion->get($question->id, collect());
-                    $earnedPoints = $this->calculateAutoScore($question, $questionAnswers);
+    //             // log::info("answersByQuestion" , [
+    //             //     'answer key' => $answersByQuestion
+    //             // ]);
 
-                    // Batch update points for answers
-                    foreach ($questionAnswers as $ans) {
-                        $ans->points_earned = $earnedPoints;
-                        $ans->save();
-                    }
-                    $totalScore += $earnedPoints;
-                }
+    //             foreach ($assessment->questions as $question) {
+    //                 $questionAnswers = $answersByQuestion->get($question->id, collect());
+    //                 $earnedPoints = $this->calculateAutoScore($question, $questionAnswers);
 
-                // UPDATE ATTEMPT STATUS
-                $attempt->update([
-                    'status' => 'scored',
-                    'sub_score' => $totalScore
-                ]);
+    //                 // Batch update points for answers
+    //                 foreach ($questionAnswers as $ans) {
+    //                     $ans->points_earned = $earnedPoints;
+    //                     $ans->save();
+    //                 }
+    //                 $totalScore += $earnedPoints;
+    //             }
 
-                // UPDATE PARENT ASSESSMENT STATUS (This was missing/skipped in your log)
-                $studentAssessment->update([
-                    'status' => 'scored',
-                    'score' => $totalScore
-                ]);
+    //             // UPDATE ATTEMPT STATUS
+    //             $attempt->update([
+    //                 'status' => 'scored',
+    //                 'sub_score' => $totalScore
+    //             ]);
 
-                // Log::info("✅ Scored SA ID: {$studentAssessment->id} - Score: {$totalScore}");
-            }
 
-            DB::commit();
-            // Log::info("🎉 AutoScore COMPLETED");
-            return back()->with('success', 'Scoring complete.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            // Log::error("❌ AutoScore Error: " . $e->getMessage());
-            return back()->with('error', 'Scoring failed.');
-        }
-    }
+    //             // UPDATE PARENT ASSESSMENT STATUS (This was missing/skipped in your log)
+    //             $studentAssessment->update([
+    //                 'status' => 'scored',
+    //                 'score' => $totalScore
+    //             ]);
+
+    //             Log::info("✅ Scored SA ID: {$studentAssessment->id} - Score: {$totalScore}");
+    //         }
+
+    //         DB::commit();
+    //         Log::info("🎉 AutoScore COMPLETED");
+    //         return back()->with('success', 'Scoring complete.');
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         Log::error("❌ AutoScore Error: " . $e->getMessage());
+    //         return back()->with('error', 'Scoring failed.');
+    //     }
+    // }
 
     // public function autoScore($class, $subject, $assessmentId)
     // {
@@ -318,55 +323,201 @@ class StudentController extends Controller
     //     }
     // }
 
+    public function autoScore($class, $subject, $assessmentId)
+    {
+        Log::info("🚀 AutoScore START", compact('class', 'subject', 'assessmentId'));
+
+        // Eager load everything needed for the calculation upfront
+        $assessment = Assessment::with('questions.options')->findOrFail($assessmentId);
+
+        $manualTypes = ['fill_blank', 'short_answer', 'fileupload'];
+        if ($assessment->questions->whereIn('type', $manualTypes)->isNotEmpty()) {
+            return back()->with('error', 'Manual grading required.');
+        }
+
+        // 1. Filter StudentAssessments that are either submitted or already scored
+        $studentAssessments = StudentAssessment::where('assessment_id', $assessmentId)
+            ->whereIn('status', ['submitted', 'scored'])
+            ->get();
+
+        if ($studentAssessments->isEmpty()) {
+            return back()->with('info', 'No eligible assessments found to score.');
+        }
+
+        // 2. Fetch latest attempts for these assessments (filtered by relevant statuses)
+        $attemptsMap = StudentAssessmentAttempt::with('answers')
+            ->whereIn('student_assessment_id', $studentAssessments->pluck('id'))
+            ->whereIn('status', ['submitted', 'scored'])
+            ->latest()
+            ->get()
+            ->groupBy('student_assessment_id');
+
+        DB::beginTransaction();
+        try {
+            foreach ($studentAssessments as $studentAssessment) {
+                $attempt = $attemptsMap->get($studentAssessment->id)?->first();
+
+                if (!$attempt) {
+                    continue;
+                }
+
+                $totalScore = 0;
+                $answersByQuestion = $attempt->answers->groupBy('question_id');
+
+                foreach ($assessment->questions as $question) {
+                    $questionAnswers = $answersByQuestion->get($question->id, collect());
+                    $earnedPoints = $this->calculateAutoScore($question, $questionAnswers);
+
+                    // PERFORMANCE: Update points only if they've changed to reduce DB writes
+                    foreach ($questionAnswers as $ans) {
+                        if ($ans->points_earned !== $earnedPoints) {
+                            $ans->update(['points_earned' => $earnedPoints]);
+                        }
+                    }
+                    $totalScore += $earnedPoints;
+                }
+
+                // 3. Update Attempt status and sub_score
+                $attempt->update([
+                    'status' => 'scored',
+                    'sub_score' => $totalScore
+                ]);
+
+                // 4. Update Parent Assessment status and total score
+                $studentAssessment->update([
+                    'status' => 'scored',
+                    'score' => $totalScore
+                ]);
+
+                Log::info("✅ Processed SA ID: {$studentAssessment->id} - Score: {$totalScore}");
+            }
+
+            DB::commit();
+            Log::info("🎉 AutoScore COMPLETED");
+            return back()->with('success', 'Scoring updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("❌ AutoScore Error: " . $e->getMessage());
+            return back()->with('error', 'Scoring failed due to a system error.');
+        }
+    }
+
     private function calculateAutoScore($question, $answers)
     {
         $maxPoints = (float) ($question->point ?? 0);
 
-        // Fast exit if no answers provided
         if ($answers->isEmpty()) {
             return 0;
         }
 
-        /*
-    |--------------------------------------------------------------------------
-    | TRUE / FALSE
-    |--------------------------------------------------------------------------
-    */
-        if ($question->type === 'true_false') {
-            $studentAnswer = $answers->first()->answer_text;
-            if (!$studentAnswer) return 0;
-
-            $correctOption = $question->options->firstWhere('is_correct', 1);
-            if (!$correctOption) return 0;
-
-            // BUG FIX: Your log showed $correctOption->text was returning null. 
-            // We now fallback to other common column names, or you can hardcode your exact column name here.
-            $correctValue = $correctOption->text ?? $correctOption->option_text ?? $correctOption->title ?? $correctOption->value;
-
-            if (strtolower(trim((string) $studentAnswer)) === strtolower(trim((string) $correctValue))) {
-                return $maxPoints;
-            }
-            return 0;
-        }
+        // Common normalization logic for performance
+        $normalize = fn($value) => strtolower(trim((string)$value));
 
         /*
     |--------------------------------------------------------------------------
-    | MULTIPLE CHOICE
+    | TRUE / FALSE & MULTIPLE CHOICE (Text-Based)
     |--------------------------------------------------------------------------
     */
-        if ($question->type === 'multiple_choice') {
-            // Since we eager loaded options, pluck directly from the collection
-            $correctOptionIds = $question->options->where('is_correct', 1)->pluck('id')->sort()->values()->toArray();
-            $selectedOptionIds = $answers->pluck('option_id')->filter()->sort()->values()->toArray();
+        if ($question->type === 'true_false' || $question->type === 'multiple_choice') {
 
-            if (!empty($correctOptionIds) && $correctOptionIds === $selectedOptionIds) {
+            // 1. Get all correct option texts from the pre-loaded relationship
+            // We normalize them immediately to avoid doing it inside a loop
+            $correctOptionTexts = $question->options
+                ->where('is_correct', 1)
+                ->pluck('option_text') // Using the 'option_text' column from your logs
+                ->map($normalize)
+                ->sort()
+                ->values()
+                ->toArray();
+
+            // 2. Get the student's selected answer texts
+            $studentSelectedTexts = $answers
+                ->pluck('answer_text')
+                ->filter()
+                ->map($normalize)
+                ->sort()
+                ->values()
+                ->toArray();
+
+            // 3. High-Performance Comparison
+            if (empty($correctOptionTexts)) {
+                Log::warning("⚠️ No correct options for Question ID: {$question->id}");
+                return 0;
+            }
+
+            // Compare the sorted, normalized string arrays
+            if ($correctOptionTexts === $studentSelectedTexts) {
                 return $maxPoints;
             }
+
             return 0;
         }
 
         return 0;
     }
+    // private function calculateAutoScore($question, $answers)
+    // {
+    //     $maxPoints = (float) ($question->point ?? 0);
+
+    //     if ($answers->isEmpty()) {
+    //         return 0;
+    //     }
+
+    //     /*
+    // |--------------------------------------------------------------------------
+    // | TRUE / FALSE
+    // |--------------------------------------------------------------------------
+    // */
+    //     if ($question->type === 'true_false') {
+    //         $studentAnswer = $answers->first()->answer_text;
+    //         $correctOption = $question->options->firstWhere('is_correct', 1);
+
+    //         if (!$correctOption || $studentAnswer === null) return 0;
+
+    //         // Use the correct column from your logs: option_text
+    //         $correctValue = $correctOption->option_text ?? $correctOption->text ?? $correctOption->value;
+
+    //         return (strtolower(trim((string)$studentAnswer)) === strtolower(trim((string)$correctValue)))
+    //             ? $maxPoints
+    //             : 0;
+    //     }
+
+    //     /*
+    // |--------------------------------------------------------------------------
+    // | MULTIPLE CHOICE
+    // |--------------------------------------------------------------------------
+    // */
+    //     if ($question->type === 'multiple_choice') {
+    //         // Correct IDs: Map to integers for strict comparison performance
+    //         $correctOptionIds = $question->options
+    //             ->where('is_correct', 1)
+    //             ->pluck('id')
+    //             ->map(fn($id) => (int)$id)
+    //             ->sort()
+    //             ->values()
+    //             ->toArray();
+    //         log::info("Correct Option IDs", ['correct_ids' => $correctOptionIds]);
+            
+    //         // Student IDs: Map to integers and filter out any empty values
+    //         $selectedOptionIds = $answers
+    //         ->pluck('option_id')
+    //         ->filter()
+    //         ->map(fn($id) => (int)$id)
+    //         ->sort()
+    //         ->values()
+    //         ->toArray();
+    //         log::info("Selected Option IDs", ['selected_ids' => $selectedOptionIds]);
+
+    //         // LATENCY CHECK: Compare pre-sorted integer arrays (fastest method in PHP)
+    //         if (!empty($correctOptionIds) && $correctOptionIds === $selectedOptionIds) {
+    //             return $maxPoints;
+    //         }
+
+    //         return 0;
+    //     }
+
+    //     return 0;
+    // }
 
     // public function autoScoreIfNoManual($assessmentId)
     // {
