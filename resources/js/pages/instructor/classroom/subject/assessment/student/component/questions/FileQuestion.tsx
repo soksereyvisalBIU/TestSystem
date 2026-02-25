@@ -28,8 +28,8 @@ export default function FileQuestion({ question, answers, onTeacherScore }) {
     ? route('files.show', { path: fileData.file_path })
     : null;
 
-    console.log('File Data:', fileData);
-    console.log('File fileUrl:', fileUrl);
+    // console.log('File Data:', fileData);
+    // console.log('File fileUrl:', fileUrl);
 
     const fileName = fileData.file_name || 'submitted_file';
 

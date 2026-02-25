@@ -27,7 +27,7 @@ export function AssessmentCard({ assessment, classId }: AssessmentCardProps) {
      * FIX 2: Correct the route parameter array [class, subject, assessment]
      */
 
-    console.log('Assessment Subject ID:', assessment);
+    // console.log('Assessment Subject ID:', assessment);
 
     const assessmentRoute = accessInstructorPage
         ? route('instructor.classes.subjects.assessments.show', [

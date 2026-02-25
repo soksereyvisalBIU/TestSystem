@@ -40,7 +40,7 @@ export default function Dashboard({
         );
     }
 
-    console.log(assessment);
+    // console.log(assessment);
     // {
     //     "id": 1,
     //     "title": "Week I Quizz",
@@ -70,7 +70,7 @@ export default function Dashboard({
 
     if (!serverNow) return;
 
-    console.log('Server Time:', serverNow.format());
+    // console.log('Server Time:', serverNow.format());
 
     // ===============================
     // Time Calculations

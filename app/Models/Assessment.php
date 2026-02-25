@@ -22,7 +22,7 @@ class Assessment extends Model
     public function studentAssessmentAttempts()
     {
         return $this->hasMany(StudentAssessment::class, 'assessment_id')
-            ->with(['student:id,name,email,avatar' , 'lastAttempt:id,student_assessment_id,started_at,completed_at,status,sub_score']);
+            ->with(['student:id,name,email,avatar', 'lastAttempt:id,student_assessment_id,started_at,completed_at,status,sub_score']);
     } // used
 
     public function attempts()
@@ -41,6 +41,11 @@ class Assessment extends Model
                 'score' // Include score if you have it in your pivot
             ])
             ->withTimestamps();
+    }
+
+    public function studentAssessments()
+    {
+        return $this->hasMany(StudentAssessment::class);
     }
 
     public function classroom()

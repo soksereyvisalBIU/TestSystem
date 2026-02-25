@@ -5,7 +5,7 @@ export const renderAnswers = (q: any) => {
     // Utility for letter indexing (A, B, C...)
     const getLetter = (i: number) => String.fromCharCode(65 + i);
 
-    console.log(q);
+    // console.log(q);
 
     switch (q.type) {
         case 'true_false':
@@ -110,7 +110,7 @@ export const renderAnswers = (q: any) => {
             // Map the media array from your API to the expected refImages
             const refImages = q?.media || [];
 
-            console.log(q);
+            // console.log(q);
 
             return (
                 <div className="mt-2 space-y-3">

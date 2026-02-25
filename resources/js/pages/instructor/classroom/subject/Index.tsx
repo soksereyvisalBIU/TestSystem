@@ -48,7 +48,7 @@ export default function SubjectDetail({ subject , students }: { subject: Subject
         <AppLayout>
             <Head title={`${subject?.name} | Student Portal`} />
 
-            {console.log(subject)}
+            {/* {console.log(subject)} */}
 
             <div className="mx-auto min-h-screen max-w-7xl space-y-8 p-4 pb-20 md:p-8">
                 {/* 1. Hero Section */}

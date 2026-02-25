@@ -126,7 +126,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('classes/subjects/assessment/{assessment}/copy', [App\Http\Controllers\Instructor\AssessmentController::class, 'copy'])->name('classes.subjects.assessments.copy');
             Route::resource('classes.subjects.assessment.question', App\Http\Controllers\Instructor\QuestionController::class)->names('classes.subjects.assessments.questions');
             Route::resource('classes.subjects.assessment.student', App\Http\Controllers\Instructor\StudentController::class)->names('classes.subjects.assessments.students');
-
+            // web.php
+            Route::post(
+                '/instructor/classes/{class}/subjects/{subject}/assessments/{assessment}/auto-score',
+                [App\Http\Controllers\Instructor\StudentController::class, 'autoScore']
+            )->name('assessments.autoScore');
 
 
             Route::get(

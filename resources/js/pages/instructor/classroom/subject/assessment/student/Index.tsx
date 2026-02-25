@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { saveAs } from 'file-saver';
 import {
@@ -205,6 +205,7 @@ export default function StudentAssessmentAttemptShow({ assessment, classId, subj
     return (
         <AppLayout>
             <Head title={`${assessment.title} | Analytics`} />
+            
 
             <div className="container mx-auto max-w-7xl animate-in space-y-6 p-6 duration-500 fade-in">
                 {/* Header Section */}
@@ -218,6 +219,25 @@ export default function StudentAssessmentAttemptShow({ assessment, classId, subj
                     </div>
 
                     <div className="flex items-center gap-2">
+                        <Button
+                            variant="default"
+                            onClick={() => {
+                                router.post(
+                                    route('instructor.assessments.autoScore', {
+                                        class: classId,
+                                        subject: subjectId,
+                                        assessment: assessment.id,
+                                    }),
+                                    {},
+                                    {
+                                        onSuccess: () => toast.success('Auto scoring completed.'),
+                                        onError: () => toast.error('Assessment requires manual grading.'),
+                                    }
+                                );
+                            }}
+                        >
+                            Auto Score All Students
+                        </Button>
                         <Button variant="outline" size="sm" onClick={() => handleExport('xlsx')} className="rounded-xl border-emerald-600/20 text-emerald-700 hover:bg-emerald-50">
                             <FileSpreadsheet className="mr-2 h-4 w-4" /> Export Excel
                         </Button>

@@ -409,7 +409,7 @@ export const useQuestionManager = (assessmentId: number) => {
     }
 
     const handleAddQuestion = (question: any) => {
-        console.log("add")
+        // console.log("add")
         if (editIndex !== null) {
             const updated = [...questions];
             updated[editIndex] = { ...updated[editIndex], ...question, updated: true };
@@ -461,7 +461,7 @@ export const useQuestionManager = (assessmentId: number) => {
     };
 
     const handleEdit = (index: number) => {
-        console.log("edit")
+        // console.log("edit")
         setSelectedQuestion(questions[index]);
         setEditIndex(index);
         setModalOpen(true);

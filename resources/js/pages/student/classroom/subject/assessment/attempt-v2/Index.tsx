@@ -13,7 +13,7 @@ import { route } from 'ziggy-js';
 
 export default function AttemptAssessment({ assessment }: { assesment: any }) {
 
-    console.log(assessment);
+    // console.log(assessment);
     
     
     const { props } = usePage();
